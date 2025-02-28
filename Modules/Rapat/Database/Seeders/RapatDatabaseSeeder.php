@@ -16,6 +16,10 @@ class RapatDatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        // $this->call("OthersTableSeeder");
+        $this->call([
+            MenuRapatTableSeeder::class,
+            RoleSeederTableSeeder::class,
+            UserSeederTableSeeder::class
+        ]);
     }
 }

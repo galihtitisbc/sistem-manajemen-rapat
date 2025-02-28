@@ -47,7 +47,7 @@ class MigrationRapat extends Command
         ]);
         $this->info('Migration for core And Rapat executed successfully.');
         $this->call('db:seed', ['--class' => 'DatabaseSeeder']);
-        // $this->call('module:seed', ['module' => 'Rapat']);/
+        $this->call('module:seed', ['module' => 'Rapat']);
 
         $this->info('Seeder for core And Rapat executed successfully.');
     }

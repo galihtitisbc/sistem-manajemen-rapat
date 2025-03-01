@@ -13,10 +13,47 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <h1>Hello Test Module Rapat</h1>
-                    <p>
-                        This view is loaded from module: {!! config('rapat.name') !!}
-                    </p>
+                    @hasanyrole(['pimpinan', 'pejabat', 'sekretaris'])
+                        <div class="btn-tambah d-flex justify-content-end">
+                            <button class="btn btn-primary">Tambah Rapat</button>
+                        </div>
+                    @endhasanyrole
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Topik Rapat</th>
+                                <th scope="col">Tanggal</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Aksi</th>
+                                <th scope="col">Tugas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>@mdo</td>
+                                <td>Otto</td>
+                                <td>@mdo</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>@fat</td>
+                                <td>Thornton</td>
+                                <td>@fat</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td colspan="2">Larry the Bird</td>
+                                <td>@twitter</td>
+                                <td colspan="2">Larry the Bird</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

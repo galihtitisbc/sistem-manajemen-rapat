@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Rapat\Http\Controllers\RapatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +16,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth', 'permission']], function () {
     Route::prefix('rapat')->group(function () {
-        Route::get('/', 'RapatController@index');
+        Route::get('/dashboard', [RapatController::class, 'index']);
     });
 });

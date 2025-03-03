@@ -2,15 +2,11 @@
 
 namespace Modules\Rapat\Http\Controllers;
 
-use App\Models\Core\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Rapat\Entities\RapatAgenda;
-use Illuminate\Support\Facades\View;
-use Modules\Rapat\Entities\Kepanitiaan;
 
-class RapatController extends Controller
+class RapatDashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,10 +14,7 @@ class RapatController extends Controller
      */
     public function index()
     {
-        $rapat = RapatAgenda::all();
-        return view('rapat::rapat.index', [
-            'rapats' =>  $rapat,
-        ]);
+        return view('rapat::index');
     }
 
     /**
@@ -30,12 +23,7 @@ class RapatController extends Controller
      */
     public function create()
     {
-        $kepanitiaans = Kepanitiaan::all();
-        $users = User::all();
-        return view('rapat::rapat.create', [
-            'kepanitiaans' => $kepanitiaans,
-            'users'        => $users
-        ]);
+        return view('rapat::create');
     }
 
     /**
@@ -45,7 +33,7 @@ class RapatController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        //
     }
 
     /**

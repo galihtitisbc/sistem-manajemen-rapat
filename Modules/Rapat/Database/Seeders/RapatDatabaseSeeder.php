@@ -19,7 +19,9 @@ class RapatDatabaseSeeder extends Seeder
         $this->call([
             MenuRapatTableSeeder::class,
             RoleSeederTableSeeder::class,
-            UserSeederTableSeeder::class
+            UserSeederTableSeeder::class,
+            PesertaRapatTableSeeder::class,
+            RapatKepanitiaanTableSeeder::class
         ]);
     }
 }

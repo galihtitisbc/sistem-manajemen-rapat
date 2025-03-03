@@ -12,10 +12,10 @@ class RapatAgenda extends Model
 
     protected $fillable = [];
 
-    // protected static function newFactory()
-    // {
-    //     return \Modules\Rapat\Database\factories\RapatAgendaFactory::new();
-    // }
+    protected static function newFactory()
+    {
+        return \Modules\Rapat\Database\factories\RapatAgendaFactory::new();
+    }
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

@@ -6,6 +6,7 @@
 @stop
 
 @push('css')
+    @livewireStyles
 @endpush
 
 @section('content')
@@ -13,7 +14,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <h3>Modul Rapat</h3>
+                    <livewire:rapat.rapat-create-form />
                 </div>
             </div>
         </div>
@@ -21,5 +22,5 @@
 @endsection
 
 @push('js')
-    <script></script>
+    @livewireScripts
 @endpush

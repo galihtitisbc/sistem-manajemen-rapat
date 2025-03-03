@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Rapat\Http\Controllers\RapatController;
+use Modules\Rapat\Http\Controllers\RapatDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +17,9 @@ use Modules\Rapat\Http\Controllers\RapatController;
 
 Route::group(['middleware' => ['auth', 'permission']], function () {
     Route::prefix('rapat')->group(function () {
-        Route::get('/dashboard', [RapatController::class, 'index']);
+        Route::get('/dashboard', [RapatDashboardController::class, 'index']);
+        Route::get('/agenda-rapat', [RapatController::class, 'index']);
+        Route::get('/agenda-rapat/create', [RapatController::class, 'create']);
+        Route::post('/agenda-rapat/store', [RapatController::class, 'store']);
     });
 });

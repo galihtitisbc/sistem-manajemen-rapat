@@ -18,13 +18,14 @@ class CreateRapatAgendasTable extends Migration
             $table->foreignId('user_id')->constrained('users');
             // ->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreignId('pimpinan_id')->constrained('users');
-            $table->foreignId('notulen_id')->constrained('users');
+            $table->foreignId('notulis_id')->constrained('users');
             $table->string('judul_rapat');
             $table->string('slug');
-            $table->date('tanggal');
+            $table->dateTime('waktu_mulai');
+            $table->dateTime('waktu_selesai');
             $table->text('deskripsi');
             $table->string('tempat');
-            $table->enum('status', ['CANCELED', 'SCHEDULED', 'COMPLETED'])->default('SCHEDULED');
+            $table->enum('status', ['CANCELED', 'SCHEDULED', 'COMPLETED', 'STARTED'])->default('SCHEDULED');
             $table->string('lampiran');
             $table->string('zoom_link');
             $table->string('calendar_link');

@@ -103,7 +103,8 @@ class User extends Authenticatable
 			$this->save();
 			return false;
 		}
-		if ($rol[$this->role_aktif] == $roleCheck) return true;
+		if ($rol[$this->role_aktif] == $roleCheck)
+			return true;
 		return false;
 	}
 

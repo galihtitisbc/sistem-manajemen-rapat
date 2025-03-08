@@ -3,7 +3,6 @@
 namespace Modules\Rapat\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Modules\Rapat\Console\MakeLivewireComponentInModule;
 use Modules\Rapat\Console\MigrationRapat;
 
 class ConsoleRapatServiceProvider extends ServiceProvider
@@ -15,7 +14,6 @@ class ConsoleRapatServiceProvider extends ServiceProvider
      */
     protected $commands = [
         MigrationRapat::class,
-        MakeLivewireComponentInModule::class
     ];
     public function register()
     {

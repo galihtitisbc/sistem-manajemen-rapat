@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateRapatAgendasTable extends Migration
 {
@@ -19,16 +19,16 @@ class CreateRapatAgendasTable extends Migration
             // ->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreignId('pimpinan_id')->constrained('users');
             $table->foreignId('notulis_id')->constrained('users');
-            $table->string('judul_rapat');
+            $table->string('nomor_surat');
             $table->string('slug');
             $table->dateTime('waktu_mulai');
             $table->dateTime('waktu_selesai');
-            $table->text('deskripsi');
+            $table->text('agenda_rapat');
             $table->string('tempat');
             $table->enum('status', ['CANCELED', 'SCHEDULED', 'COMPLETED', 'STARTED'])->default('SCHEDULED');
-            $table->string('lampiran');
-            $table->string('zoom_link');
-            $table->string('calendar_link');
+            $table->string('lampiran')->nullable();
+            $table->string('zoom_link')->nullable();
+            $table->string('calendar_link')->nullable();
             $table->timestamps();
         });
     }

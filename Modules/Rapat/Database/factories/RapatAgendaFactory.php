@@ -1,10 +1,9 @@
 <?php
-
 namespace Modules\Rapat\Database\factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Core\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RapatAgendaFactory extends Factory
 {
@@ -23,19 +22,19 @@ class RapatAgendaFactory extends Factory
     public function definition()
     {
         return [
-            'user_id'           => User::inRandomOrder()->first()->id,
-            'pimpinan_id'       => User::inRandomOrder()->first()->id,
-            'notulis_id'        => User::inRandomOrder()->first()->id,
-            'judul_rapat'       => $this->faker->sentence,
-            'slug'              => $this->faker->slug,
-            'waktu_mulai'       => Carbon::now('Asia/Jakarta'),
-            'waktu_selesai'     => Carbon::now('Asia/Jakarta')->addHours(2),
-            'deskripsi'         => $this->faker->text,
-            'tempat'            => $this->faker->address,
-            'status'            => $this->faker->randomElement(['CANCELED', 'SCHEDULED', 'COMPLETED', 'STARTED']),
-            'lampiran'          => $this->faker->word,
-            'zoom_link'         => $this->faker->url,
-            'calendar_link'     => $this->faker->url
+            'user_id'       => User::inRandomOrder()->first()->id,
+            'pimpinan_id'   => User::inRandomOrder()->first()->id,
+            'notulis_id'    => User::inRandomOrder()->first()->id,
+            'nomor_surat'   => $this->faker->word,
+            'slug'          => $this->faker->slug,
+            'waktu_mulai'   => Carbon::now('Asia/Jakarta'),
+            'waktu_selesai' => Carbon::now('Asia/Jakarta')->addHours(2),
+            'agenda_rapat'  => $this->faker->text,
+            'tempat'        => $this->faker->address,
+            'status'        => $this->faker->randomElement(['CANCELED', 'SCHEDULED', 'COMPLETED', 'STARTED']),
+            'lampiran'      => $this->faker->word,
+            'zoom_link'     => $this->faker->url,
+            'calendar_link' => $this->faker->url,
         ];
     }
 }

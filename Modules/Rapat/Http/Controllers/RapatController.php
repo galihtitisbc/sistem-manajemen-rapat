@@ -30,12 +30,7 @@ class RapatController extends Controller
      */
     public function create()
     {
-        $kepanitiaans = Kepanitiaan::all();
-        $users = User::all();
-        return view('rapat::rapat.create', [
-            'kepanitiaans' => $kepanitiaans,
-            'users'        => $users
-        ]);
+        return view('rapat::rapat.create');
     }
 
     /**
@@ -43,10 +38,7 @@ class RapatController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $request)
-    {
-        dd($request->all());
-    }
+    public function store(Request $request) {}
 
     /**
      * Show the specified resource.

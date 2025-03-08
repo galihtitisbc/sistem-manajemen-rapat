@@ -1,21 +1,23 @@
 <?php
-
 namespace App\Http\Livewire\Rapat;
 
 use App\Models\Core\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Modules\Rapat\Entities\Kepanitiaan;
 use Modules\Rapat\Http\Requests\CreateRapatRequest;
+use Modules\Rapat\Http\Service\RapatServiceInterface;
 
 class RapatCreateForm extends Component
 {
-    public $judulRapat;
+    private $rapatService;
+    public $nomorSurat;
     public $tempat;
     public $waktuMulai;
     public $waktuSelesai;
-    public $deskripsi;
+    public $agendaRapat;
     public $kepanitiaans;
     public $kepanitiaanSelected;
     public $pesertaRapat;
@@ -30,7 +32,7 @@ class RapatCreateForm extends Component
     {
         $this->kepanitiaans = Kepanitiaan::all();
         $this->pesertaRapat = collect();
-        $this->users = User::with('rapatAgendaPeserta')->get();
+        $this->users        = User::with('rapatAgendaPeserta')->get();
     }
     protected function rules()
     {
@@ -58,18 +60,29 @@ class RapatCreateForm extends Component
     public function storeRapat()
     {
         $data = [
-            'user_id'        => Auth::user()->id,
-            'pimpinan_id'    => $this->pimpinanRapat,
-            'peserta_rapat'  => $this->pesertaRapat->pluck('id')->toArray(),
-            'notulis_id'     => $this->notulisRapat,
-            'judul_rapat'    => $this->judulRapat,
-            'waktu_mulai'    => $this->waktuMulai,
-            'waktu_selesai'  => $this->waktuSelesai,
-            'deskripsi'      => $this->deskripsi,
-            'tempat'         => $this->tempat,
+            'user_id'       => Auth::user()->id,
+            'pimpinan_id'   => $this->pimpinanRapat,
+            'peserta_rapat' => $this->pesertaRapat->pluck('id')->toArray(),
+            'notulis_id'    => $this->notulisRapat,
+            'nomor_surat'   => $this->nomorSurat,
+            'waktu_mulai'   => $this->waktuMulai,
+            'waktu_selesai' => $this->waktuSelesai,
+            'agenda_rapat'  => $this->agendaRapat,
+            'tempat'        => $this->tempat,
             // 'lampiran'       => $this->lampiran,
         ];
         $validatedData = (new CreateRapatRequest())->validated($data);
-        dd($validatedData);
+        try {
+            $this->getRapatService()->store($validatedData);
+        } catch (\Throwable $e) {
+            dd($e->getMessage());
+        }
+    }
+    public function getRapatService()
+    {
+        if (! $this->rapatService) {
+            $this->rapatService = App::make(RapatServiceInterface::class);
+        }
+        return $this->rapatService;
     }
 }

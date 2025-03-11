@@ -27,8 +27,8 @@ class CreateRapatAgendasTable extends Migration
             $table->string('tempat');
             $table->enum('status', ['CANCELED', 'SCHEDULED', 'COMPLETED', 'STARTED'])->default('SCHEDULED');
             $table->string('lampiran')->nullable();
-            $table->string('zoom_link')->nullable();
-            $table->string('calendar_link')->nullable();
+            $table->text('zoom_link')->nullable();
+            $table->text('calendar_link')->nullable();
             $table->timestamps();
         });
     }

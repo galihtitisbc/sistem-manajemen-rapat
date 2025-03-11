@@ -24,7 +24,7 @@ class CreateRapatRequest extends FormRequest
             'waktu_selesai'   => 'required|date_format:Y-m-d H:i:s|after:waktu_mulai',
             'agenda_rapat'    => 'required|string',
             'tempat'          => 'required|string|max:255',
-            'lampiran'        => 'nullable|file|mimes:jpg,jpeg,png,doc,docx,xls,xlsx,pdf,txt|max:2048',
+            'lampiran.*'      => 'nullable|file|mimes:jpg,jpeg,png,doc,docx,xls,xlsx,pdf,txt|max:2048',
         ];
     }
     public function validated($data = [])

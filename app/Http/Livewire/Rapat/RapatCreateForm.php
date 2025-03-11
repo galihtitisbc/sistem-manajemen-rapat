@@ -6,12 +6,15 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Modules\Rapat\Entities\Kepanitiaan;
+use Modules\Rapat\Http\Helper\FlashMessage;
 use Modules\Rapat\Http\Requests\CreateRapatRequest;
 use Modules\Rapat\Http\Service\RapatServiceInterface;
 
 class RapatCreateForm extends Component
 {
+    use WithFileUploads;
     private $rapatService;
     public $nomorSurat;
     public $tempat;
@@ -24,6 +27,7 @@ class RapatCreateForm extends Component
     public $users;
     public $pimpinanRapat;
     public $notulisRapat;
+    public $lampiran = [];
     public function render()
     {
         return view('livewire.rapat.rapat-create-form');
@@ -69,13 +73,15 @@ class RapatCreateForm extends Component
             'waktu_selesai' => $this->waktuSelesai,
             'agenda_rapat'  => $this->agendaRapat,
             'tempat'        => $this->tempat,
-            // 'lampiran'       => $this->lampiran,
+            'lampiran'      => $this->lampiran,
         ];
         $validatedData = (new CreateRapatRequest())->validated($data);
         try {
             $this->getRapatService()->store($validatedData);
+            FlashMessage::success('Agenda Rapat Berhasil DiBuat');
+            return redirect()->to('/rapat/agenda-rapat');
         } catch (\Throwable $e) {
-            dd($e->getMessage());
+            FlashMessage::error($e->getMessage());
         }
     }
     public function getRapatService()

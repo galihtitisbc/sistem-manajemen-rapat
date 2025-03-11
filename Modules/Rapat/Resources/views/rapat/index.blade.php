@@ -18,8 +18,8 @@
                             <a href="{{ url('rapat/agenda-rapat/create') }}" class="btn btn-primary">Tambah Rapat</a>
                         </div>
                     @endhasanyrole
-                    <table class="table table-striped text-center">
-                        <thead>
+                    <table class="table table-striped">
+                        <thead class="text-center">
                             <tr>
                                 <th scope="col">No</th>
                                 <th scope="col">Topik Rapat</th>
@@ -32,10 +32,11 @@
                         <tbody>
                             @foreach ($rapats as $rapat)
                                 <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $rapat->judul_rapat }}</td>
-                                    <td>{{ $rapat->waktu_mulai }} - {{ $rapat->waktu_selesai }}</td>
-                                    <td>
+                                    <td class="text-center">{{ $loop->iteration }}</td>
+                                    <td class="text-wrap" style="max-width: 200px; word-wrap: break-word;">
+                                        {{ $rapat->agenda_rapat }}</td>
+                                    <td class="text-center">{{ $rapat->waktu_mulai }} - {{ $rapat->waktu_selesai }}</td>
+                                    <td class="text-center">
                                         @if ($rapat->status == 'CANCELED')
                                             <span class="badge bg-danger">Canceled</span>
                                         @elseif ($rapat->status == 'SCHEDULED')
@@ -46,8 +47,9 @@
                                             <span class="badge bg-primary">Started</span>
                                         @endif
                                     </td>
-                                    <td>
-                                        <a href="#" class="btn btn-primary">
+                                    <td class="text-center">
+                                        <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/detail') }}"
+                                            class="btn btn-primary">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         @if ($rapat->user_id == Auth::user()->id || $rapat->pimpinan_id == Auth::user()->id)
@@ -62,7 +64,7 @@
                                             <a href="#" class="btn btn-success">Isi Notulen</a>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         @if ($rapat->status == 'COMPLETED' || $rapat->status == 'STARTED')
                                             <a href="#" class="btn btn-primary"> Isi Penugasan</a>
                                         @endif
@@ -78,5 +80,15 @@
 @endsection
 
 @push('js')
-    <script></script>
+    @if (session('swal'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "{{ session('swal.title') }}",
+                    text: "{{ session('swal.text') }}",
+                    icon: "{{ session('swal.icon') }}"
+                });
+            });
+        </script>
+    @endif
 @endpush

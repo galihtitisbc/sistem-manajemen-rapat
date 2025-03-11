@@ -29,7 +29,7 @@ class RapatAgenda extends Model
     }
     public function rapatAgendaPeserta()
     {
-        return $this->belongsToMany(User::class, 'rapat_pesertas');
+        return $this->belongsToMany(User::class, 'rapat_pesertas')->withPivot('status', 'is_penugasan');
     }
     public function rapatLampiran()
     {

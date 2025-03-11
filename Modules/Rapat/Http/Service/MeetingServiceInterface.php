@@ -1,7 +1,7 @@
 <?php
 namespace Modules\Rapat\Http\Service;
 
-interface ZoomServiceInterface
+interface MeetingServiceInterface
 {
     public function authentication();
     public function createMeeting($data);

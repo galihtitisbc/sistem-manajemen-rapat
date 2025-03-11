@@ -3,10 +3,10 @@ namespace Modules\Rapat\Http\Service\Implementation;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
-use Modules\Rapat\Http\Service\ZoomServiceInterface;
-use Session;
+use Illuminate\Support\Facades\Session;
+use Modules\Rapat\Http\Service\MeetingServiceInterface;
 
-class ZoomServiceImpl implements ZoomServiceInterface
+class ZoomServiceImpl implements MeetingServiceInterface
 {
     public function authentication()
     {
@@ -28,33 +28,36 @@ class ZoomServiceImpl implements ZoomServiceInterface
             $this->authentication();
         }
         try {
-            $date = Carbon::now()->addDays(2)->setTimezone('UTC')->toIso8601String();
+            $waktuMulai   = Carbon::parse($data->waktu_mulai)->setTimezone('UTC')->toIso8601String();
+            $waktuSelesai = Carbon::parse($data->waktu_selesai)->setTimezone('UTC')->toIso8601String();
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . Session::get('zoom_token'),
                 'Content-Type'  => 'application/json',
             ])->post('https://api.zoom.us/v2/users/me/meetings', [
-                "agenda"            => "My Meeting",
-                "duration"          => 120,
+                "agenda"            => $data->agenda_rapat,
+                "duration"          => (int) Carbon::parse($waktuSelesai)->diffInSeconds(Carbon::parse($waktuMulai)) / 60,
                 "password"          => "123456",
-                "alternative_hosts" => "hhonggil007@gmail.com",
+                "alternative_hosts" => $data->rapatAgendaPimpinan->email,
                 "settings"          => [
                     "approval_type"      => 2,
                     "audio"              => "telephony",
-                    "contact_email"      => "hhonggil007@gmail.com",
-                    "contact_name"       => "Jill Chill",
+                    "contact_email"      => $data->rapatAgendaPimpinan->email,
+                    "contact_name"       => $data->rapatAgendaPimpinan->name,
                     "email_notification" => true,
                     "host_video"         => true,
                     "participant_video"  => true,
                     "join_before_host"   => true,
                     "waiting_room"       => false,
                 ],
-                "start_time"        => $date,
+                "start_time"        => $waktuMulai,
                 "timezone"          => "Asia/Jakarta",
-                "topic"             => "My Meeting",
+                "topic"             => $data->agenda_rapat,
                 "type"              => 2,
             ]);
-            dd($response->collect());
+            $data->update([
+                'zoom_link' => $response->collect()['join_url'],
+            ]);
         } catch (\Throwable $e) {
             dd($e->getMessage());
         }

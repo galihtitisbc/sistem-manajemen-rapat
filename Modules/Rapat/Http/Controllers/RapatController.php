@@ -1,14 +1,11 @@
 <?php
-
 namespace Modules\Rapat\Http\Controllers;
 
-use App\Models\Core\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Rapat\Entities\RapatAgenda;
 use Illuminate\Support\Facades\View;
-use Modules\Rapat\Entities\Kepanitiaan;
+use Modules\Rapat\Entities\RapatAgenda;
 
 class RapatController extends Controller
 {
@@ -20,7 +17,7 @@ class RapatController extends Controller
     {
         $rapat = RapatAgenda::all();
         return view('rapat::rapat.index', [
-            'rapats' =>  $rapat,
+            'rapats' => $rapat,
         ]);
     }
 
@@ -38,16 +35,20 @@ class RapatController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $request) {}
+    public function store(Request $request)
+    {}
 
     /**
      * Show the specified resource.
      * @param int $id
      * @return Renderable
      */
-    public function show($id)
+    public function show(RapatAgenda $rapatAgenda)
     {
-        return view('rapat::show');
+        $rapatAgenda->load(['rapatAgendaPimpinan', 'rapatAgendaNotulis', 'rapatAgendaPeserta', 'rapatLampiran']);
+        return view('rapat::rapat.detail-rapat', [
+            'rapat' => $rapatAgenda,
+        ]);
     }
 
     /**

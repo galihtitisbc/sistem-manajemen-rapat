@@ -10,7 +10,8 @@
             </div>
         @endif --}}
 
-        <form method="POST" wire:submit.prevent="storeRapat" class="col-lg-6 col-md-6 col-sm-10">
+        <form method="POST" wire:submit.prevent="storeRapat" class="col-lg-6 col-md-6 col-sm-10"
+            enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
                 <label for="nomor-surat" class="form-label">Nomor Surat :</label>
@@ -50,8 +51,11 @@
             </div>
             <div class="mb-3">
                 <label for="tempat" class="form-label">Tempat Rapat</label>
-                <input type="text" wire:model.debounce.250ms="tempat"
-                    class="form-control @error('tempat') is-invalid @enderror" id="tempat">
+                <select class="form-control @error('tempat') is-invalid @enderror" wire:model.debounce.250ms="tempat">
+                    <option selected value="">-- Pilih Tempat --</option>
+                    <option value="zoom">Online</option>
+                    <option value="3">Three</option>
+                </select>
                 @error('tempat')
                     <div id="validationServer03Feedback" class="invalid-feedback">
                         {{ $message }}
@@ -130,7 +134,13 @@
             </div>
             <div class="mb-3">
                 <label>Lampiran : ( Jika Ada )</label>
-                <input class="form-control" type="file" id="formFile">
+                <input type="file" class="form-control" id="lampiran-file" wire:model="lampiran" multiple>
+                <div wire:loading wire:target="lampiran" class="mt-2 text-blue-500 font-semibold animate-pulse">
+                    Uploading...
+                </div>
+                @error('lampiran.*')
+                    <span class="text-danger d-block">{{ $message }}</span>
+                @enderror
             </div>
             <div class="my-3">
                 <label>Pilih Pimpinan Rapat :</label>
@@ -152,10 +162,12 @@
                                         <td>{{ $item['name'] }}</td>
                                         <td>TRPL</td>
                                         <td>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio"
-                                                    wire:model="pimpinanRapat" value="{{ $item['id'] }}">
-                                            </div>
+                                            @if ($item['id'] != $notulisRapat)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio"
+                                                        wire:model="pimpinanRapat" value="{{ $item['id'] }}">
+                                                </div>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -189,10 +201,12 @@
                                         <td>{{ $item['name'] }}</td>
                                         <td>TRPL</td>
                                         <td>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" wire:model="notulisRapat"
-                                                    value="{{ $item['id'] }}">
-                                            </div>
+                                            @if ($item['id'] != $pimpinanRapat)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio"
+                                                        wire:model="notulisRapat" value="{{ $item['id'] }}">
+                                                </div>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

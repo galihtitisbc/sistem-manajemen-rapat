@@ -1,13 +1,11 @@
 <?php
-
 namespace Modules\Rapat\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
 use Modules\Rapat\Http\Service\Implementation\RapatServiceImpl;
 use Modules\Rapat\Http\Service\Implementation\ZoomServiceImpl;
+use Modules\Rapat\Http\Service\MeetingServiceInterface;
 use Modules\Rapat\Http\Service\RapatServiceInterface;
-use Modules\Rapat\Http\Service\ZoomServiceInterface;
 
 class RapatServiceProvider extends ServiceProvider
 {
@@ -44,7 +42,7 @@ class RapatServiceProvider extends ServiceProvider
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(ConsoleRapatServiceProvider::class);
         $this->app->bind(RapatServiceInterface::class, RapatServiceImpl::class);
-        $this->app->bind(ZoomServiceInterface::class, ZoomServiceImpl::class);
+        $this->app->bind(MeetingServiceInterface::class, ZoomServiceImpl::class);
     }
 
     /**
@@ -75,7 +73,7 @@ class RapatServiceProvider extends ServiceProvider
         $sourcePath = module_path($this->moduleName, 'Resources/views');
 
         $this->publishes([
-            $sourcePath => $viewPath
+            $sourcePath => $viewPath,
         ], ['views', $this->moduleNameLower . '-module-views']);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);

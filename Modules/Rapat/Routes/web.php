@@ -19,6 +19,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     Route::prefix('rapat')->group(function () {
         Route::get('/dashboard', [RapatDashboardController::class, 'index']);
         Route::get('/agenda-rapat', [RapatController::class, 'index']);
+        Route::get('/agenda-rapat/{rapatAgenda:slug}/detail', [RapatController::class, 'show']);
         Route::get('/agenda-rapat/create', [RapatController::class, 'create']);
         Route::post('/agenda-rapat/store', [RapatController::class, 'store']);
     });

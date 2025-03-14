@@ -23,15 +23,15 @@
 
 @push('js')
     @livewireScripts
-    @if (session('swal'))
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            window.addEventListener("swal", (event) => {
                 Swal.fire({
-                    title: "{{ session('swal.title') }}",
-                    text: "{{ session('swal.text') }}",
-                    icon: "{{ session('swal.icon') }}"
+                    title: event.detail.title,
+                    text: event.detail.text,
+                    icon: event.detail.icon
                 });
             });
-        </script>
-    @endif
+        });
+    </script>
 @endpush

@@ -17,7 +17,6 @@ class RapatCreateForm extends Component
     use WithFileUploads;
     private $rapatService;
     public $nomorSurat;
-    public $tempat;
     public $waktuMulai;
     public $waktuSelesai;
     public $agendaRapat;
@@ -25,23 +24,29 @@ class RapatCreateForm extends Component
     public $kepanitiaanSelected;
     public $pesertaRapat;
     public $users;
+    public $allUsers;
     public $pimpinanRapat;
     public $notulisRapat;
     public $lampiran = [];
+    public $selectTempat;
+    public $customTempat;
+    public $cariPeserta;
     public function render()
     {
-        return view('livewire.rapat.rapat-create-form');
+        return view('livewire.rapat.rapat-create-form', );
     }
     public function mount()
     {
         $this->kepanitiaans = Kepanitiaan::all();
         $this->pesertaRapat = collect();
-        $this->users        = User::with('rapatAgendaPeserta')->get();
+        $this->allUsers     = User::with('rapatAgendaPeserta')->get();
+        $this->users        = $this->allUsers;
     }
     protected function rules()
     {
         return (new CreateRapatRequest())->rules();
     }
+
     public function updatedWaktuMulai($value)
     {
         $this->waktuMulai = Carbon::parse($value)->format('Y-m-d H:i:s');
@@ -50,7 +55,14 @@ class RapatCreateForm extends Component
     {
         $this->waktuSelesai = Carbon::parse($value)->format('Y-m-d H:i:s');
     }
-
+    public function updatedCariPeserta($value)
+    {
+        if (empty($value)) {
+            $this->users = $this->allUsers;
+            return;
+        }
+        $this->users = $this->allUsers->filter(fn($user) => str_contains(strtolower($user->name), strtolower($value)));
+    }
     public function selectPesertaRapat($peserta, $isCheked)
     {
         if ($isCheked) {
@@ -72,7 +84,7 @@ class RapatCreateForm extends Component
             'waktu_mulai'   => $this->waktuMulai,
             'waktu_selesai' => $this->waktuSelesai,
             'agenda_rapat'  => $this->agendaRapat,
-            'tempat'        => $this->tempat,
+            'tempat'        => $this->selectTempat == 'custom' ? $this->customTempat : $this->selectTempat,
             'lampiran'      => $this->lampiran,
         ];
         $validatedData = (new CreateRapatRequest())->validated($data);
@@ -81,7 +93,11 @@ class RapatCreateForm extends Component
             FlashMessage::success('Agenda Rapat Berhasil DiBuat');
             return redirect()->to('/rapat/agenda-rapat');
         } catch (\Throwable $e) {
-            FlashMessage::error($e->getMessage());
+            $this->dispatchBrowserEvent('swal', [
+                'title' => 'Gagal!',
+                'text'  => 'Terjadi kesalahan: ' . $e->getMessage(),
+                'icon'  => 'error',
+            ]);
         }
     }
     public function getRapatService()

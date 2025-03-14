@@ -1,6 +1,7 @@
 <?php
 namespace Modules\Rapat\Http\Service\Implementation;
 
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Modules\Rapat\Entities\RapatAgenda;
@@ -37,12 +38,14 @@ class RapatServiceImpl implements RapatServiceInterface
                 }
                 $agendaRapat->rapatLampiran()->createMany($namaLampiran);
             }
+            if ($data['tempat'] == 'zoom') {
+                CreateMeetingZoom::dispatch($agendaRapat);
+            }
             $agendaRapat->rapatAgendaPeserta()->attach($data['peserta_rapat']);
-            CreateMeetingZoom::dispatch($agendaRapat);
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            dd($e->getMessage());
+            throw new Exception("Gagal Membuat Agenda Rapat : " . $e->getMessage());
         }
     }
 }

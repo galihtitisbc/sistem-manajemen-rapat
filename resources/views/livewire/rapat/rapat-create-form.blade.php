@@ -9,7 +9,7 @@
                 </ul>
             </div>
         @endif --}}
-        <form method="POST" wire:submit.prevent="storeRapat" class="col-lg-6 col-md-6 col-sm-10"
+        <form method="POST" wire:submit.prevent="storeRapat" class="col-lg-8 col-md-6 col-sm-10"
             enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
@@ -87,7 +87,7 @@
             <div class="mb-3">
                 <label>Pilih Kepanitiaan : ( Jika Rapat Merupakan Rapat Kepanitiaan )</label>
                 <select class="form-control @error('kepanitiaan') is-invalid @enderror"
-                    wire:model.debounce.250ms="kepanitiaanSelected" aria-label="Default select example">
+                    wire:change="setSelectedKepanitiaan($event.target.value)">
                     <option value="">-- Pilih Kepanitiaan --</option>
                     @foreach ($kepanitiaans as $kepanitiaan)
                         <option value="{{ $kepanitiaan->id }}">{{ $kepanitiaan->nama_kepanitiaan }}
@@ -103,10 +103,12 @@
             <div class="mb-3 my-4">
                 <div class="d-flex justify-content-between">
                     <label>Pilih Peserta Rapat :</label>
-                    <input type="text" class="form-control col-lg-5 col-sm-auto col-md-auto"
-                        placeholder="Cari Peserta" wire:model.debounce.250ms="cariPeserta">
+                    @if ($waktuMulai != null && $waktuSelesai != null)
+                        <input type="text" class="form-control col-lg-5 col-sm-auto col-md-auto"
+                            placeholder="Cari Peserta" wire:model="cariPeserta">
+                    @endif
                 </div>
-                <div style="max-height: 300px; overflow-y: scroll;">
+                <div style="max-height: 300px; overflow-y: scroll;" class="my-4">
                     @if ($waktuMulai != null && $waktuSelesai != null)
                         <table class="table table-bordered text-center">
                             <thead>
@@ -160,7 +162,7 @@
                     <span class="text-danger d-block">{{ $message }}</span>
                 @enderror
             </div>
-            <div class="my-3">
+            <div class="my-4">
                 <label>Pilih Pimpinan Rapat :</label>
                 <div style="max-height: 300px; overflow-y: scroll;">
                     @if ($pesertaRapat->isNotEmpty())
@@ -238,7 +240,8 @@
                     <span class="text-danger d-block">{{ $message }}</span>
                 @enderror
             </div>
-            <button type="submit" wire:loading.remove class="btn btn-primary">Submit</button>
+            <button type="submit" wire:loading.remove wire:target="storeRapat,lampiran"
+                class="btn btn-primary">Submit</button>
             <div wire:loading wire:target="storeRapat" class="spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>
             </div>

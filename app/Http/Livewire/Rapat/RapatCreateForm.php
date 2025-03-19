@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Modules\Rapat\Entities\Kepanitiaan;
 use Modules\Rapat\Http\Helper\FlashMessage;
 use Modules\Rapat\Http\Requests\CreateRapatRequest;
 use Modules\Rapat\Http\Service\RapatServiceInterface;
@@ -21,7 +20,6 @@ class RapatCreateForm extends Component
     public $waktuSelesai;
     public $agendaRapat;
     public $kepanitiaans;
-    public $kepanitiaanSelected;
     public $pesertaRapat;
     public $users;
     public $allUsers;
@@ -37,9 +35,7 @@ class RapatCreateForm extends Component
     }
     public function mount()
     {
-        $this->kepanitiaans = Kepanitiaan::all();
         $this->pesertaRapat = collect();
-        $this->allUsers     = User::with('rapatAgendaPeserta')->get();
         $this->users        = $this->allUsers;
     }
     protected function rules()
@@ -62,6 +58,16 @@ class RapatCreateForm extends Component
             return;
         }
         $this->users = $this->allUsers->filter(fn($user) => str_contains(strtolower($user->name), strtolower($value)));
+    }
+    public function setSelectedKepanitiaan($kepanitiaanId)
+    {
+        $userKepanitiaan    = $this->kepanitiaans->where('id', $kepanitiaanId)->first()->users;
+        $this->pesertaRapat = $this->pesertaRapat->reject(function ($item) {
+            return true;
+        });
+        foreach ($userKepanitiaan as $value) {
+            $this->pesertaRapat->push($value);
+        }
     }
     public function selectPesertaRapat($peserta, $isCheked)
     {

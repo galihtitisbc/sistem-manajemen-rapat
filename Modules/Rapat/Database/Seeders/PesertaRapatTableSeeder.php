@@ -1,11 +1,10 @@
 <?php
-
 namespace Modules\Rapat\Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Rapat\Entities\RapatAgenda;
 use App\Models\Core\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Seeder;
+use Modules\Rapat\Entities\RapatAgenda;
 
 class PesertaRapatTableSeeder extends Seeder
 {
@@ -19,8 +18,14 @@ class PesertaRapatTableSeeder extends Seeder
         Model::unguard();
         $users = User::all();
         RapatAgenda::factory(2)->create();
-        RapatAgenda::each(function ($rapatAgenda) use ($users) {
-            $rapatAgenda->rapatAgendaPeserta()->attach($users->random(rand(2, 7))->pluck('id')->toArray());
+        $status = ['BERSEDIA', 'TIDAK BERSEDIA', 'HADIR', 'TIDAK HADIR', 'MENUNGGU'];
+        RapatAgenda::each(function ($rapatAgenda) use ($users, $status) {
+            $pivotArray = [];
+            $userIds    = $users->random(rand(2, 7))->pluck('id')->toArray();
+            foreach ($userIds as $userId) {
+                $pivotArray[] = ['user_id' => $userId, 'status' => $status[rand(0, 4)], 'is_penugasan' => rand(0, 1)];
+            }
+            $rapatAgenda->rapatAgendaPeserta()->attach($pivotArray);
         });
     }
 }

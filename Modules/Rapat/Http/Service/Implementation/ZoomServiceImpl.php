@@ -12,13 +12,14 @@ class ZoomServiceImpl implements MeetingServiceInterface
     public function authentication()
     {
         try {
-
             $encoded  = base64_encode(env('ZOOM_CLIENT_ID') . ":" . env('ZOOM_CLIENT_SECRET'));
             $response = Http::withHeaders([
                 'Authorization' => 'Basic ' . $encoded,
                 'Content-Type'  => 'application/x-www-form-urlencoded',
             ])->post('https://zoom.us/oauth/token?grant_type=account_credentials&account_id=' . env('ZOOM_ACCOUNT_ID'));
             Session::put('zoom_token', $response->collect()['access_token']);
+            Session::put('zoom_token_expired_at', now()->addMinutes(55)->timestamp);
+
             Session::save();
         } catch (\Throwable $e) {
             throw new Exception("Authentikasi Zoom Gagal : " . $e->getMessage());
@@ -26,7 +27,7 @@ class ZoomServiceImpl implements MeetingServiceInterface
     }
     public function createMeeting($data)
     {
-        if (! Session::exists('zoom_token')) {
+        if (! Session::exists('zoom_token') || now()->timestamp > Session::get('zoom_token_expired_at', 0)) {
             $this->authentication();
         }
         try {

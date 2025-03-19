@@ -14,7 +14,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <livewire:rapat.rapat-create-form />
+                    <livewire:rapat.rapat-create-form :allUsers=$users :kepanitiaans=$kepanitiaans />
                 </div>
             </div>
         </div>

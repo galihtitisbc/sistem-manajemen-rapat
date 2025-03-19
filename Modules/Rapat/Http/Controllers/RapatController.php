@@ -1,10 +1,12 @@
 <?php
 namespace Modules\Rapat\Http\Controllers;
 
+use App\Models\Core\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\View;
+use Modules\Rapat\Entities\Kepanitiaan;
 use Modules\Rapat\Entities\RapatAgenda;
 
 class RapatController extends Controller
@@ -27,7 +29,12 @@ class RapatController extends Controller
      */
     public function create()
     {
-        return view('rapat::rapat.create');
+        $users       = User::with(['rapatAgendaPeserta', 'kepanitiaans'])->get();
+        $kepanitiaan = Kepanitiaan::with('users')->get();
+        return view('rapat::rapat.create', [
+            'users'        => $users,
+            'kepanitiaans' => $kepanitiaan,
+        ]);
     }
 
     /**

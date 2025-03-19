@@ -9,6 +9,14 @@
 @endpush
 
 @section('content')
+    @php
+        $statusRapat = [
+            'CANCELED' => ['danger', 'Di Batalkan'],
+            'SCHEDULED' => ['warning', 'Di Jadwalkan'],
+            'COMPLETED' => ['SUCCESS', 'Selesai'],
+            'STARTED' => ['primary', 'Sedang Berlangsung'],
+        ];
+    @endphp
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -37,15 +45,8 @@
                                         {{ $rapat->agenda_rapat }}</td>
                                     <td class="text-center">{{ $rapat->waktu_mulai }} - {{ $rapat->waktu_selesai }}</td>
                                     <td class="text-center">
-                                        @if ($rapat->status == 'CANCELED')
-                                            <span class="badge bg-danger">Canceled</span>
-                                        @elseif ($rapat->status == 'SCHEDULED')
-                                            <span class="badge bg-warning">Scheduled</span>
-                                        @elseif($rapat->status == 'COMPLETED')
-                                            <span class="badge bg-success">Completed</span>
-                                        @elseif($rapat->status == 'STARTED')
-                                            <span class="badge bg-primary">Started</span>
-                                        @endif
+                                        <span
+                                            class="badge bg-{{ $statusRapat[$rapat->status][0] }}">{{ $statusRapat[$rapat->status][1] }}</span>
                                     </td>
                                     <td class="text-center">
                                         <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/detail') }}"

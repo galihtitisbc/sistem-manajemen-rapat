@@ -10,11 +10,16 @@
 
 @section('content')
     @php
+        use Carbon\Carbon;
         $statusRapat = [
             'CANCELED' => ['danger', 'Di Batalkan'],
             'SCHEDULED' => ['warning', 'Di Jadwalkan'],
-            'COMPLETED' => ['SUCCESS', 'Selesai'],
+            'COMPLETED' => ['success', 'Selesai'],
             'STARTED' => ['primary', 'Sedang Berlangsung'],
+        ];
+        $statusKeaktifan = [
+            'SCHEDULED' => ['fa-window-close', '#ff0000'],
+            'CANCELED' => ['fa-undo', '#5cb85c'],
         ];
     @endphp
     <div class="row">
@@ -39,26 +44,38 @@
                         </thead>
                         <tbody>
                             @foreach ($rapats as $rapat)
+                                @php
+                                    $startTime = Carbon::parse($rapat->waktu_mulai);
+                                    $endTime = Carbon::parse($rapat->waktu_selesai);
+                                @endphp
                                 <tr>
                                     <td class="text-center">{{ $loop->iteration }}</td>
                                     <td class="text-wrap" style="max-width: 200px; word-wrap: break-word;">
                                         {{ $rapat->agenda_rapat }}</td>
-                                    <td class="text-center">{{ $rapat->waktu_mulai }} - {{ $rapat->waktu_selesai }}</td>
+                                    @if ($startTime->isSameDay($endTime))
+                                        <td class="text-center"> {{ $startTime->translatedFormat('l, d F Y, H:i') }} -
+                                            {{ $endTime->translatedFormat('H:i') }} WIB</td>
+                                    @else
+                                        <td class="text-center">{{ $startTime->translatedFormat('l, d F Y, H:i') }} -
+                                            {{ $endTime->translatedFormat('l, d F Y, H:i') }} WIB</td>
+                                    @endif
                                     <td class="text-center">
                                         <span
                                             class="badge bg-{{ $statusRapat[$rapat->status][0] }}">{{ $statusRapat[$rapat->status][1] }}</span>
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/detail') }}"
-                                            class="btn btn-primary">
-                                            <i class="fas fa-eye"></i>
+                                        <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/detail') }}">
+                                            <i class="fas fa-eye fa-lg"></i>
                                         </a>
                                         @if ($rapat->user_id == Auth::user()->id || $rapat->pimpinan_id == Auth::user()->id)
-                                            <a href="#" class="btn btn-warning">
-                                                <i class="fas fa-edit"></i>
+                                            <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/edit') }}"
+                                                class="mx-2 my-2">
+                                                <i class="fas fa-edit fa-lg" style="color: #FFD43B;"></i>
                                             </a>
-                                            <a href="#" class="btn btn-danger">
-                                                <i class="fas fa-trash"></i>
+                                            <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/batal') }}"
+                                                onclick="return batalkanRapat(event,this.href,'{{ $rapat->status }}')">
+                                                <i class="fas {{ $statusKeaktifan[$rapat->status][0] }} fa-lg"
+                                                    style="color: {{ $statusKeaktifan[$rapat->status][1] }};"></i>
                                             </a>
                                         @endif
                                         @if ($rapat->notulis_id == Auth::user()->id && $rapat->status != 'CANCELED')
@@ -81,6 +98,25 @@
 @endsection
 
 @push('js')
+    <script>
+        function batalkanRapat(event, url, status) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Apakah anda yakin?',
+                text: status == "SCHEDULED" ? "Rapat akan dibatalkan!" : "Rapat akan dijadwalkan kembali!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: status == "SCHEDULED" ? 'Ya, Batalkan Rapat!' : 'Ya, Jadwalkan Kembali!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            })
+        }
+    </script>
     @if (session('swal'))
         <script>
             document.addEventListener("DOMContentLoaded", function() {

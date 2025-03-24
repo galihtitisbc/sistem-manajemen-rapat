@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Modules\Rapat\Http\Helper\StatusAgendaRapat;
 
 class CreateRapatAgendasTable extends Migration
 {
@@ -25,7 +26,7 @@ class CreateRapatAgendasTable extends Migration
             $table->dateTime('waktu_selesai');
             $table->text('agenda_rapat');
             $table->string('tempat');
-            $table->enum('status', ['CANCELED', 'SCHEDULED', 'COMPLETED', 'STARTED'])->default('SCHEDULED');
+            $table->enum('status', [StatusAgendaRapat::STARTED->value, StatusAgendaRapat::CANCELLED->value, StatusAgendaRapat::COMPLETED->value, StatusAgendaRapat::SCHEDULED->value])->default(StatusAgendaRapat::SCHEDULED->value);
             $table->string('lampiran')->nullable();
             $table->text('zoom_link')->nullable();
             $table->text('calendar_link')->nullable();

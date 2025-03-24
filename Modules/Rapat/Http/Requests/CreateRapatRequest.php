@@ -16,6 +16,7 @@ class CreateRapatRequest extends FormRequest
             'user_id'         => 'required|exists:users,id',
             'pimpinan_id'     => 'required|exists:users,id',
             'kepanitiaan_id'  => 'nullable|exists:kepanitiaans,id',
+            'kepanitiaan_id'  => 'required|exists:kepanitiaans,id',
             'peserta_rapat'   => 'required|array',
             'peserta_rapat.*' => 'exists:users,id',
             'notulis_id'      => 'required|exists:users,id',

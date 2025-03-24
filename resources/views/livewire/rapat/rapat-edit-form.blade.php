@@ -9,11 +9,10 @@
                 </ul>
             </div>
         @endif --}}
-        <form method="POST" wire:submit.prevent="storeRapat" class="col-lg-8 col-md-6 col-sm-10"
-            enctype="multipart/form-data">
+        <form wire:submit.prevent="updateRapat" class="col-lg-8 col-md-6 col-sm-10" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
-                <label for="nomor-surat" class="form-label">Nomor Surat Undangan:</label>
+                <label for="nomor-surat" class="form-label">Nomor Surat Undangan :</label>
                 <input type="text" wire:model.debounce.250ms="nomorSurat"
                     class="form-control @error('nomor_surat') is-invalid @enderror" id="nomor-surat">
                 @error('nomor_surat')
@@ -90,7 +89,9 @@
                     wire:change="setSelectedKepanitiaan($event.target.value)">
                     <option value="">-- Pilih Kepanitiaan --</option>
                     @foreach ($kepanitiaans as $kepanitiaan)
-                        <option value="{{ $kepanitiaan->id }}">{{ $kepanitiaan->nama_kepanitiaan }}
+                        <option value="{{ $kepanitiaan->id }}"
+                            {{ $kepanitiaan->id == $selectedKepanitiaan ? 'selected' : '' }}>
+                            {{ $kepanitiaan->nama_kepanitiaan }}
                         </option>
                     @endforeach
                 </select>
@@ -103,50 +104,45 @@
             <div class="mb-3 my-4">
                 <div class="d-flex justify-content-between">
                     <label>Pilih Peserta Rapat :</label>
-                    @if ($waktuMulai != null && $waktuSelesai != null)
-                        <input type="text" class="form-control col-lg-5 col-sm-auto col-md-auto"
-                            placeholder="Cari Peserta" wire:model="cariPeserta">
-                    @endif
+                    <input type="text" class="form-control col-lg-5 col-sm-auto col-md-auto"
+                        placeholder="Cari Peserta" wire:model="cariPeserta">
                 </div>
                 <div style="max-height: 300px; overflow-y: scroll;" class="my-4">
-                    @if ($waktuMulai != null && $waktuSelesai != null)
-                        <table class="table table-bordered text-center">
-                            <thead>
+                    <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th scope="col">No</th>
+                                <th>Nama</th>
+                                <th>Whatsapp</th>
+                                <th>Undang</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($users as $user)
+                                </h5>
                                 <tr>
-                                    <th scope="col">No</th>
-                                    <th>Nama</th>
-                                    <th>Whatsapp</th>
-                                    <th>Undang</th>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $user->name }}</td>
+                                    <td>0822123</td>
+                                    <td>
+                                        @if (
+                                            !$pesertaRapat->contains('id', $user->id) &&
+                                                ($user->rapatAgendaPeserta->whereBetween('waktu_mulai', [$waktuMulai, $waktuSelesai])->isNotEmpty() ||
+                                                    $user->rapatAgendaPeserta->whereBetween('waktu_selesai', [$waktuMulai, $waktuSelesai])->isNotEmpty()))
+                                            <strong>Peserta Ada Rapat Yang Lain</strong>
+                                        @else
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    value="{{ $user->id }}" id="flexCheckDefault"
+                                                    wire:change="selectPesertaRapat({{ $user }},$event.target.checked)"
+                                                    {{ $pesertaRapat->contains('id', $user->id) ? 'checked' : '' }}>
+                                            </div>
+                                        @endif
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($users as $user)
-                                    </h5>
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $user->name }}</td>
-                                        <td>0822123</td>
-                                        <td>
-                                            @if (
-                                                $user->rapatAgendaPeserta->whereBetween('waktu_mulai', [$waktuMulai, $waktuSelesai])->isNotEmpty() ||
-                                                    $user->rapatAgendaPeserta->whereBetween('waktu_selesai', [$waktuMulai, $waktuSelesai])->isNotEmpty())
-                                                <strong>Peserta Ada Rapat Yang Lain</strong>
-                                            @else
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        value="{{ $user->id }}" id="flexCheckDefault"
-                                                        wire:change="selectPesertaRapat({{ $user }},$event.target.checked)"
-                                                        {{ $pesertaRapat->contains('id', $user->id) ? 'checked' : '' }}>
-                                                </div>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    @else
-                        <h5 class="text-center text-danger">Silahkan Pilih Waktu Mulai dan Waktu Selesai</h5>
-                    @endif
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
                 @error('peserta_rapat')
                     <span class="text-danger d-block">{{ $message }}</span>
@@ -161,24 +157,33 @@
                 @error('lampiran.*')
                     <span class="text-danger d-block">{{ $message }}</span>
                 @enderror
-
+                @php
+                    $icons = [
+                        'jpg' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
+                        'jpeg' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
+                        'png' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
+                        'doc' => ['icon' => 'fas fa-file-word', 'color' => '#1E90FF'],
+                        'docx' => ['icon' => 'fas fa-file-word', 'color' => '#1E90FF'],
+                        'xls' => ['icon' => 'fas fa-file-excel', 'color' => '#008000'],
+                        'xlsx' => ['icon' => 'fas fa-file-excel', 'color' => '#008000'],
+                        'pdf' => ['icon' => 'fas fa-file-pdf', 'color' => '#FF0000'],
+                        'txt' => ['icon' => 'fas fa-file-alt', 'color' => '#808080'],
+                    ];
+                @endphp
+                @if (!$lampiran)
+                    @foreach ($lampiranOld as $item)
+                        <i class="{{ $icons['pdf']['icon'] }}"
+                            style="color: {{ $icons['pdf']['color'] }}; fa-lg  mr-2"></i>
+                        {{ $item }}
+                        <br>
+                    @endforeach
+                @endif
                 {{-- File Preview --}}
                 @if ($lampiran)
                     <div class="mt-3">
                         @foreach ($lampiran as $item)
                             @php
                                 $extension = strtolower($item->getClientOriginalExtension());
-                                $icons = [
-                                    'jpg' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
-                                    'jpeg' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
-                                    'png' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
-                                    'doc' => ['icon' => 'fas fa-file-word', 'color' => '#1E90FF'],
-                                    'docx' => ['icon' => 'fas fa-file-word', 'color' => '#1E90FF'],
-                                    'xls' => ['icon' => 'fas fa-file-excel', 'color' => '#008000'],
-                                    'xlsx' => ['icon' => 'fas fa-file-excel', 'color' => '#008000'],
-                                    'pdf' => ['icon' => 'fas fa-file-pdf', 'color' => '#FF0000'],
-                                    'txt' => ['icon' => 'fas fa-file-alt', 'color' => '#808080'],
-                                ];
                                 $fileData = $icons[$extension] ?? ['icon' => 'fas fa-file', 'color' => '#A9A9A9'];
                             @endphp
                             <i class="{{ $fileData['icon'] }}"
@@ -213,7 +218,8 @@
                                             @if ($item['id'] != $notulisRapat)
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio"
-                                                        wire:model="pimpinanRapat" value="{{ $item['id'] }}">
+                                                        wire:model="pimpinanRapat" value="{{ $item['id'] }}"
+                                                        {{ $item['id'] == $pimpinanRapat ? 'checked' : '' }}>
                                                 </div>
                                             @endif
                                         </td>
@@ -252,7 +258,8 @@
                                             @if ($item['id'] != $pimpinanRapat)
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio"
-                                                        wire:model="notulisRapat" value="{{ $item['id'] }}">
+                                                        wire:model="notulisRapat" value="{{ $item['id'] }}"
+                                                        {{ $item['id'] == $notulisRapat ? 'checked' : '' }}>
                                                 </div>
                                             @endif
                                         </td>
@@ -270,7 +277,7 @@
             </div>
             <div class="text-center">
                 <button type="submit" wire:loading.remove wire:target="storeRapat,lampiran"
-                    class="btn btn-primary mx-auto">Submit</button>
+                    class="btn btn-warning mx-auto">Update</button>
             </div>
             <div wire:loading wire:target="storeRapat" class="spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>

@@ -1,63 +1,64 @@
 <?php
 namespace App\Http\Livewire\Rapat;
 
-use App\Models\Core\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Modules\Rapat\Http\Helper\FlashMessage;
 use Modules\Rapat\Http\Requests\CreateRapatRequest;
-use Modules\Rapat\Http\Service\Implementation\RapatService;
 
-class RapatCreateForm extends Component
+class RapatEditForm extends Component
 {
     use WithFileUploads;
+    public $agendaRapatLoad;
     private $rapatService;
     public $nomorSurat;
     public $waktuMulai;
     public $waktuSelesai;
-    public $agendaRapat;
     public $kepanitiaans;
     public $pesertaRapat;
+    public $agendaRapat;
     public $users;
     public $allUsers;
     public $pimpinanRapat;
     public $notulisRapat;
     public $lampiran = [];
+    public $lampiranOld;
     public $selectTempat;
     public $customTempat;
     public $cariPeserta;
     public $selectedKepanitiaan;
+
     public function render()
     {
-        return view('livewire.rapat.rapat-create-form', );
+        return view('livewire.rapat.rapat-edit-form');
     }
     public function mount()
     {
-        $this->pesertaRapat = collect();
-        $this->users        = $this->allUsers;
+        $this->users               = $this->allUsers;
+        $this->pesertaRapat        = $this->agendaRapatLoad->rapatAgendaPeserta->collect();
+        $this->nomorSurat          = $this->agendaRapatLoad->nomor_surat;
+        $this->waktuMulai          = $this->agendaRapatLoad->waktu_mulai;
+        $this->waktuSelesai        = $this->agendaRapatLoad->waktu_selesai;
+        $this->selectTempat        = $this->agendaRapatLoad->tempat == 'zoom' ? 'zoom' : 'custom';
+        $this->customTempat        = $this->agendaRapatLoad->tempat == 'zoom' ? '' : $this->agendaRapatLoad->tempat;
+        $this->agendaRapat         = $this->agendaRapatLoad->agenda_rapat;
+        $this->selectedKepanitiaan = $this->agendaRapatLoad->kepanitiaan_id;
+        $this->pimpinanRapat       = $this->agendaRapatLoad->pimpinan_id;
+        $this->notulisRapat        = $this->agendaRapatLoad->notulis_id;
+        $this->lampiranOld         = $this->agendaRapatLoad->rapatLampiran->pluck('nama_file')->toArray();
     }
     protected function rules()
     {
         return (new CreateRapatRequest())->rules();
     }
-
     public function updatedWaktuMulai($value)
     {
-        $this->waktuMulai   = Carbon::parse($value)->format('Y-m-d H:i:s');
-        $this->pesertaRapat = $this->pesertaRapat->reject(function ($item) {
-            return true;
-        });
+        $this->waktuMulai = Carbon::parse($value)->format('Y-m-d H:i:s');
     }
     public function updatedWaktuSelesai($value)
     {
         $this->waktuSelesai = Carbon::parse($value)->format('Y-m-d H:i:s');
-        $this->pesertaRapat = $this->pesertaRapat->reject(function ($item) {
-            return true;
-        });
-
     }
     public function updatedCariPeserta($value)
     {
@@ -88,7 +89,7 @@ class RapatCreateForm extends Component
             });
         }
     }
-    public function storeRapat()
+    public function updateRapat()
     {
         $data = [
             'user_id'        => Auth::user()->id,
@@ -104,23 +105,6 @@ class RapatCreateForm extends Component
             'lampiran'       => $this->lampiran,
         ];
         $validatedData = (new CreateRapatRequest())->validated($data);
-        try {
-            $this->getRapatService()->store($validatedData);
-            FlashMessage::success('Agenda Rapat Berhasil DiBuat');
-            return redirect()->to('/rapat/agenda-rapat');
-        } catch (\Throwable $e) {
-            $this->dispatchBrowserEvent('swal', [
-                'title' => 'Gagal!',
-                'text'  => 'Terjadi kesalahan: ' . $e->getMessage(),
-                'icon'  => 'error',
-            ]);
-        }
-    }
-    public function getRapatService()
-    {
-        if (! $this->rapatService) {
-            $this->rapatService = App::make(RapatService::class);
-        }
-        return $this->rapatService;
+        dd($validatedData);
     }
 }

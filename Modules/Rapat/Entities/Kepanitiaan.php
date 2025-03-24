@@ -20,4 +20,8 @@ class Kepanitiaan extends Model
     {
         return $this->belongsToMany(User::class, 'kepanitiaan_user');
     }
+    public function rapatAgenda()
+    {
+        return $this->hasMany(RapatAgenda::class, 'kepanitiaan_id');
+    }
 }

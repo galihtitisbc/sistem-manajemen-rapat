@@ -8,9 +8,16 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\View;
 use Modules\Rapat\Entities\Kepanitiaan;
 use Modules\Rapat\Entities\RapatAgenda;
+use Modules\Rapat\Http\Helper\FlashMessage;
+use Modules\Rapat\Http\Service\Implementation\RapatService;
 
 class RapatController extends Controller
 {
+    protected $rapatService;
+    public function __construct(RapatService $rapatService)
+    {
+        $this->rapatService = $rapatService;
+    }
     /**
      * Display a listing of the resource.
      * @return Renderable
@@ -63,9 +70,16 @@ class RapatController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function edit($id)
+    public function edit(RapatAgenda $rapatAgenda)
     {
-        return view('rapat::edit');
+        $users       = User::with(['rapatAgendaPeserta', 'kepanitiaans'])->get();
+        $kepanitiaan = Kepanitiaan::with('users')->get();
+        $rapatAgenda->load(['rapatAgendaPimpinan', 'rapatAgendaNotulis', 'rapatAgendaPeserta', 'rapatLampiran']);
+        return view('rapat::rapat.edit-rapat', [
+            'rapat'        => $rapatAgenda,
+            'users'        => $users,
+            'kepanitiaans' => $kepanitiaan,
+        ]);
     }
 
     /**
@@ -84,8 +98,15 @@ class RapatController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function destroy($id)
+    public function ubahStatusRapat(RapatAgenda $rapatAgenda)
     {
-        //
+        try {
+            $this->rapatService->ubahStatusAgendaRapat($rapatAgenda);
+            FlashMessage::success('Status rapat berhasil diubah');
+            return redirect()->to('/rapat/agenda-rapat');
+        } catch (\Throwable $th) {
+            FlashMessage::error($th->getMessage());
+            return redirect()->to('/rapat/agenda-rapat');
+        }
     }
 }

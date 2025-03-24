@@ -44,7 +44,7 @@ class ZoomServiceImpl implements MeetingServiceInterface
                 "alternative_hosts" => $data->rapatAgendaPimpinan->email,
                 "settings"          => [
                     "approval_type"      => 2,
-                    "audio"              => "telephony",
+                    "audio"              => "both",
                     "contact_email"      => $data->rapatAgendaPimpinan->email,
                     "contact_name"       => $data->rapatAgendaPimpinan->name,
                     "email_notification" => true,

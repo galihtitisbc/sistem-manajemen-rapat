@@ -2,10 +2,8 @@
 namespace Modules\Rapat\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Modules\Rapat\Http\Service\Implementation\RapatServiceImpl;
 use Modules\Rapat\Http\Service\Implementation\ZoomServiceImpl;
 use Modules\Rapat\Http\Service\MeetingServiceInterface;
-use Modules\Rapat\Http\Service\RapatServiceInterface;
 
 class RapatServiceProvider extends ServiceProvider
 {
@@ -41,7 +39,6 @@ class RapatServiceProvider extends ServiceProvider
     {
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(ConsoleRapatServiceProvider::class);
-        $this->app->bind(RapatServiceInterface::class, RapatServiceImpl::class);
         $this->app->bind(MeetingServiceInterface::class, ZoomServiceImpl::class);
     }
 

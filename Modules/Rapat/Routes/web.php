@@ -18,9 +18,13 @@ use Modules\Rapat\Http\Controllers\RapatDashboardController;
 Route::group(['middleware' => ['auth', 'permission']], function () {
     Route::prefix('rapat')->group(function () {
         Route::get('/dashboard', [RapatDashboardController::class, 'index']);
-        Route::get('/agenda-rapat', [RapatController::class, 'index']);
-        Route::get('/agenda-rapat/{rapatAgenda:slug}/detail', [RapatController::class, 'show']);
-        Route::get('/agenda-rapat/create', [RapatController::class, 'create']);
-        Route::post('/agenda-rapat/store', [RapatController::class, 'store']);
+        Route::prefix('agenda-rapat')->group(function () {
+            Route::get('/', [RapatController::class, 'index']);
+            Route::get('/create', [RapatController::class, 'create']);
+            Route::post('/store', [RapatController::class, 'store']);
+            Route::get('/{rapatAgenda:slug}/detail', [RapatController::class, 'show']);
+            Route::get('/{rapatAgenda:slug}/batal', [RapatController::class, 'ubahStatusRapat']);
+            Route::get('/{rapatAgenda:slug}/edit', [RapatController::class, 'edit']);
+        });
     });
 });

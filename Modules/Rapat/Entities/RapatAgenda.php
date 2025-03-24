@@ -2,18 +2,27 @@
 namespace Modules\Rapat\Entities;
 
 use App\Models\Core\User;
+use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class RapatAgenda extends Model
 {
-    use HasFactory;
+    use HasFactory, Sluggable;
 
     protected $guarded = ['id'];
 
     protected static function newFactory()
     {
         return \Modules\Rapat\Database\factories\RapatAgendaFactory::new ();
+    }
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'agenda_rapat',
+            ],
+        ];
     }
     public function user()
     {
@@ -42,5 +51,9 @@ class RapatAgenda extends Model
     public function rapatTindakLanjut()
     {
         return $this->hasMany(RapatTindakLanjut::class, 'rapat_agenda_id');
+    }
+    public function rapatKepanitiaan()
+    {
+        return $this->belongsTo(Kepanitiaan::class, 'kepanitiaan_id');
     }
 }

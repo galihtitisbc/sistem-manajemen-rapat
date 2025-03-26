@@ -87,7 +87,9 @@
             <div class="mb-3">
                 <label>Pilih Kepanitiaan : ( Jika Rapat Merupakan Rapat Kepanitiaan )</label>
                 <select class="form-control @error('kepanitiaan') is-invalid @enderror"
-                    wire:change="setSelectedKepanitiaan($event.target.value)">
+                    wire:model="selectedKepanitiaan">
+                    {{-- <select class="form-control @error('kepanitiaan') is-invalid @enderror"
+                    wire:change="setSelectedKepanitiaan($event.target.value)"> --}}
                     <option value="">-- Pilih Kepanitiaan --</option>
                     @foreach ($kepanitiaans as $kepanitiaan)
                         <option value="{{ $kepanitiaan->id }}">{{ $kepanitiaan->nama_kepanitiaan }}

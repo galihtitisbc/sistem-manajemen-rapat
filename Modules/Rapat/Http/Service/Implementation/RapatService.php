@@ -18,7 +18,7 @@ class RapatService
                 'user_id'        => $data['user_id'],
                 'pimpinan_id'    => $data['pimpinan_id'],
                 'notulis_id'     => $data['notulis_id'],
-                'kepanitiaan_id' => $data['kepanitiaan_id'],
+                'kepanitiaan_id' => $data['kepanitiaan_id'] == "" ? null : $data['kepanitiaan_id'],
                 'nomor_surat'    => $data['nomor_surat'],
                 'waktu_mulai'    => $data['waktu_mulai'],
                 'waktu_selesai'  => $data['waktu_selesai'],
@@ -28,6 +28,7 @@ class RapatService
                 'calendar_link'  => 'lorem ipsum',
             ]);
             if (isset($data['lampiran'])) {
+                //simpan lampiran ke storage
                 $namaLampiran = [];
                 foreach ($data['lampiran'] as $index => $lampiran) {
                     $fileName = time() . "_{$index}_" . $lampiran->getClientOriginalName();
@@ -60,6 +61,52 @@ class RapatService
             }
         } catch (\Throwable $th) {
             throw new Exception("Gagal Mengubah Status Agenda Rapat : " . $th->getMessage());
+        }
+    }
+    public function update(array $data, $agendaRapatId)
+    {
+        try {
+            $agendaRapat = RapatAgenda::with('rapatLampiran')->where('id', $agendaRapatId)->firstOrFail();
+            $oldTempat   = $agendaRapat->tempat;
+            DB::beginTransaction();
+            $agendaRapat->update([
+                'pimpinan_id'    => $data['pimpinan_id'],
+                'notulis_id'     => $data['notulis_id'],
+                'kepanitiaan_id' => $data['kepanitiaan_id'] == "" ? null : $data['kepanitiaan_id'],
+                'nomor_surat'    => $data['nomor_surat'],
+                'waktu_mulai'    => $data['waktu_mulai'],
+                'waktu_selesai'  => $data['waktu_selesai'],
+                'agenda_rapat'   => $data['agenda_rapat'],
+                'tempat'         => $data['tempat'],
+                'calendar_link'  => 'lorem ipsum',
+            ]);
+            if (isset($data['lampiran'])) {
+                //hapus lampiran lama
+                if ($agendaRapat->rapatLampiran->isNotEmpty()) {
+                    foreach ($agendaRapat->rapatLampiran as $lampiran) {
+                        Storage::delete('rapat/' . $lampiran->nama_file);
+                    }
+                    $agendaRapat->rapatLampiran()->delete();
+                }
+                //upload lampiran
+                $namaLampiran = [];
+                foreach ($data['lampiran'] as $index => $lampiran) {
+                    $fileName = time() . "_{$index}_" . $lampiran->getClientOriginalName();
+                    Storage::putFileAs('rapat', $lampiran, $fileName);
+                    $namaLampiran[] = [
+                        'nama_file' => $fileName,
+                    ];
+                }
+                $agendaRapat->rapatLampiran()->createMany($namaLampiran);
+            }
+            if ($oldTempat != 'zoom' && $data['tempat'] == 'zoom') {
+                CreateMeetingZoom::dispatch($agendaRapat);
+            }
+            $agendaRapat->rapatAgendaPeserta()->sync($data['peserta_rapat']);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw new Exception("Gagal Mengubah Agenda Rapat : " . $th->getMessage());
         }
     }
 }

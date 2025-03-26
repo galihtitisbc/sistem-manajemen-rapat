@@ -6,6 +6,7 @@
 @stop
 
 @push('css')
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
 @endpush
 
 @section('content')
@@ -50,14 +51,16 @@
                 </div>
             </div>
             <div class="row m-4">
-                <div class="col-4">
-                    <span style="font-weight: bold">Link Zoom</span>
-                    <hr>
-                </div>
-                <div class="col-8">
-                    <span><a href="{{ $rapat->zoom_link }}" target="_blank">{{ $rapat->zoom_link }}</a></span>
-                    <hr>
-                </div>
+                @if ($rapat->tempat == 'zoom')
+                    <div class="col-4">
+                        <span style="font-weight: bold">Link Zoom</span>
+                        <hr>
+                    </div>
+                    <div class="col-8">
+                        <span><a href="{{ $rapat->zoom_link }}" target="_blank">{{ $rapat->zoom_link }}</a></span>
+                        <hr>
+                    </div>
+                @endif
                 <div class="col-4">
                     <span style="font-weight: bold">Link Google Calendar</span>
                     <hr>
@@ -90,28 +93,39 @@
             </div>
             <div class="mt-5">
                 <h5>Daftar Peserta :</h5>
-                <table class="table table-hover text-center">
-                    <thead class="">
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Status</th>
+                <table id="daftar-peserta" class="table table-hover text-center">
+                    <thead class="text-center">
+                        <th class="text-center">No</th>
+                        <th class="text-center">Nama</th>
+                        <th class="text-center">Whatsapp</th>
+                        <th class="text-center">Status</th>
                     </thead>
-                    <tbody>
+                    <tbody class="text-center">
                         @foreach ($rapat->rapatAgendaPeserta as $peserta)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $peserta->name }}</td>
-                                <td><span
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td class="text-center">{{ $peserta->name }}</td>
+                                <td class="text-center">082232123</td>
+                                <td class="text-center"><span
                                         class="badge bg-{{ $statusPeserta[$peserta->pivot->status] }}">{{ $peserta->pivot->status }}</span>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
+
             </div>
         </div>
     </div>
 @endsection
 
 @push('js')
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+    <script>
+        $(document).ready(function() {
+            new DataTable('#daftar-peserta', {
+                responsive: true,
+            });
+        })
+    </script>
 @endpush

@@ -86,7 +86,9 @@
             <div class="mb-3">
                 <label>Pilih Kepanitiaan : ( Jika Rapat Merupakan Rapat Kepanitiaan )</label>
                 <select class="form-control @error('kepanitiaan') is-invalid @enderror"
-                    wire:change="setSelectedKepanitiaan($event.target.value)">
+                    wire:model="selectedKepanitiaan">
+                    {{-- <select class="form-control @error('kepanitiaan') is-invalid @enderror"
+                    wire:change="setSelectedKepanitiaan($event.target.value)"> --}}
                     <option value="">-- Pilih Kepanitiaan --</option>
                     @foreach ($kepanitiaans as $kepanitiaan)
                         <option value="{{ $kepanitiaan->id }}"
@@ -276,10 +278,10 @@
                 @enderror
             </div>
             <div class="text-center">
-                <button type="submit" wire:loading.remove wire:target="storeRapat,lampiran"
+                <button type="submit" wire:loading.remove wire:target="updateRapat,lampiran"
                     class="btn btn-warning mx-auto">Update</button>
             </div>
-            <div wire:loading wire:target="storeRapat" class="spinner-border text-primary" role="status">
+            <div wire:loading wire:target="updateRapat,lampiran" class="spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         </form>

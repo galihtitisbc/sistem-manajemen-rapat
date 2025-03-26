@@ -3,7 +3,7 @@ namespace Modules\Rapat\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateRapatRequest extends FormRequest
+class UpdateRapatRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -13,8 +13,8 @@ class CreateRapatRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id'         => 'required|exists:users,id',
             'pimpinan_id'     => 'required|exists:users,id',
+            'kepanitiaan_id'  => 'nullable|exists:kepanitiaans,id',
             'kepanitiaan_id'  => 'nullable|exists:kepanitiaans,id',
             'peserta_rapat'   => 'required|array',
             'peserta_rapat.*' => 'exists:users,id',
@@ -27,15 +27,16 @@ class CreateRapatRequest extends FormRequest
             'lampiran.*'      => 'nullable|file|mimes:jpg,jpeg,png,doc,docx,xls,xlsx,pdf,txt|max:2048',
         ];
     }
-    public function validated($data = [])
-    {
-        return validator($data, $this->rules())->validate();
-    }
+
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
+    public function validated($data = [])
+    {
+        return validator($data, $this->rules())->validate();
+    }
     public function authorize()
     {
         return true;

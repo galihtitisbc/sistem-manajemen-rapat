@@ -24,7 +24,9 @@ class RapatController extends Controller
      */
     public function index()
     {
-        $rapat = RapatAgenda::all();
+        $rapat = RapatAgenda::orderBy('created_at', 'desc')->get();
+        // $userId = Auth::user()->id;
+        // $rapat  = RapatAgenda::userIsPeserta($userId)->get();
         return view('rapat::rapat.index', [
             'rapats' => $rapat,
         ]);

@@ -67,17 +67,38 @@ class RapatCreateForm extends Component
         }
         $this->users = $this->allUsers->filter(fn($user) => str_contains(strtolower($user->name), strtolower($value)));
     }
-    public function setSelectedKepanitiaan($kepanitiaanId)
+    public function updatingSelectedKepanitiaan($value)
     {
-        $this->selectedKepanitiaan = $kepanitiaanId;
-        $userKepanitiaan           = $this->kepanitiaans->where('id', $kepanitiaanId)->first()->users;
-        $this->pesertaRapat        = $this->pesertaRapat->reject(function ($item) {
-            return true;
+        $userKepanitiaan = '';
+        if ($this->selectedKepanitiaan == null) {
+            $userKepanitiaan = $this->kepanitiaans->where('id', $value)->first()->users;
+        } else {
+            $userKepanitiaan = $this->kepanitiaans->where('id', $this->selectedKepanitiaan)->first()->users;
+        }
+        $this->pesertaRapat = $this->pesertaRapat->reject(function ($item) use ($userKepanitiaan) {
+            return $userKepanitiaan->contains('id', $item['id']);
         });
-        foreach ($userKepanitiaan as $value) {
-            $this->pesertaRapat->push($value);
+    }
+    public function updatedSelectedKepanitiaan($value)
+    {
+        if ($value != null) {
+            $userKepanitiaan = $this->kepanitiaans->where('id', $this->selectedKepanitiaan)->first()->users;
+            foreach ($userKepanitiaan as $value) {
+                $this->pesertaRapat->push($value);
+            }
         }
     }
+    // public function setSelectedKepanitiaan($kepanitiaanId)
+    // {
+    //     $this->selectedKepanitiaan = $kepanitiaanId;
+    //     $userKepanitiaan           = $this->kepanitiaans->where('id', $kepanitiaanId)->first()->users;
+    //     $this->pesertaRapat        = $this->pesertaRapat->reject(function ($item) {
+    //         return true;
+    //     });
+    //     foreach ($userKepanitiaan as $value) {
+    //         $this->pesertaRapat->push($value);
+    //     }
+    // }
     public function selectPesertaRapat($peserta, $isCheked)
     {
         if ($isCheked) {

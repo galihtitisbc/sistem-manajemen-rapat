@@ -2,10 +2,12 @@
 namespace App\Http\Livewire\Rapat;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\App;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Modules\Rapat\Http\Requests\CreateRapatRequest;
+use Modules\Rapat\Http\Helper\FlashMessage;
+use Modules\Rapat\Http\Requests\UpdateRapatRequest;
+use Modules\Rapat\Http\Service\Implementation\RapatService;
 
 class RapatEditForm extends Component
 {
@@ -50,7 +52,7 @@ class RapatEditForm extends Component
     }
     protected function rules()
     {
-        return (new CreateRapatRequest())->rules();
+        return (new UpdateRapatRequest())->rules();
     }
     public function updatedWaktuMulai($value)
     {
@@ -68,17 +70,38 @@ class RapatEditForm extends Component
         }
         $this->users = $this->allUsers->filter(fn($user) => str_contains(strtolower($user->name), strtolower($value)));
     }
-    public function setSelectedKepanitiaan($kepanitiaanId)
+    public function updatingSelectedKepanitiaan($value)
     {
-        $this->selectedKepanitiaan = $kepanitiaanId;
-        $userKepanitiaan           = $this->kepanitiaans->where('id', $kepanitiaanId)->first()->users;
-        $this->pesertaRapat        = $this->pesertaRapat->reject(function ($item) {
-            return true;
+        $userKepanitiaan = '';
+        if ($this->selectedKepanitiaan == null) {
+            $userKepanitiaan = $this->kepanitiaans->where('id', $value)->first()->users;
+        } else {
+            $userKepanitiaan = $this->kepanitiaans->where('id', $this->selectedKepanitiaan)->first()->users;
+        }
+        $this->pesertaRapat = $this->pesertaRapat->reject(function ($item) use ($userKepanitiaan) {
+            return $userKepanitiaan->contains('id', $item['id']);
         });
-        foreach ($userKepanitiaan as $value) {
-            $this->pesertaRapat->push($value);
+    }
+    public function updatedSelectedKepanitiaan($value)
+    {
+        if ($value != null) {
+            $userKepanitiaan = $this->kepanitiaans->where('id', $this->selectedKepanitiaan)->first()->users;
+            foreach ($userKepanitiaan as $value) {
+                $this->pesertaRapat->push($value);
+            }
         }
     }
+    // public function setSelectedKepanitiaan($kepanitiaanId)
+    // {
+    //     $this->selectedKepanitiaan = $kepanitiaanId;
+    //     $userKepanitiaan           = $this->kepanitiaans->where('id', $kepanitiaanId)->first()->users;
+    //     $this->pesertaRapat        = $this->pesertaRapat->reject(function ($item) {
+    //         return true;
+    //     });
+    //     foreach ($userKepanitiaan as $value) {
+    //         $this->pesertaRapat->push($value);
+    //     }
+    // }
     public function selectPesertaRapat($peserta, $isCheked)
     {
         if ($isCheked) {
@@ -92,7 +115,6 @@ class RapatEditForm extends Component
     public function updateRapat()
     {
         $data = [
-            'user_id'        => Auth::user()->id,
             'pimpinan_id'    => $this->pimpinanRapat,
             'peserta_rapat'  => $this->pesertaRapat->pluck('id')->toArray(),
             'notulis_id'     => $this->notulisRapat,
@@ -104,7 +126,24 @@ class RapatEditForm extends Component
             'tempat'         => $this->selectTempat == 'custom' ? $this->customTempat : $this->selectTempat,
             'lampiran'       => $this->lampiran,
         ];
-        $validatedData = (new CreateRapatRequest())->validated($data);
-        dd($validatedData);
+        $validatedData = (new UpdateRapatRequest())->validated($data);
+        try {
+            $this->getRapatService()->update($validatedData, $this->agendaRapatLoad->id);
+            FlashMessage::success('Agenda Rapat Berhasil Di Ubah');
+            return redirect()->to('/rapat/agenda-rapat');
+        } catch (\Throwable $e) {
+            $this->dispatchBrowserEvent('swal', [
+                'title' => 'Gagal!',
+                'text'  => 'Terjadi kesalahan: ' . $e->getMessage(),
+                'icon'  => 'error',
+            ]);
+        }
+    }
+    public function getRapatService()
+    {
+        if (! $this->rapatService) {
+            $this->rapatService = App::make(RapatService::class);
+        }
+        return $this->rapatService;
     }
 }

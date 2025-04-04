@@ -83,18 +83,6 @@ class RapatController extends Controller
             'kepanitiaans' => $kepanitiaan,
         ]);
     }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
     /**
      * Remove the specified resource from storage.
      * @param int $id
@@ -111,4 +99,5 @@ class RapatController extends Controller
             return redirect()->to('/rapat/agenda-rapat');
         }
     }
+
 }

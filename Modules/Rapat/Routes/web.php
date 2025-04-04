@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Rapat\Http\Controllers\RapatController;
 use Modules\Rapat\Http\Controllers\RapatDashboardController;
+use Modules\Rapat\Http\Controllers\TindakLanjutRapatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,8 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             Route::get('/{rapatAgenda:slug}/detail', [RapatController::class, 'show']);
             Route::get('/{rapatAgenda:slug}/batal', [RapatController::class, 'ubahStatusRapat']);
             Route::get('/{rapatAgenda:slug}/edit', [RapatController::class, 'edit']);
+            Route::get('/{rapatAgenda:slug}/tugas', [TindakLanjutRapatController::class, 'isiPenugasan']);
+            Route::get('/{rapatAgenda:slug}/tugaskan/{user}', [TindakLanjutRapatController::class, 'tugaskanPesertaRapat']);
         });
     });
 });

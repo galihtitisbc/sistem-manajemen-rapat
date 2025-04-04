@@ -10,15 +10,9 @@
 @endpush
 
 @section('content')
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    @livewire('rapat.rapat-edit-form', ['agendaRapatLoad' => $rapat, 'allUsers' => $users, 'kepanitiaans' => $kepanitiaans])
-                </div>
-            </div>
-        </div>
-    </div>
+    <x-adminlte-card>
+        @livewire('rapat.rapat-edit-form', ['agendaRapatLoad' => $rapat, 'allUsers' => $users, 'kepanitiaans' => $kepanitiaans])
+    </x-adminlte-card>
 @endsection
 
 @push('js')

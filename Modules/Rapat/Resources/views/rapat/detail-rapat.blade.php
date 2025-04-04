@@ -2,7 +2,6 @@
 @section('title', 'Rapat')
 {{-- @section('plugins.Select2', true) --}}
 @section('content_header')
-    <h1 class="m-0 text-dark"></h1>
 @stop
 
 @push('css')
@@ -26,30 +25,29 @@
         ];
     @endphp
     <div class="card">
-        <div class="card-body col-lg-11 mx-auto">
+        <x-adminlte-card>
             <h4 class="text-center mb-4">{{ $rapat->agenda_rapat }}</h4>
-            <div class="card">
-                <div class="card-body">
-                    <div class="row d-flex justify-content-between">
-                        <div class="col">
-                            <b class="text-primary mb-2">Status</b>
-                            <div class="p-2 mb-1 bg-{{ $statusRapat[$rapat->status][0] }} text-center">
-                                {{ $statusRapat[$rapat->status][1] }}
-                            </div>
-                        </div>
-                        <div class="col">
-                            <b class="text-primary mb-2">Waktu</b>
-                            <div class="p-2 mb-1 bg-primary text-center">
-                                {{ \Carbon\Carbon::parse($rapat->waktu_mulai)->translatedFormat('l, d F Y') }}
-                            </div>
-                        </div>
-                        <div class="col">
-                            <b class="text-primary mb-2">Tempat</b>
-                            <div class="p-2 mb-1 bg-secondary text-center">{{ $rapat->tempat }}</div>
+            <x-adminlte-card>
+                <div class="row d-flex justify-content-between">
+                    <div class="col">
+                        <b class="text-primary mb-2">Status</b>
+                        <div class="p-2 mb-1 bg-{{ $statusRapat[$rapat->status][0] }} text-center">
+                            {{ $statusRapat[$rapat->status][1] }}
                         </div>
                     </div>
+                    <div class="col">
+                        <b class="text-primary mb-2">Waktu</b>
+                        <div class="p-2 mb-1 bg-primary text-center">
+                            {{ \Carbon\Carbon::parse($rapat->waktu_mulai)->translatedFormat('l, d F Y') }}
+                        </div>
+                    </div>
+                    <div class="col">
+                        <b class="text-primary mb-2">Tempat</b>
+                        <div class="p-2 mb-1 bg-secondary text-center">{{ $rapat->tempat }}</div>
+                    </div>
                 </div>
-            </div>
+            </x-adminlte-card>
+
             <div class="row m-4">
                 @if ($rapat->tempat == 'zoom')
                     <div class="col-4">
@@ -91,7 +89,7 @@
                     <hr>
                 </div>
             </div>
-            <div class="mt-5">
+            <div class="mt-5 col-11 mx-auto">
                 <h5>Daftar Peserta :</h5>
                 <table id="daftar-peserta" class="table table-hover text-center">
                     <thead class="text-center">
@@ -115,7 +113,7 @@
                 </table>
 
             </div>
-        </div>
+        </x-adminlte-card>
     </div>
 @endsection
 

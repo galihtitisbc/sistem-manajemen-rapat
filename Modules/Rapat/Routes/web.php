@@ -28,6 +28,11 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             Route::get('/{rapatAgenda:slug}/edit', [RapatController::class, 'edit']);
             Route::get('/{rapatAgenda:slug}/tugas', [TindakLanjutRapatController::class, 'isiPenugasan']);
             Route::get('/{rapatAgenda:slug}/tugaskan/{user}', [TindakLanjutRapatController::class, 'tugaskanPesertaRapat']);
+            Route::post('/{rapatAgenda:slug}/tugaskan/{user}', [TindakLanjutRapatController::class, 'createTugasPesertaRapat']);
+        });
+        Route::prefix('tindak-lanjut-rapat')->group(function () {
+            Route::get('/', [TindakLanjutRapatController::class, 'index']);
+            Route::get('/{rapatAgenda:slug}/detail', [TindakLanjutRapatController::class, 'show']);
         });
     });
 });

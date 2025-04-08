@@ -10,7 +10,7 @@ class RapatTindakLanjut extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $guarded = ['id'];
 
     // protected static function newFactory()
     // {

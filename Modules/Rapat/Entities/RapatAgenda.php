@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Rapat\Entities;
 
 use App\Models\Core\User;
@@ -14,7 +15,7 @@ class RapatAgenda extends Model
 
     protected static function newFactory()
     {
-        return \Modules\Rapat\Database\factories\RapatAgendaFactory::new ();
+        return \Modules\Rapat\Database\factories\RapatAgendaFactory::new();
     }
     public function sluggable(): array
     {
@@ -24,9 +25,32 @@ class RapatAgenda extends Model
             ],
         ];
     }
-    public function scopeUserIsPeserta($query, $userId)
+    public function scopeUserIsPesertaOrCreator($query, $userId)
     {
+        $query->whereHas('rapatAgendaPeserta', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+            ->orWhere('user_id', $userId);
         return $query;
+    }
+    public function scopeShowTindakLanjut($query, $userId)
+    {
+        $query->whereHas('rapatTindakLanjut', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+            ->orWhere(function ($q) use ($userId) {
+                $q->where('user_id', $userId)
+                    ->whereHas('rapatTindakLanjut');
+            });
+
+        return $query;
+    }
+    public function getStatusTindakLanjutAttribute()
+    {
+        if ($this->rapatTindakLanjut->contains('status', 'BELUM SELESAI')) {
+            return 'BELUM SELESAI';
+        }
+        return 'SELESAI';
     }
     public function user()
     {

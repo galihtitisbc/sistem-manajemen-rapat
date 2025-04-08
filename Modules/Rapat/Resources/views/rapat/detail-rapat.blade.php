@@ -88,6 +88,22 @@
                     @endif
                     <hr>
                 </div>
+                <div class="col-4">
+                    <span style="font-weight: bold">Pimpinan Rapat :</span>
+                    <hr>
+                </div>
+                <div class="col-8">
+                    <span style="font-weight: bold">{{ $rapat->rapatAgendaPimpinan->name }}</span>
+                    <hr>
+                </div>
+                <div class="col-4">
+                    <span style="font-weight: bold">Notulis Rapat :</span>
+                    <hr>
+                </div>
+                <div class="col-8">
+                    <span style="font-weight: bold">{{ $rapat->rapatAgendaNotulis->name }}</span>
+                    <hr>
+                </div>
             </div>
             <div class="mt-5 col-11 mx-auto">
                 <h5>Daftar Peserta :</h5>

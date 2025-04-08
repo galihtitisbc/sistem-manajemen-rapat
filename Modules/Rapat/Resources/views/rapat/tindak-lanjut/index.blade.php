@@ -1,0 +1,63 @@
+@extends('adminlte::page')
+@section('title', 'Rapat')
+{{-- @section('plugins.Select2', true) --}}
+@section('content_header')
+    <h1 class="m-0 text-dark"></h1>
+@stop
+
+@push('css')
+@endpush
+
+@section('content')
+    <div class="row">
+        <div class="col-12">
+            @php
+                $statusTindakLanjut = [
+                    'SELESAI' => 'success',
+                    'BELUM SELESAI' => 'danger',
+                ];
+            @endphp
+            @if ($agendaRapat->isEmpty())
+                <x-adminlte-card>
+                    <div class="col-6 mx-auto mt-5">
+                        <x-adminlte-alert theme="success">
+                            Anda Tidak Memiliki Tugas
+                        </x-adminlte-alert>
+                    </div>
+                </x-adminlte-card>
+            @endif
+            <x-adminlte-card>
+                <table class="table table-striped mt-5">
+                    <thead>
+                        <tr>
+                            <th class="text-center">No</th>
+                            <th>Topik Rapat</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($agendaRapat as $item)
+                            <tr>
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td>{{ $item->agenda_rapat }}</td>
+                                <td class="text-center">
+                                    <span class="badge badge-{{ $statusTindakLanjut[$item->status_tindak_lanjut] }}">
+                                        {{ $item->status_tindak_lanjut }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ url('rapat/tindak-lanjut-rapat/' . $item->slug . '/detail') }}"
+                                        class="btn btn-secondary">Detail</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </x-adminlte-card>
+        </div>
+    </div>
+@endsection
+
+@push('js')
+    <script></script>
+@endpush

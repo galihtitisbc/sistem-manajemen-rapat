@@ -20,7 +20,7 @@ class CreateRapatTindakLanjutsTable extends Migration
             $table->text('deskripsi_tugas');
             $table->date('batas_waktu');
             $table->enum('status', ['SELESAI', 'BELUM SELESAI'])->default('BELUM SELESAI');
-            $table->string('tugas');
+            $table->string('tugas')->nullable();
             $table->enum('penilaian', ['MELEBIHI EKSPETASI', 'SESUAI EKSPETASI', "TIDAK SESUAI EKSPETASI", "BELUM DINILAI"])->default("BELUM DINILAI");
             $table->text('komentar')->nullable();
             $table->timestamps();

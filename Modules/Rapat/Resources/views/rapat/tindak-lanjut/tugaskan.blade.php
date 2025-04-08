@@ -21,15 +21,28 @@
                 <hr>
             </div>
         </div>
-        <form class="col-8 mx-auto" action="" method="POST">
+        <form class="col-8 mx-auto" action="{{ url('/rapat/agenda-rapat/' . $rapat->slug . '/tugaskan/' . $peserta->id) }}"
+            method="POST">
             @csrf
             <div class="mb-3">
                 <label for="deskripsi-tugas" class="form-label">Deskripsi Tugas :</label>
-                <textarea class="form-control" id="deskripsi-tugas" rows="3"></textarea>
+                <textarea class="form-control @error('deskripsi') is-invalid @enderror" name="deskripsi" id="deskripsi-tugas"
+                    rows="3">{{ old('deskripsi') }}</textarea>
+                @error('deskripsi')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
             <div class="mb-3">
                 <label for="deskripsi-date" class="form-label">Batas Waktu :</label>
-                <input type="date" class="form-control" id="deskripsi-date">
+                <input type="date" name="batas_waktu" class="form-control @error('batas_waktu') is-invalid @enderror"
+                    id="deskripsi-date" value="{{ old('batas_waktu') }}">
+                @error('batas_waktu')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
             <button type="submit" class="btn btn-primary">Tugaskan</button>
         </form>

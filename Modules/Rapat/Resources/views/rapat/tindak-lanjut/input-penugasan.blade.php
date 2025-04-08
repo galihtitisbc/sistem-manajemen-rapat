@@ -11,7 +11,7 @@
 @section('content')
     <x-adminlte-card>
         <h4 class="text-center mb-4">{{ $rapat->agenda_rapat }}</h4>
-        <div class="col-9 mx-auto mt-5">
+        <div class="col-lg-9 mx-auto mt-5">
             <h6 class="mb-4">Peserta Rapat :</h6>
             @foreach ($rapat->rapatAgendaPeserta as $peserta)
                 <div class="daftar-peserta col-11 mx-auto">
@@ -32,4 +32,16 @@
 @endsection
 
 @push('js')
+    <script></script>
+    @if (session('swal'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "{{ session('swal.title') }}",
+                    text: "{{ session('swal.text') }}",
+                    icon: "{{ session('swal.icon') }}"
+                });
+            });
+        </script>
+    @endif
 @endpush

@@ -24,8 +24,10 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             Route::get('/create', [RapatController::class, 'create']);
             Route::post('/store', [RapatController::class, 'store']);
             Route::get('/{rapatAgenda:slug}/detail', [RapatController::class, 'show']);
-            Route::get('/{rapatAgenda:slug}/batal', [RapatController::class, 'ubahStatusRapat']);
-            Route::get('/{rapatAgenda:slug}/edit', [RapatController::class, 'edit']);
+            Route::middleware(['pimpinanRapat'])->group(function () {
+                Route::get('/{rapatAgenda:slug}/edit', [RapatController::class, 'edit']);
+                Route::get('/{rapatAgenda:slug}/batal', [RapatController::class, 'ubahStatusRapat']);
+            });
             Route::get('/{rapatAgenda:slug}/tugas', [TindakLanjutRapatController::class, 'isiPenugasan']);
             Route::get('/{rapatAgenda:slug}/tugaskan/{user}', [TindakLanjutRapatController::class, 'tugaskanPesertaRapat']);
             Route::post('/{rapatAgenda:slug}/tugaskan/{user}', [TindakLanjutRapatController::class, 'createTugasPesertaRapat']);

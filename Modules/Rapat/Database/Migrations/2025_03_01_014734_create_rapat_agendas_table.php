@@ -17,7 +17,6 @@ class CreateRapatAgendasTable extends Migration
         Schema::create('rapat_agendas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            // ->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreignId('pimpinan_id')->constrained('users');
             $table->foreignId('notulis_id')->constrained('users');
             $table->string('nomor_surat');

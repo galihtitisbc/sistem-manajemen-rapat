@@ -28,9 +28,10 @@ class TindakLanjutRapatController extends Controller
     }
     public function show(RapatAgenda $rapatAgenda)
     {
-        $rapatAgenda->load(['rapatTindakLanjut', 'rapatTindakLanjut.user']);
+        $tindakLanjut = $rapatAgenda->rapatTindakLanjut()->userHaveTugas(Auth::user(), $rapatAgenda)->with('rapatTindakLanjutFile')->get();
         return view('rapat::rapat.tindak-lanjut.lihat-tindak-lanjut', [
-            'rapat' => $rapatAgenda
+            'rapat'         => $rapatAgenda,
+            'tindakLanjuts' => $tindakLanjut
         ]);
     }
     public function isiPenugasan(RapatAgenda $rapatAgenda)

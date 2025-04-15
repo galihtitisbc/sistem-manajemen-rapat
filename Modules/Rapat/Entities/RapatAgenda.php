@@ -38,6 +38,7 @@ class RapatAgenda extends Model
         $query->whereHas('rapatTindakLanjut', function ($q) use ($userId) {
             $q->where('user_id', $userId);
         })
+            ->orWhere('pimpinan_id', $userId)
             ->orWhere(function ($q) use ($userId) {
                 $q->where('user_id', $userId)
                     ->whereHas('rapatTindakLanjut');

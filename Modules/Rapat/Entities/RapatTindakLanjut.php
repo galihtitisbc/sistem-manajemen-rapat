@@ -16,6 +16,15 @@ class RapatTindakLanjut extends Model
     // {
     //     return \Modules\Rapat\Database\factories\RapatTindakLanjutFactory::new();
     // }
+    public function scopeUserHaveTugas($query, $user, $rapatAgenda)
+    {
+        $query->when($rapatAgenda->pimpinan_id == $user->id || $rapatAgenda->user_id == $user->id, function ($q) use ($rapatAgenda) {
+            $q->where('rapat_agenda_id', $rapatAgenda->id);
+        }, function ($q) use ($user) {
+            $q->where('user_id', $user->id);
+        });
+        return $query;
+    }
     public function rapatAgenda()
     {
         return $this->belongsTo(RapatAgenda::class, 'rapat_agenda_id');

@@ -24,6 +24,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             Route::get('/create', [RapatController::class, 'create']);
             Route::post('/store', [RapatController::class, 'store']);
             Route::get('/{rapatAgenda:slug}/detail', [RapatController::class, 'show']);
+            Route::get('/{file}/download', [RapatController::class, 'downloadLampiran']);
             Route::middleware(['pimpinanRapat'])->group(function () {
                 Route::get('/{rapatAgenda:slug}/edit', [RapatController::class, 'edit']);
                 Route::get('/{rapatAgenda:slug}/batal', [RapatController::class, 'ubahStatusRapat']);
@@ -35,6 +36,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::prefix('tindak-lanjut-rapat')->group(function () {
             Route::get('/', [TindakLanjutRapatController::class, 'index']);
             Route::get('/{rapatAgenda:slug}/detail', [TindakLanjutRapatController::class, 'show']);
+            Route::get('/tugas/{rapatTindakLanjut:slug}/unggah-tugas', [TindakLanjutRapatController::class, 'uploadTugas']);
         });
     });
 });

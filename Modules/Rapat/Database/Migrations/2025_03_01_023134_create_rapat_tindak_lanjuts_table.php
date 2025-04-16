@@ -18,6 +18,7 @@ class CreateRapatTindakLanjutsTable extends Migration
             $table->foreignId('rapat_agenda_id')->constrained('rapat_agendas');
             $table->foreignId('user_id')->constrained('users');
             $table->text('deskripsi_tugas');
+            $table->text('slug');
             $table->date('batas_waktu');
             $table->enum('status', ['SELESAI', 'BELUM SELESAI'])->default('BELUM SELESAI');
             $table->string('tugas')->nullable();

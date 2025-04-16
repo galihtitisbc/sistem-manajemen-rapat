@@ -23,6 +23,17 @@
             'COMPLETED' => ['success', 'Selesai'],
             'STARTED' => ['primary', 'Sedang Berlangsung'],
         ];
+        $icons = [
+            'jpg' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
+            'jpeg' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
+            'png' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
+            'doc' => ['icon' => 'fas fa-file-word', 'color' => '#1E90FF'],
+            'docx' => ['icon' => 'fas fa-file-word', 'color' => '#1E90FF'],
+            'xls' => ['icon' => 'fas fa-file-excel', 'color' => '#008000'],
+            'xlsx' => ['icon' => 'fas fa-file-excel', 'color' => '#008000'],
+            'pdf' => ['icon' => 'fas fa-file-pdf', 'color' => '#FF0000'],
+            'txt' => ['icon' => 'fas fa-file-alt', 'color' => '#808080'],
+        ];
     @endphp
     <div class="card">
         <x-adminlte-card>
@@ -75,11 +86,20 @@
                     @if ($rapat->rapatLampiran->isNotEmpty())
                         <div class="row">
                             @foreach ($rapat->rapatLampiran as $lampiran)
+                                @php
+                                    $extension = pathinfo($lampiran->nama_file, PATHINFO_EXTENSION);
+                                    $icon = $icons[$extension] ?? [
+                                        'icon' => 'fas fa-file',
+                                        'color' => '#A9A9A9',
+                                    ];
+                                @endphp
                                 <div class="col-12">
                                     <span class="mr-2">
-                                        <i class="fas fa-file-pdf" style="color: #ff0000;"></i>
+                                        <a href="{{ url('/rapat/agenda-rapat/' . $lampiran->nama_file . '/download') }}"
+                                            target="_blank"><i class="{{ $icon['icon'] }}"
+                                                style="color: {{ $icon['color'] }}; fa-lg  mr-2"></i>
+                                            {{ $lampiran->nama_file }}</a>
                                     </span>
-                                    <span>{{ $lampiran->nama_file }}</span>
                                 </div>
                             @endforeach
                         </div>

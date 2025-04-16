@@ -11,12 +11,6 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            @php
-                $statusTindakLanjut = [
-                    'SELESAI' => 'success',
-                    'BELUM SELESAI' => 'danger',
-                ];
-            @endphp
             @if ($agendaRapat->isEmpty())
                 <x-adminlte-card>
                     <div class="col-6 mx-auto mt-5">
@@ -26,8 +20,18 @@
                     </div>
                 </x-adminlte-card>
             @endif
-            <x-adminlte-card>
-                <table class="table table-striped mt-5">
+            @if ($agendaRapat->isNotEmpty())
+                <x-adminlte-card>
+                    <x-adminlte-datatable id="agenda-rapat-tugas" :heads="$heads" :config="$config">
+                        @foreach ($config['data'] as $row)
+                            <tr>
+                                @foreach ($row as $cell)
+                                    <td>{!! $cell !!}</td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </x-adminlte-datatable>
+                    {{-- <table class="table table-striped mt-5">
                     <thead>
                         <tr>
                             <th class="text-center">No</th>
@@ -52,8 +56,9 @@
                             </tr>
                         @endforeach
                     </tbody>
-                </table>
-            </x-adminlte-card>
+                </table> --}}
+                </x-adminlte-card>
+            @endif
         </div>
     </div>
 @endsection

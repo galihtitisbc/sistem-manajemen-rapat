@@ -12,6 +12,8 @@
     <div class="row">
         <div class="col-12">
             @php
+                $belumSelesaiEnum = \Modules\Rapat\Http\Helper\StatusTindakLanjut::BELUM_SELESAI->value;
+                $selesaiEnum = \Modules\Rapat\Http\Helper\StatusTindakLanjut::SELESAI->value;
                 $statusTindakLanjut = [
                     'SELESAI' => 'success',
                     'BELUM SELESAI' => 'danger',
@@ -30,7 +32,7 @@
             @endphp
             <x-adminlte-card>
                 <h4 class="text-center my-4">{{ $rapat->agenda_rapat }}</h4>
-                <div class="col-sm-12 col-lg-6 mx-auto my-4">
+                <div class="col-sm-12 col-lg-8 mx-auto my-4">
                     @foreach ($tindakLanjuts as $tindakLanjut)
                         <x-adminlte-card theme="primary" theme-mode="outline">
                             <div class="d-flex justify-content-start">
@@ -58,10 +60,17 @@
                                 </div>
                             </div>
                             <p style="font-size: 1.2rem;">Berkas Pengumpulan :</p>
-                            @if ($tindakLanjut->status == 'BELUM SELESAI')
+                            @if ($tindakLanjut->status == $belumSelesaiEnum && $tindakLanjut->rapatAgenda->pimpinan_id == Auth::user()->id)
                                 <span class="badge badge badge-danger p-2">Belum Selesai</span>
                             @endif
-                            @if ($tindakLanjut->status == 'SELESAI')
+                            @if ($tindakLanjut->status == $belumSelesaiEnum && $tindakLanjut->user_id == Auth::user()->id)
+                                <a href="{{ url('/rapat/tindak-lanjut-rapat/tugas/' . $tindakLanjut->slug . '/unggah-tugas') }}"
+                                    class="btn btn-primary" href="">Unggah Tugas</a>
+                            @endif
+                            @if ($tindakLanjut->status == $selesaiEnum && $tindakLanjut->user_id == Auth::user()->id)
+                                <a class="btn btn-success" href="">Tugas Sudah Di Unggah</a>
+                            @endif
+                            @if ($tindakLanjut->status == $selesaiEnum)
                                 <x-adminlte-callout theme="success">
                                     <p>{{ $tindakLanjut->tugas }}</p>
                                     @foreach ($tindakLanjut->rapatTindakLanjutFile as $file)
@@ -76,6 +85,14 @@
                                         {{ $file->nama_file }}
                                     @endforeach
                                 </x-adminlte-callout>
+                                @if ($tindakLanjut->rapatAgenda->pimpinan_id == Auth::user()->id)
+                                    <div class="text-center">
+                                        <a href="{{ url('/rapat/tindak-lanjut-rapat/tugas/' . $tindakLanjut->slug . '/simpan-tugas') }}"
+                                            class="btn btn-primary">Simpan Penugasan</a>
+                                        <a href="{{ url('/rapat/tindak-lanjut-rapat/tugas/' . $tindakLanjut->slug . '/kembalikan') }}"
+                                            class="btn btn-danger">Kembalikan</a>
+                                    </div>
+                                @endif
                             @endif
                         </x-adminlte-card>
                     @endforeach

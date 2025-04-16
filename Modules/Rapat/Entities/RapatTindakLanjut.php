@@ -3,12 +3,13 @@
 namespace Modules\Rapat\Entities;
 
 use App\Models\Core\User;
+use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RapatTindakLanjut extends Model
 {
-    use HasFactory;
+    use HasFactory, Sluggable;
 
     protected $guarded = ['id'];
 
@@ -16,6 +17,14 @@ class RapatTindakLanjut extends Model
     // {
     //     return \Modules\Rapat\Database\factories\RapatTindakLanjutFactory::new();
     // }
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'deskripsi_tugas',
+            ],
+        ];
+    }
     public function scopeUserHaveTugas($query, $user, $rapatAgenda)
     {
         $query->when($rapatAgenda->pimpinan_id == $user->id || $rapatAgenda->user_id == $user->id, function ($q) use ($rapatAgenda) {

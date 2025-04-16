@@ -10,30 +10,22 @@
 @endpush
 
 @section('content')
-    @php
-        use Carbon\Carbon;
-        Carbon::setLocale('id');
-        $statusRapat = [
-            'CANCELED' => ['danger', 'Di Batalkan'],
-            'SCHEDULED' => ['warning', 'Di Jadwalkan'],
-            'COMPLETED' => ['success', 'Selesai'],
-            'STARTED' => ['primary', 'Sedang Berlangsung'],
-        ];
-        $statusKeaktifan = [
-            'SCHEDULED' => ['fa-calendar-times', '#ff0000'],
-            'CANCELED' => ['fa-undo', '#5cb85c'],
-            'COMPLETED' => ['fas fa-check-circle', '#28a745'],
-            'STARTED' => ['fas fa-play-circle', '#0275d8'],
-        ];
-    @endphp
     <x-adminlte-card>
         @hasanyrole(['pimpinan', 'pejabat', 'sekretaris'])
             <div class="btn-tambah d-flex justify-content-end my-2">
                 <a href="{{ url('rapat/agenda-rapat/create') }}" class="btn btn-primary">Tambah Rapat</a>
             </div>
         @endhasanyrole
-
-        <table class="table table-striped mx-auto" id="agenda-rapat">
+        <x-adminlte-datatable id="agenda-rapat" :heads="$heads" :config="$config">
+            @foreach ($config['data'] as $row)
+                <tr>
+                    @foreach ($row as $cell)
+                        <td>{!! $cell !!}</td>
+                    @endforeach
+                </tr>
+            @endforeach
+        </x-adminlte-datatable>
+        {{-- <table class="table table-striped mx-auto" id="agenda-rapat">
             <thead class="text-center">
                 <tr>
                     <th scope="col">No</th>
@@ -52,7 +44,7 @@
                     @endphp
                     <tr>
                         <td class="text-center">{{ $loop->iteration }}</td>
-                        <td class="text-wrap" style="max-width: 200px; word-wrap: break-word;">
+                        <td style="width: 25%">
                             {{ $rapat->agenda_rapat }}</td>
                         <td class="text-center"> {{ $startTime->translatedFormat('l, d F Y, H:i') }} WIB</td>
                         <td class="text-center">
@@ -82,40 +74,25 @@
                                 <a href="#" class="btn btn-success">Isi Notulen</a>
                             @endif
                         </td>
-                        <td class="text-center">
-                            @if (
-                                $rapat->notulis_id == Auth::user()->id ||
-                                    $rapat->user_id == Auth::user()->id ||
-                                    $rapat->pimpinan_id == Auth::user()->id)
+                        <td class="text-center" style="width: 10%">
+                            @if ($rapat->notulis_id == Auth::user()->id || $rapat->user_id == Auth::user()->id || $rapat->pimpinan_id == Auth::user()->id)
                                 @if ($rapat->status == 'COMPLETED' || $rapat->status == 'STARTED')
-                                    <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/tugas') }}"
-                                        class="btn btn-primary"> Isi Penugasan</a>
+                                    <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/tugas') }}">
+                                        <span class="badge bg-primary p-2">Input Tugas</span>
+                                    </a>
                                 @endif
                             @endif
                         </td>
                     </tr>
                 @endforeach
             </tbody>
-        </table>
+        </table> --}}
     </x-adminlte-card>
 @endsection
 
 @push('js')
 
-    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
     <script>
-        $('#agenda-rapat').DataTable({
-            select: true,
-            responsive: true,
-            columnDefs: [{
-                targets: [4, 5],
-                orderable: false,
-                className: 'text-center'
-            }, {
-                targets: [0, 2, 3, 4],
-                className: 'text-center'
-            }]
-        });
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl =>
             new bootstrap.Tooltip(tooltipTriggerEl)

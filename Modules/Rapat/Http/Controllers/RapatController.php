@@ -3,18 +3,22 @@
 namespace Modules\Rapat\Http\Controllers;
 
 use App\Models\Core\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Modules\Rapat\Entities\Kepanitiaan;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Http\Helper\FlashMessage;
 use Modules\Rapat\Http\Service\Implementation\RapatService;
+use Modules\Rapat\Http\Traits\AgendaRapatDatatables;
 
 class RapatController extends Controller
 {
+    use AgendaRapatDatatables;
     protected $rapatService;
     public function __construct(RapatService $rapatService)
     {
@@ -23,9 +27,10 @@ class RapatController extends Controller
 
     public function index()
     {
-        $rapat  = RapatAgenda::userIsPesertaOrCreator(Auth::user()->id)->orderBy('created_at', 'desc')->get();
+        // mengambil data agenda rapat dari trait AgendaRapatDatatables
         return view('rapat::rapat.index', [
-            'rapats' => $rapat,
+            'config' => $this->getAgendaRapatDatatables()['config'],
+            'heads'  => $this->getAgendaRapatDatatables()['heads'],
         ]);
     }
     public function create()
@@ -43,6 +48,10 @@ class RapatController extends Controller
         return view('rapat::rapat.detail-rapat', [
             'rapat' => $rapatAgenda,
         ]);
+    }
+    public function downloadLampiran($file)
+    {
+        return Storage::download('/rapat/' . $file);
     }
     public function edit(RapatAgenda $rapatAgenda)
     {

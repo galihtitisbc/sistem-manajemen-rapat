@@ -1,8 +1,8 @@
 @extends('adminlte::page')
-@section('title', 'Unggah Tugas')
+@section('title', 'Edit Tugas')
 {{-- @section('plugins.Select2', true) --}}
 @section('content_header')
-    <h5 class="m-0 text-dark">Unggah Tugas</h5>
+    <h5 class="m-0 text-dark">Edit Tugas</h5>
 @stop
 
 @push('css')
@@ -24,15 +24,16 @@
                     <p> {{ \Carbon\Carbon::parse($rapatTindakLanjut->batas_waktu)->translatedFormat('l, d F Y') }}</p>
                 </div>
             </div>
-            <form action="{{ url('/rapat/tindak-lanjut-rapat/tugas/' . $rapatTindakLanjut->slug . '/unggah-tugas') }}"
+            <form action="{{ url('/rapat/tindak-lanjut-rapat/tugas/' . $rapatTindakLanjut->slug . '/ubah-tugas') }}"
                 method="POST" enctype="multipart/form-data" class="mt-4">
+                @method('PUT')
                 @csrf
                 <div class="row">
                     <div class="col-lg-6 col-sm-12 col-md-12">
                         <div class="mb-3">
                             <label for="exampleFormControlInput1" class="form-label">Tugas (Opsional):</label>
                             <input type="text" name="tugas" class="form-control @error('tugas') is-invalid @enderror"
-                                id="exampleFormControlInput1" placeholder="Jika Tugas Berbentuk Link">
+                                value="{{ $rapatTindakLanjut->tugas }}">
                             @error('tugas')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -42,7 +43,7 @@
                         <div class="mb-3">
                             <label for="exampleFormControlTextarea1" class="form-label">Kendala (Jika Ada):</label>
                             <textarea class="form-control @error('kendala') is-invalid @enderror" name="kendala" id="exampleFormControlTextarea1"
-                                rows="3"></textarea>
+                                rows="3">{{ $rapatTindakLanjut->kendala }}</textarea>
                             @error('kendala')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -60,7 +61,7 @@
                     @endforeach
                 </div>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Unggah Tugas</button>
+                    <button type="submit" class="btn btn-warning">Edit Tugas</button>
                 </div>
             </form>
 

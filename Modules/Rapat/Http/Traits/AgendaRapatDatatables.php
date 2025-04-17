@@ -24,6 +24,7 @@ trait AgendaRapatDatatables
             'COMPLETED' => ['fas fa-check-circle', '#28a745'],
             'STARTED' => ['fas fa-play-circle', '#0275d8'],
         ];
+        $data = [];
         foreach ($rapats as $index => $rapat) {
             $startTime = Carbon::parse($rapat->waktu_mulai)->translatedFormat('l, d F Y H:i');
             $statusBadge = '<span class="badge bg-' . $statusRapat[$rapat->status][0] . '">' . $statusRapat[$rapat->status][1] . '</span>';

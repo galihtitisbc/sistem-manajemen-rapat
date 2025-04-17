@@ -10,6 +10,7 @@
 
 @section('content')
     @php
+        \Carbon\Carbon::setLocale('id');
         $statusPeserta = [
             'BERSEDIA' => 'primary',
             'TIDAK BERSEDIA' => 'danger',
@@ -27,6 +28,7 @@
             'jpg' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
             'jpeg' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
             'png' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
+            'PNG' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
             'doc' => ['icon' => 'fas fa-file-word', 'color' => '#1E90FF'],
             'docx' => ['icon' => 'fas fa-file-word', 'color' => '#1E90FF'],
             'xls' => ['icon' => 'fas fa-file-excel', 'color' => '#008000'],
@@ -49,7 +51,7 @@
                     <div class="col">
                         <b class="text-primary mb-2">Waktu</b>
                         <div class="p-2 mb-1 bg-primary text-center">
-                            {{ \Carbon\Carbon::parse($rapat->waktu_mulai)->translatedFormat('l, d F Y') }}
+                            {{ \Carbon\Carbon::parse($rapat->waktu_mulai)->translatedFormat('l, d F Y H:i') }}
                         </div>
                     </div>
                     <div class="col">

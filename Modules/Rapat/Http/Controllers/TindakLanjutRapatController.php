@@ -6,10 +6,12 @@ use App\Models\Core\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Entities\RapatTindakLanjut;
 use Modules\Rapat\Http\Helper\FlashMessage;
 use Modules\Rapat\Http\Requests\CreateTugasPesertaRapatRequest;
+use Modules\Rapat\Http\Requests\UploadTugasTindakLanjutRapatRequest;
 use Modules\Rapat\Http\Service\Implementation\TindakLanjutRapatService;
 
 class TindakLanjutRapatController extends Controller
@@ -67,7 +69,7 @@ class TindakLanjutRapatController extends Controller
     }
     public function show(RapatAgenda $rapatAgenda)
     {
-        $tindakLanjut = $rapatAgenda->rapatTindakLanjut()->userHaveTugas(Auth::user(), $rapatAgenda)->with('rapatTindakLanjutFile', 'rapatAgenda')->get();
+        $tindakLanjut = $rapatAgenda->rapatTindakLanjut()->userHaveTugas(Auth::user(), $rapatAgenda)->with(['rapatTindakLanjutFile', 'rapatAgenda', 'user'])->get();
         return view('rapat::rapat.tindak-lanjut.lihat-tindak-lanjut', [
             'rapat'         => $rapatAgenda,
             'tindakLanjuts' => $tindakLanjut
@@ -116,11 +118,39 @@ class TindakLanjutRapatController extends Controller
         }
     }
 
-    public function uploadTugas(RapatTindakLanjut $rapatTindakLanjut)
+    public function showUploadTugas(RapatTindakLanjut $rapatTindakLanjut)
     {
         return view('rapat::rapat.tindak-lanjut.upload-tugas', [
             'rapatTindakLanjut' => $rapatTindakLanjut
         ]);
+    }
+    public function uploadTugas(RapatTindakLanjut $rapatTindakLanjut, UploadTugasTindakLanjutRapatRequest $request)
+    {
+        try {
+            $this->tindakLanjutRapatService->uploadTugas($rapatTindakLanjut, $request);
+            FlashMessage::success('Tugas Berhasil Di Unggah');
+            return redirect()->to('/rapat/tindak-lanjut-rapat/' . $rapatTindakLanjut->rapatAgenda->slug . '/detail');
+        } catch (\Throwable $e) {
+            FlashMessage::error("Gagal Upload Tugas");
+            return redirect()->to('/rapat/tindak-lanjut-rapat/' . $rapatTindakLanjut->rapatAgenda->slug . '/detail');
+        }
+    }
+    public function showEditTugas(RapatTindakLanjut $rapatTindakLanjut)
+    {
+        return view('rapat::rapat.tindak-lanjut.ubah-tugas', [
+            'rapatTindakLanjut' => $rapatTindakLanjut
+        ]);
+    }
+    public function editTugas(RapatTindakLanjut $rapatTindakLanjut, UploadTugasTindakLanjutRapatRequest $request)
+    {
+        try {
+            $this->tindakLanjutRapatService->editTugas($rapatTindakLanjut, $request);
+            FlashMessage::success('Tugas Berhasil Di Edit');
+            return redirect()->to('/rapat/tindak-lanjut-rapat/' . $rapatTindakLanjut->rapatAgenda->slug . '/detail');
+        } catch (\Throwable $e) {
+            FlashMessage::error("Gagal Edit Tugas");
+            return redirect()->to('/rapat/tindak-lanjut-rapat/' . $rapatTindakLanjut->rapatAgenda->slug . '/detail');
+        }
     }
     function isUserArePesertaRapat(RapatAgenda $rapatAgenda, User $user)
     {

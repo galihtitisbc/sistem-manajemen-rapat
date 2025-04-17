@@ -1,8 +1,8 @@
 @extends('adminlte::page')
-@section('title', 'Rapat')
+@section('title', 'Detail Tindak Lanjut Rapat')
 {{-- @section('plugins.Select2', true) --}}
 @section('content_header')
-    <h1 class="m-0 text-dark"></h1>
+    <h5 class="m-0 text-dark">Detail Tindak Lanjut {{ $rapat->agenda_rapat }}</h5>
 @stop
 
 @push('css')
@@ -29,73 +29,93 @@
                     'pdf' => ['icon' => 'fas fa-file-pdf', 'color' => '#FF0000'],
                     'txt' => ['icon' => 'fas fa-file-alt', 'color' => '#808080'],
                 ];
+
+                $heads = [
+                    ['label' => 'No', 'width' => 5, 'class' => 'text-center'],
+                    ['label' => 'Nama Peserta', 'width' => 10],
+                    ['label' => 'Tugas', 'width' => 10],
+                    ['label' => 'Target Penyelesaian', 'width' => 10],
+                    ['label' => 'Status', 'width' => 10, 'class' => 'text-center'],
+                    ['label' => 'Aksi', 'width' => 10, 'class' => 'text-center'],
+                ];
+                $data = [];
+                $status = '';
+                $aksi = '';
+                foreach ($tindakLanjuts as $key => $tindakLanjut) {
+                    $status =
+                        '<span class="badge bg-' .
+                        $statusTindakLanjut[$tindakLanjut->status] .
+                        '">' .
+                        $tindakLanjut->status .
+                        '</span>';
+                    $btnDetail = '<button class="btn btn-success mx-2" data-toggle="modal" data-target="#exampleModal"> <i class="fas fa-eye" data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Detail Rapat"></i></button>';
+                    $btnUpdate =
+                        '<a href="' .
+                        url('/rapat/tindak-lanjut-rapat/tugas/' . $tindakLanjut->slug . '/ubah-tugas') .
+                        '" class="btn btn-warning"> <i class="fas fa-edit" data-bs-toggle="tooltip"
+                            data-bs-placement="top" title="Ubah Tugas"></i></a>';
+                    $aksi = $btnDetail;
+                    if ($tindakLanjut->user_id == Auth::user()->id) {
+                        $aksi .= $btnUpdate;
+                    }
+                    if ($tindakLanjut->status == $belumSelesaiEnum) {
+                        $aksi = '-';
+                    }
+                    $data[] = [
+                        $key + 1,
+                        $tindakLanjut->user->name,
+                        $tindakLanjut->deskripsi_tugas,
+                        $tindakLanjut->batas_waktu,
+                        $status,
+                        $aksi,
+                    ];
+                }
+                $config = [
+                    'data' => $data,
+                    'order' => [[1, 'asc']],
+                    'columns' => [
+                        ['className' => 'text-center'],
+                        null,
+                        ['orderable' => false],
+                        null,
+                        ['className' => 'text-center'],
+                        ['className' => 'text-center', 'orderable' => false],
+                    ],
+                ];
             @endphp
             <x-adminlte-card>
-                <h4 class="text-center my-4">{{ $rapat->agenda_rapat }}</h4>
-                <div class="col-sm-12 col-lg-8 mx-auto my-4">
-                    @foreach ($tindakLanjuts as $tindakLanjut)
-                        <x-adminlte-card theme="primary" theme-mode="outline">
-                            <div class="d-flex justify-content-start">
-                                <i class="fas fa-tasks fa-lg" style="color: #74C0FC;"></i>
-                                <p class="ml-3" style="font-size: 1.5rem;margin-top: -1%">
-                                    {{ $tindakLanjut->deskripsi_tugas }}</p>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="d-flex justify-content-start">
-                                        <i class="fas fa-user fa-lg" style="color: #74C0FC;"></i>
-                                        <p class="ml-3" style="font-size: 1.2rem;margin-top: -1%">Peserta Yang Ditugaskan
-                                            :
-                                        </p>
-                                    </div>
-                                    <p class="ml-5" style="font-size: 1.1rem;">{{ $tindakLanjut->user->name }}</p>
+                <div class="col-11 mx-auto mt-4">
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
-                                <div class="col">
-                                    <p class="ml-3" style="font-size: 1.2rem;margin-top: -1%">Batas Waktu Pengumpulan :
-                                    </p>
-                                    <div class="d-flex justify-content-start ml-3">
-                                        <i class="fas fa-calendar-alt fa-lg" style="color: #74C0FC;"></i>
-                                        <p class="ml-2" style="font-size: 1.1rem;">{{ $tindakLanjut->batas_waktu }}</p>
-                                    </div>
+                                <div class="modal-body">
+                                    ...
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Save changes</button>
                                 </div>
                             </div>
-                            <p style="font-size: 1.2rem;">Berkas Pengumpulan :</p>
-                            @if ($tindakLanjut->status == $belumSelesaiEnum && $tindakLanjut->rapatAgenda->pimpinan_id == Auth::user()->id)
-                                <span class="badge badge badge-danger p-2">Belum Selesai</span>
-                            @endif
-                            @if ($tindakLanjut->status == $belumSelesaiEnum && $tindakLanjut->user_id == Auth::user()->id)
-                                <a href="{{ url('/rapat/tindak-lanjut-rapat/tugas/' . $tindakLanjut->slug . '/unggah-tugas') }}"
-                                    class="btn btn-primary" href="">Unggah Tugas</a>
-                            @endif
-                            @if ($tindakLanjut->status == $selesaiEnum && $tindakLanjut->user_id == Auth::user()->id)
-                                <a class="btn btn-success" href="">Tugas Sudah Di Unggah</a>
-                            @endif
-                            @if ($tindakLanjut->status == $selesaiEnum)
-                                <x-adminlte-callout theme="success">
-                                    <p>{{ $tindakLanjut->tugas }}</p>
-                                    @foreach ($tindakLanjut->rapatTindakLanjutFile as $file)
-                                        @php
-                                            $extension = pathinfo($file->nama_file, PATHINFO_EXTENSION);
-                                            $icon = $icons[$extension] ?? [
-                                                'icon' => 'fas fa-file',
-                                                'color' => '#A9A9A9',
-                                            ];
-                                        @endphp
-                                        <i class="{{ $icon['icon'] }}" style="color: {{ $icon['color'] }}; fa-lg  mr-2"></i>
-                                        {{ $file->nama_file }}
-                                    @endforeach
-                                </x-adminlte-callout>
-                                @if ($tindakLanjut->rapatAgenda->pimpinan_id == Auth::user()->id)
-                                    <div class="text-center">
-                                        <a href="{{ url('/rapat/tindak-lanjut-rapat/tugas/' . $tindakLanjut->slug . '/simpan-tugas') }}"
-                                            class="btn btn-primary">Simpan Penugasan</a>
-                                        <a href="{{ url('/rapat/tindak-lanjut-rapat/tugas/' . $tindakLanjut->slug . '/kembalikan') }}"
-                                            class="btn btn-danger">Kembalikan</a>
-                                    </div>
-                                @endif
-                            @endif
-                        </x-adminlte-card>
-                    @endforeach
+                        </div>
+                    </div>
+                    <x-adminlte-datatable id="detail-tindak-lanjut" :heads="$heads" :config="$config">
+                        @foreach ($config['data'] as $row)
+                            <tr>
+                                @foreach ($row as $cell)
+                                    <td>{!! $cell !!}</td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </x-adminlte-datatable>
                 </div>
             </x-adminlte-card>
         </div>
@@ -103,5 +123,15 @@
 @endsection
 
 @push('js')
-    <script></script>
+    @if (session('swal'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "{{ session('swal.title') }}",
+                    text: "{{ session('swal.text') }}",
+                    icon: "{{ session('swal.icon') }}"
+                });
+            });
+        </script>
+    @endif
 @endpush

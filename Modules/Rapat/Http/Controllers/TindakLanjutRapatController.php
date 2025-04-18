@@ -23,27 +23,35 @@ class TindakLanjutRapatController extends Controller
     }
     public function index()
     {
-        $agendaRapat = RapatAgenda::with('rapatTindakLanjut')->showTindakLanjut(Auth::user()->id)->get();
+        // $agendaRapat = RapatAgenda::with('rapatTindakLanjut')->showTindakLanjut(Auth::user()->id)->get();
+        $tindakLanjutRapat = RapatTindakLanjut::listAgendaRapatHaveTugas(Auth::user()->id)->with('rapatAgenda')->get();
         $data = [];
         $statusTindakLanjut = [
             'SELESAI' => 'success',
             'BELUM SELESAI' => 'danger',
         ];
-        foreach ($agendaRapat as $key => $rapat) {
+        $status = '';
+        $btnDetail = '';
+        $addedAgendaIds = [];
+        $no = 0;
+        foreach ($tindakLanjutRapat as $key => $tindakLanjut) {
+            if (in_array($tindakLanjut->rapat_agenda_id, $addedAgendaIds)) {
+                continue;
+            }
+            $status =         '<div class="text-center">
+                 <span class="badge badge-' . $statusTindakLanjut[$tindakLanjut->rapatAgenda->status_tindak_lanjut] . '">
+                     ' . $tindakLanjut->rapatAgenda->status_tindak_lanjut  . '
+                 </span></div>';
+            $btnDetail = '<div class="text-center"> <a href="' . url('rapat/tindak-lanjut-rapat/' . $tindakLanjut->rapatAgenda->slug . '/detail') . '" class="btn btn-secondary">
+                        Detail</a></div>';
             $data[] = [
-                '<div class="text-center">' . ($key + 1) . '</div>',
-                $rapat->agenda_rapat,
-                '<div class="text-center">
-        <span class="badge badge-' . $statusTindakLanjut[$rapat->status_tindak_lanjut] . '">
-            ' . $rapat->status_tindak_lanjut . '
-        </span>
-        </div>',
-                '<div class="text-center">
-            <a href="' . url('rapat/tindak-lanjut-rapat/' . $rapat->slug . '/detail') . '" class="btn btn-secondary">
-                Detail
-            </a>
-        </div>',
+                '<div class="text-center">' . ($no + 1) . '</div>',
+                $tindakLanjut->rapatAgenda->agenda_rapat,
+                $status,
+                $btnDetail
             ];
+            $addedAgendaIds[] = $tindakLanjut->rapat_agenda_id;
+            $no++;
         }
         $heads = [
             ['label' => 'No', 'width' => 5, 'class' => 'text-center'],
@@ -53,16 +61,15 @@ class TindakLanjutRapatController extends Controller
         ];
         $config = [
             'data' => $data,
-            'order' => [[1, 'asc']],
             'columns' => [
                 ['className' => 'text-center'],
                 null,
-                ['className' => 'text-center', 'orderable' => false],
+                ['className' => 'text-center'],
                 ['className' => 'text-center', 'orderable' => false],
             ],
         ];
         return view('rapat::rapat.tindak-lanjut.index', [
-            'agendaRapat' => $agendaRapat,
+            'agendaRapat' => $tindakLanjutRapat,
             'config'         => $config,
             'heads'          => $heads
         ]);

@@ -35,6 +35,7 @@
                     ['label' => 'Nama Peserta', 'width' => 10],
                     ['label' => 'Tugas', 'width' => 10],
                     ['label' => 'Target Penyelesaian', 'width' => 10],
+                    ['label' => 'Tanggal Selesai', 'width' => 10],
                     ['label' => 'Status', 'width' => 10, 'class' => 'text-center'],
                     ['label' => 'Aksi', 'width' => 10, 'class' => 'text-center'],
                 ];
@@ -56,29 +57,39 @@
                         '" class="btn btn-warning"> <i class="fas fa-edit" data-bs-toggle="tooltip"
                             data-bs-placement="top" title="Ubah Tugas"></i></a>';
                     $aksi = $btnDetail;
-                    if ($tindakLanjut->user_id == Auth::user()->id) {
-                        $aksi .= $btnUpdate;
+                    if ($tindakLanjut->status == $belumSelesaiEnum && $tindakLanjut->user_id == Auth::user()->id) {
+                        $aksi =
+                            '<a href="' .
+                            url('/rapat/tindak-lanjut-rapat/tugas/' . $tindakLanjut->slug . '/unggah-tugas') .
+                            '" class="btn btn-primary">Unggah Tugas</a>';
                     }
-                    if ($tindakLanjut->status == $belumSelesaiEnum) {
+                    if (
+                        $tindakLanjut->status == $belumSelesaiEnum &&
+                        $tindakLanjut->rapatAgenda->pimpinan_id == Auth::user()->id
+                    ) {
                         $aksi = '-';
+                    }
+                    if ($tindakLanjut->status == $selesaiEnum && $tindakLanjut->user_id == Auth::user()->id) {
+                        $aksi .= $btnUpdate;
                     }
                     $data[] = [
                         $key + 1,
                         $tindakLanjut->user->name,
                         $tindakLanjut->deskripsi_tugas,
                         $tindakLanjut->batas_waktu,
+                        $tindakLanjut->tanggal_selesai ? $tindakLanjut->tanggal_selesai : '-',
                         $status,
                         $aksi,
                     ];
                 }
                 $config = [
                     'data' => $data,
-                    'order' => [[1, 'asc']],
                     'columns' => [
                         ['className' => 'text-center'],
                         null,
                         ['orderable' => false],
                         null,
+                        ['className' => 'text-center'],
                         ['className' => 'text-center'],
                         ['className' => 'text-center', 'orderable' => false],
                     ],

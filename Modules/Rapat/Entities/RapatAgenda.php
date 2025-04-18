@@ -33,19 +33,19 @@ class RapatAgenda extends Model
             ->orWhere('user_id', $userId);
         return $query;
     }
-    public function scopeShowTindakLanjut($query, $userId)
-    {
-        $query->whereHas('rapatTindakLanjut', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })
-            ->orWhere('pimpinan_id', $userId)
-            ->orWhere(function ($q) use ($userId) {
-                $q->where('user_id', $userId)
-                    ->whereHas('rapatTindakLanjut');
-            });
+    // public function scopeShowTindakLanjut($query, $userId)
+    // {
+    //     $query->whereHas('rapatTindakLanjut', function ($q) use ($userId) {
+    //         $q->where('user_id', $userId);
+    //     })
+    //         ->orWhere('pimpinan_id', $userId)
+    //         ->orWhere(function ($q) use ($userId) {
+    //             $q->where('user_id', $userId)
+    //                 ->whereHas('rapatTindakLanjut');
+    //         });
 
-        return $query;
-    }
+    //     return $query;
+    // }
     public function getStatusTindakLanjutAttribute()
     {
         if ($this->rapatTindakLanjut->contains('status', 'BELUM SELESAI')) {

@@ -81,7 +81,6 @@ trait AgendaRapatDatatables
 
         $config = [
             'data' => $data,
-            'order' => [[2, 'asc']],
             'columns' => [
                 ['className' => 'text-center'],
                 null,

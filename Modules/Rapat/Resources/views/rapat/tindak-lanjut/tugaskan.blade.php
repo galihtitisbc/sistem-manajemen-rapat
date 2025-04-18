@@ -35,7 +35,7 @@
                 @enderror
             </div>
             <div class="mb-3">
-                <label for="deskripsi-date" class="form-label">Batas Waktu :</label>
+                <label for="deskripsi-date" class="form-label">Target Penyelesaian :</label>
                 <input type="date" name="batas_waktu" class="form-control @error('batas_waktu') is-invalid @enderror"
                     id="deskripsi-date" value="{{ old('batas_waktu') }}">
                 @error('batas_waktu')

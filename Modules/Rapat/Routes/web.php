@@ -36,10 +36,12 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::prefix('tindak-lanjut-rapat')->group(function () {
             Route::get('/', [TindakLanjutRapatController::class, 'index']);
             Route::get('/{rapatAgenda:slug}/detail', [TindakLanjutRapatController::class, 'show']);
+            Route::get('/{rapatTindakLanjut:slug}/detail/tugas', [TindakLanjutRapatController::class, 'detailTugas']);
             Route::get('/tugas/{rapatTindakLanjut:slug}/unggah-tugas', [TindakLanjutRapatController::class, 'showUploadTugas']);
             Route::post('/tugas/{rapatTindakLanjut:slug}/unggah-tugas', [TindakLanjutRapatController::class, 'uploadTugas']);
             Route::get('/tugas/{rapatTindakLanjut:slug}/ubah-tugas', [TindakLanjutRapatController::class, 'showEditTugas']);
             Route::put('/tugas/{rapatTindakLanjut:slug}/ubah-tugas', [TindakLanjutRapatController::class, 'editTugas']);
+            Route::post('/detail/simpan-tugas', [TindakLanjutRapatController::class, 'simpanTugas']);
         });
     });
 });

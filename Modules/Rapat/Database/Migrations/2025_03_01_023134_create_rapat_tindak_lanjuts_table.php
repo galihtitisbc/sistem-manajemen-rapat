@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Modules\Rapat\Http\Helper\KriteriaPenilaian;
 
 class CreateRapatTindakLanjutsTable extends Migration
 {
@@ -23,7 +24,8 @@ class CreateRapatTindakLanjutsTable extends Migration
             $table->enum('status', ['SELESAI', 'BELUM SELESAI'])->default('BELUM SELESAI');
             $table->string('tugas')->nullable();
             $table->timestamp('tanggal_selesai')->nullable();
-            $table->enum('penilaian', ['MELEBIHI EKSPETASI', 'SESUAI EKSPETASI', "TIDAK SESUAI EKSPETASI", "BELUM DINILAI"])->default("BELUM DINILAI");
+            // $table->enum('penilaian', ['MELEBIHI EKSPETASI', 'SESUAI EKSPETASI', "TIDAK SESUAI EKSPETASI", "BELUM DINILAI"])->default("BELUM DINILAI");
+            $table->enum('penilaian', [KriteriaPenilaian::BELUM_DINILAI->value, KriteriaPenilaian::MELEBIHI_EKSPETASI->value, KriteriaPenilaian::SESUAI_EKSPETASI->value, KriteriaPenilaian::TIDAK_SESUAI_EKSPETASI->value])->default(KriteriaPenilaian::BELUM_DINILAI->value);
             $table->text('kendala')->nullable();
             $table->text('komentar')->nullable();
             $table->timestamps();

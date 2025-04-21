@@ -13,6 +13,7 @@ use Modules\Rapat\Http\Helper\FlashMessage;
 use Modules\Rapat\Http\Requests\CreateTugasPesertaRapatRequest;
 use Modules\Rapat\Http\Requests\UploadTugasTindakLanjutRapatRequest;
 use Modules\Rapat\Http\Service\Implementation\TindakLanjutRapatService;
+use Modules\Rapat\Rules\EnumKriteriaPenilaianRule;
 
 class TindakLanjutRapatController extends Controller
 {
@@ -159,6 +160,28 @@ class TindakLanjutRapatController extends Controller
             return redirect()->to('/rapat/tindak-lanjut-rapat/' . $rapatTindakLanjut->rapatAgenda->slug . '/detail');
         }
     }
+    public function detailTugas(RapatTindakLanjut $rapatTindakLanjut)
+    {
+        return response()->json($rapatTindakLanjut->load(['rapatTindakLanjutFile', 'rapatAgenda']));
+    }
+    public function simpanTugas(Request $request)
+    {
+        $validated = $request->validate([
+            'slug'              => ['required', 'exists:rapat_tindak_lanjuts,slug'],
+            'kriteria_penilaian' => ['required', new EnumKriteriaPenilaianRule],
+            'komentar_penugasan' => 'nullable',
+        ]);
+        try {
+            $this->tindakLanjutRapatService->simpanTugas($validated);
+            FlashMessage::success('Penilaian Berhasil Di Simpan');
+            return redirect()->back();
+        } catch (\Throwable $e) {
+            FlashMessage::error("Penilaian Gagal Di Simpan");
+            return redirect()->back();
+        }
+    }
+
+    // untuk cek apakah user adalah peserta
     function isUserArePesertaRapat(RapatAgenda $rapatAgenda, User $user)
     {
         if (!$rapatAgenda->rapatAgendaPeserta->contains($user)) {

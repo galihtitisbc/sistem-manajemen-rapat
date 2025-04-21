@@ -36,7 +36,7 @@ class RapatController extends Controller
     public function create()
     {
         $users       = User::with(['rapatAgendaPeserta', 'kepanitiaans'])->get();
-        $kepanitiaan = Kepanitiaan::with('users')->get();
+        $kepanitiaan = Kepanitiaan::with('users')->where('status', 'AKTIF')->get();
         return view('rapat::rapat.create', [
             'users'        => $users,
             'kepanitiaans' => $kepanitiaan,

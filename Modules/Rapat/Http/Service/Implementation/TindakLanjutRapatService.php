@@ -6,6 +6,7 @@ use App\Models\Core\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Modules\Rapat\Entities\RapatAgenda;
+use Modules\Rapat\Entities\RapatTindakLanjut;
 use Modules\Rapat\Http\Helper\StatusTindakLanjut;
 use Modules\Rapat\Http\Requests\CreateTugasPesertaRapatRequest;
 
@@ -53,7 +54,6 @@ class TindakLanjutRapatService
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            dd($e->getMessage());
         }
     }
     public function editTugas($tindakLanjutRapat, $request)
@@ -86,7 +86,21 @@ class TindakLanjutRapatService
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            dd($e->getMessage());
+        }
+    }
+    public function simpanTugas($data)
+    {
+        try {
+            DB::beginTransaction();
+            $tindakLanjut = RapatTindakLanjut::where('slug', $data['slug'])->firstOrFail();
+            $tindakLanjut->update([
+                'penilaian' => $data['kriteria_penilaian'],
+                'komentar' => $data['komentar_penugasan'],
+            ]);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            dd($th->getMessage());
         }
     }
 }

@@ -88,11 +88,10 @@ class TindakLanjutRapatService
             DB::rollBack();
         }
     }
-    public function simpanTugas($data)
+    public function simpanTugas($data, $tindakLanjut)
     {
         try {
             DB::beginTransaction();
-            $tindakLanjut = RapatTindakLanjut::where('slug', $data['slug'])->firstOrFail();
             $tindakLanjut->update([
                 'penilaian' => $data['kriteria_penilaian'],
                 'komentar' => $data['komentar_penugasan'],

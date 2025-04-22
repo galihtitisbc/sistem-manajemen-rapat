@@ -35,23 +35,7 @@
                 @endforeach
             </x-adminlte-datatable>
         </div>
-        {{-- <div class="col-lg-9 mx-auto mt-5">
-            <h6 class="mb-4">Peserta Rapat :</h6>
-            @foreach ($rapat->rapatAgendaPeserta as $peserta)
-                <div class="daftar-peserta col-11 mx-auto">
-                    <div class="peserta d-flex justify-content-between align-items-center ">
-                        <p style="font-size: 1.2rem;">{{ $peserta->name }}</p>
-                        @if ($peserta->pivot->is_penugasan == false)
-                            <a href="{{ url('/rapat/agenda-rapat/' . $rapat->slug . '/tugaskan/' . $peserta->id) }}"
-                                class="btn btn-primary">Tugaskan</a>
-                        @else
-                            <button class="btn btn-danger">Sudah Ditugaskan</button>
-                        @endif
-                    </div>
-                    <hr>
-                </div>
-            @endforeach
-        </div> --}}
+
     </x-adminlte-card>
 @endsection
 

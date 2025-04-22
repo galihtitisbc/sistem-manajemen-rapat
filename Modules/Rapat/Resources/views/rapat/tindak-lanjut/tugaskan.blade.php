@@ -1,8 +1,8 @@
 @extends('adminlte::page')
-@section('title', 'Rapat')
+@section('title', 'Tugaskan Peserta Rapat')
 {{-- @section('plugins.Select2', true) --}}
 @section('content_header')
-    <h1 class="m-0 text-dark"></h1>
+    <h5 class="m-0 text-dark">Tugaskan Peserta Rapat</h5>
 @stop
 
 @push('css')

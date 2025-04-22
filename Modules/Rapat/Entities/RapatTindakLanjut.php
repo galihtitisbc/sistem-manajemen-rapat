@@ -29,7 +29,7 @@ class RapatTindakLanjut extends Model
 
     public function scopeUserHaveTugas($query, $user, $rapatAgenda)
     {
-        $query->when($rapatAgenda->pimpinan_id == $user->id || $rapatAgenda->user_id == $user->id, function ($q) use ($rapatAgenda) {
+        $query->when($rapatAgenda->pimpinan_id == $user->id || $rapatAgenda->user_id == $user->id || $rapatAgenda->notulis_id == $user->id, function ($q) use ($rapatAgenda) {
             $q->where('rapat_agenda_id', $rapatAgenda->id);
         }, function ($q) use ($user) {
             $q->where('user_id', $user->id);

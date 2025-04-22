@@ -54,10 +54,10 @@
                         KriteriaPenilaian::from($tindakLanjut->penilaian)->label() .
                         '</span>';
                     $btnDetail =
-                        '<button class="btn btn-success mx-2 btn-detail" data-id="' .
-                        $tindakLanjut->slug .
-                        '"> <i class="fas fa-eye" data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Detail Rapat"></i></button>';
+                        '<a href="' .
+                        url('/rapat/tindak-lanjut-rapat/' . $tindakLanjut->slug . '/detail/tugas') .
+                        '" class="btn btn-success mx-2 btn-detail"> <i class="fas fa-eye" data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Detail Rapat"></i></a>';
                     $btnUpdate =
                         '<a href="' .
                         url('/rapat/tindak-lanjut-rapat/tugas/' . $tindakLanjut->slug . '/ubah-tugas') .
@@ -76,8 +76,15 @@
                     ) {
                         $aksi = '-';
                     }
-                    if ($tindakLanjut->status == $selesaiEnum && $tindakLanjut->user_id == Auth::user()->id) {
+                    if (
+                        $tindakLanjut->status == $selesaiEnum &&
+                        $tindakLanjut->user_id == Auth::user()->id &&
+                        $tindakLanjut->penilaian == KriteriaPenilaian::BELUM_DINILAI->value
+                    ) {
                         $aksi .= $btnUpdate;
+                    }
+                    if ($tindakLanjut->rapatAgenda->notulis_id == Auth::user()->id) {
+                        $aksi = '-';
                     }
                     $data[] = [
                         $key + 1,
@@ -116,75 +123,6 @@
                         @endforeach
                     </x-adminlte-datatable>
                     <!-- Modal -->
-                    <div class="modal fade" id="detail-modal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Detail Tugas</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="tugas">
-                                        <div class="mb-3">
-                                            <div class="d-flex justify-content-between">
-                                                <strong class="me-2">Deskripsi Tugas:</strong>
-                                                <span><a id="tugas-link"></a></span>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <div class="w-75">
-                                                <strong class="me-2">File yang dilampirkan:</strong>
-                                                <ul class="list-group list-group-flush">
-                                                    <li class="list-group-item">An item</li>
-                                                    <li class="list-group-item">A second item</li>
-                                                    <li class="list-group-item">A third item</li>
-                                                    <li class="list-group-item">A fourth item</li>
-                                                    <li class="list-group-item">And a fifth one</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="kendala-penugasan">Kendala Saat Mengerjakan Tugas :</label>
-                                            <textarea class="form-control" id="kendala-penugasan" rows="3"></textarea>
-                                        </div>
-                                    </div>
-                                    @if (Auth::user()->id == $rapat->pimpinan_id)
-                                    @endif
-
-                                    <form action=" {{ url('/rapat/tindak-lanjut-rapat/detail/simpan-tugas') }}"
-                                        method="POST">
-                                        @csrf
-                                        <div class="form-group">
-                                            <label for="komentar-penugasan">Komentar Untuk Tugas Yang Di Kirimkan :</label>
-                                            <textarea class="form-control" id="komentar-penugasan" name="komentar_penugasan" rows="3"></textarea>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="penilaian">Pilih Kriteria Penilaian :</label>
-                                            <input type="hidden" name="slug" id="slug-tugas">
-                                            <select name="kriteria_penilaian" class="form-control" id="kriteria-penilaian">
-                                                <option value="">Pilih Kriteria Penilaian</option>
-                                                <option value="{{ KriteriaPenilaian::MELEBIHI_EKSPETASI->value }}">
-                                                    {{ KriteriaPenilaian::MELEBIHI_EKSPETASI->label() }}</option>
-                                                <option value="{{ KriteriaPenilaian::SESUAI_EKSPETASI->value }}">
-                                                    {{ KriteriaPenilaian::SESUAI_EKSPETASI->label() }}</option>
-                                                <option value="{{ KriteriaPenilaian::TIDAK_SESUAI_EKSPETASI->value }}">
-                                                    {{ KriteriaPenilaian::TIDAK_SESUAI_EKSPETASI->label() }}</option>
-                                            </select>
-                                        </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                                    @if (Auth::user()->id == $rapat->pimpinan_id)
-                                        <button type="submit" class="btn btn-success">Simpan</button>
-                                    @endif
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </x-adminlte-card>
         </div>
@@ -192,54 +130,7 @@
 @endsection
 
 @push('js')
-    <script>
-        $(document).on('click', '.btn-detail', function() {
-            const slug = $(this).attr('data-id');
 
-            $.ajax({
-                url: `/rapat/tindak-lanjut-rapat/${slug}/detail/tugas`,
-                method: 'GET',
-                success: function(data) {
-                    const tugasLink = data.link ?? null;
-                    if (tugasLink) {
-                        $('#tugas-link')
-                            .attr('href', tugasLink)
-                            .text(tugasLink);
-                    } else {
-                        $('#tugas-link')
-                            .removeAttr('href')
-                            .text('Tidak ada link');
-                    }
-
-                    // lampiran
-                    const lampiranList = $('.tugas ul.list-group');
-                    lampiranList.empty();
-
-                    if (Array.isArray(data.rapat_tindak_lanjut_file) && data.rapat_tindak_lanjut_file
-                        .length > 0) {
-                        data.rapat_tindak_lanjut_file.forEach(file => {
-                            const fileName = file.nama_file ?? 'File tanpa nama';
-                            const fileUrl = `/storage/tindakLanjut/${fileName}`;
-                            lampiranList.append(`
-                    <li class="list-group-item">
-                        <a href="${fileUrl}" target="_blank" download>${fileName}</a>
-                    </li>
-                `);
-                        });
-                    } else {
-                        lampiranList.append(
-                            '<li class="list-group-item text-muted">Tidak ada lampiran</li>');
-                    }
-
-                    // kendala
-                    const kendala = data.kendala ?? '';
-                    $('#kendala-penugasan').val(kendala);
-                    $('#slug-tugas').val(data.slug);
-                    $('#detail-modal').modal('show');
-                }
-            });
-        });
-    </script>
     @if (session('swal'))
         <script>
             document.addEventListener("DOMContentLoaded", function() {

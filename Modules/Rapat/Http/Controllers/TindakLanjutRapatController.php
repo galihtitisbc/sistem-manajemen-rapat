@@ -162,22 +162,24 @@ class TindakLanjutRapatController extends Controller
     }
     public function detailTugas(RapatTindakLanjut $rapatTindakLanjut)
     {
-        return response()->json($rapatTindakLanjut->load(['rapatTindakLanjutFile', 'rapatAgenda']));
+        $rapatTindakLanjut->load(['rapatTindakLanjutFile', 'rapatAgenda']);
+        return view('rapat::rapat.tindak-lanjut.detail-tugas', [
+            'tindakLanjut' => $rapatTindakLanjut
+        ]);
     }
-    public function simpanTugas(Request $request)
+    public function simpanTugas(RapatTindakLanjut $rapatTindakLanjut, Request $request)
     {
         $validated = $request->validate([
-            'slug'              => ['required', 'exists:rapat_tindak_lanjuts,slug'],
             'kriteria_penilaian' => ['required', new EnumKriteriaPenilaianRule],
             'komentar_penugasan' => 'nullable',
         ]);
         try {
-            $this->tindakLanjutRapatService->simpanTugas($validated);
+            $this->tindakLanjutRapatService->simpanTugas($validated, $rapatTindakLanjut);
             FlashMessage::success('Penilaian Berhasil Di Simpan');
-            return redirect()->back();
+            return redirect()->to('/rapat/tindak-lanjut-rapat/' . $rapatTindakLanjut->rapatAgenda->slug . '/detail');
         } catch (\Throwable $e) {
             FlashMessage::error("Penilaian Gagal Di Simpan");
-            return redirect()->back();
+            return redirect()->to('/rapat/tindak-lanjut-rapat/' . $rapatTindakLanjut->rapatAgenda->slug . '/detail');
         }
     }
 

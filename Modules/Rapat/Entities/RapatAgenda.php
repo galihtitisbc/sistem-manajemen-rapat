@@ -6,6 +6,7 @@ use App\Models\Core\User;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Rapat\Http\Helper\StatusTindakLanjut;
 
 class RapatAgenda extends Model
 {
@@ -48,10 +49,10 @@ class RapatAgenda extends Model
     // }
     public function getStatusTindakLanjutAttribute()
     {
-        if ($this->rapatTindakLanjut->contains('status', 'BELUM SELESAI')) {
-            return 'BELUM SELESAI';
+        if ($this->rapatTindakLanjut->contains('status', StatusTindakLanjut::BELUM_SELESAI->value)) {
+            return StatusTindakLanjut::BELUM_SELESAI->value;
         }
-        return 'SELESAI';
+        return StatusTindakLanjut::SELESAI->value;
     }
     public function user()
     {

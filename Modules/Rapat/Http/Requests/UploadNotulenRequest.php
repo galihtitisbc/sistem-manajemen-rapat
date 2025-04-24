@@ -20,7 +20,7 @@ class UploadNotulenRequest extends FormRequest
             'notulen_file' => 'nullable|array|required_without:catatan_rapat',
             'notulen_file.*' => 'file|mimes:pdf,doc,docx|max:5120',
             'dokumentasi_file' => 'required|array',
-            'dokumentasi_file.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'dokumentasi_file.*' => 'file|mimes:jpg,jpeg,png,PNG|max:2048',
         ];
     }
     public function messages(): array

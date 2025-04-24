@@ -9,8 +9,8 @@ class RapatNotulenFile extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
-
+    protected $guarded = ['id'];
+    public $timestamps = false;
     // protected static function newFactory()
     // {
     //     return \Modules\Rapat\Database\factories\RapatNotulenFileFactory::new();

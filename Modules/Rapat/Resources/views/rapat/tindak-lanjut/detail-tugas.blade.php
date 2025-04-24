@@ -62,7 +62,7 @@
                 </ul>
             </div>
         </div>
-        <div class="row col-lg-8 mx-auto">
+        <div class="row col-lg-8 mx-auto mt-4">
             <div class="col-lg-3 col-sm-4 col-md-4 font-weight-bold">
                 Kendala Dalam Mengerjakan Tugas :
                 <hr>

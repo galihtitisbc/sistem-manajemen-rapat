@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Modules\Rapat\Http\Helper\KriteriaPenilaian;
+use Modules\Rapat\Http\Helper\StatusTindakLanjut;
 
 class CreateRapatTindakLanjutsTable extends Migration
 {
@@ -21,7 +22,7 @@ class CreateRapatTindakLanjutsTable extends Migration
             $table->text('deskripsi_tugas');
             $table->text('slug');
             $table->date('batas_waktu');
-            $table->enum('status', ['SELESAI', 'BELUM SELESAI'])->default('BELUM SELESAI');
+            $table->enum('status', [StatusTindakLanjut::BELUM_SELESAI->value, StatusTindakLanjut::SELESAI->value])->default(StatusTindakLanjut::BELUM_SELESAI->value);
             $table->string('tugas')->nullable();
             $table->timestamp('tanggal_selesai')->nullable();
             // $table->enum('penilaian', ['MELEBIHI EKSPETASI', 'SESUAI EKSPETASI', "TIDAK SESUAI EKSPETASI", "BELUM DINILAI"])->default("BELUM DINILAI");

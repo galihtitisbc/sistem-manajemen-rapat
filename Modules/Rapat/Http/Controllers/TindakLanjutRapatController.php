@@ -29,7 +29,7 @@ class TindakLanjutRapatController extends Controller
         $data = [];
         $statusTindakLanjut = [
             'SELESAI' => 'success',
-            'BELUM SELESAI' => 'danger',
+            'BELUM_SELESAI' => 'danger',
         ];
         $status = '';
         $btnDetail = '';
@@ -116,8 +116,9 @@ class TindakLanjutRapatController extends Controller
     public function createTugasPesertaRapat(RapatAgenda $rapatAgenda, User $user, CreateTugasPesertaRapatRequest $request)
     {
         $this->isUserArePesertaRapat($rapatAgenda, $user);
+        $validated = $request->validated();
         try {
-            $this->tindakLanjutRapatService->createTugasPesertaRapat($rapatAgenda, $user, $request);
+            $this->tindakLanjutRapatService->createTugasPesertaRapat($rapatAgenda, $user, $validated);
             FlashMessage::success('Tugas Berhasil Ditambahkan');
             return redirect()->to('/rapat/agenda-rapat/' . $rapatAgenda->slug . '/tugas');
         } catch (\Throwable $e) {
@@ -134,8 +135,9 @@ class TindakLanjutRapatController extends Controller
     }
     public function uploadTugas(RapatTindakLanjut $rapatTindakLanjut, UploadTugasTindakLanjutRapatRequest $request)
     {
+        $validated = $request->validated();
         try {
-            $this->tindakLanjutRapatService->uploadTugas($rapatTindakLanjut, $request);
+            $this->tindakLanjutRapatService->uploadTugas($rapatTindakLanjut, $validated);
             FlashMessage::success('Tugas Berhasil Di Unggah');
             return redirect()->to('/rapat/tindak-lanjut-rapat/' . $rapatTindakLanjut->rapatAgenda->slug . '/detail');
         } catch (\Throwable $e) {
@@ -151,8 +153,9 @@ class TindakLanjutRapatController extends Controller
     }
     public function editTugas(RapatTindakLanjut $rapatTindakLanjut, UploadTugasTindakLanjutRapatRequest $request)
     {
+        $validated = $request->validated();
         try {
-            $this->tindakLanjutRapatService->editTugas($rapatTindakLanjut, $request);
+            $this->tindakLanjutRapatService->editTugas($rapatTindakLanjut, $validated);
             FlashMessage::success('Tugas Berhasil Di Edit');
             return redirect()->to('/rapat/tindak-lanjut-rapat/' . $rapatTindakLanjut->rapatAgenda->slug . '/detail');
         } catch (\Throwable $e) {

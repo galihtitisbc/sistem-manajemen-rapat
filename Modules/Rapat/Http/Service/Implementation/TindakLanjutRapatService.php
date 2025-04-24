@@ -12,14 +12,14 @@ use Modules\Rapat\Http\Requests\CreateTugasPesertaRapatRequest;
 
 class TindakLanjutRapatService
 {
-    public function createTugasPesertaRapat(RapatAgenda $rapatAgenda, User $user, CreateTugasPesertaRapatRequest $request)
+    public function createTugasPesertaRapat(RapatAgenda $rapatAgenda, User $user, array $data)
     {
         try {
             DB::beginTransaction();
             $rapatAgenda->rapatTindakLanjut()->create([
                 'user_id'           =>  $user->id,
-                'deskripsi_tugas'   =>  $request->deskripsi,
-                'batas_waktu'       =>  $request->batas_waktu
+                'deskripsi_tugas'   =>  $data['deskripsi'],
+                'batas_waktu'       =>  $data['batas_waktu']
             ]);
             $rapatAgenda->rapatAgendaPeserta()->syncWithoutDetaching([
                 $user->id => ['is_penugasan' => 1]
@@ -30,13 +30,13 @@ class TindakLanjutRapatService
             throw $th;
         }
     }
-    public function uploadTugas($tindakLanjutRapat, $request)
+    public function uploadTugas($tindakLanjutRapat, $data)
     {
         try {
             DB::beginTransaction();
-            if ($request->hasFile('file_tugas')) {
+            if (isset($data['file_tugas'])) {
                 $fileTugas = [];
-                foreach ($request->file('file_tugas') as $index => $fileTugas) {
+                foreach ($data['file_tugas'] as $index => $fileTugas) {
                     $fileName = time() . "_{$index}_" . $fileTugas->getClientOriginalName();
                     Storage::putFileAs('tindakLanjut', $fileTugas, $fileName);
                     $namafileTugas[] = [
@@ -47,8 +47,8 @@ class TindakLanjutRapatService
             }
             $tindakLanjutRapat->update([
                 'status'            => StatusTindakLanjut::SELESAI->value,
-                'tugas'             =>  $request->tugas,
-                'kendala'           => $request->kendala,
+                'tugas'             =>  $data['tugas'],
+                'kendala'           => $data['kendala'],
                 'tanggal_selesai'   => now()
             ]);
             DB::commit();
@@ -56,11 +56,11 @@ class TindakLanjutRapatService
             DB::rollBack();
         }
     }
-    public function editTugas($tindakLanjutRapat, $request)
+    public function editTugas($tindakLanjutRapat, $data)
     {
         try {
             DB::beginTransaction();
-            if ($request->hasFile('file_tugas')) {
+            if (isset($data['file_tugas'])) {
                 if ($tindakLanjutRapat->rapatTindakLanjutFile->isNotEmpty()) {
                     foreach ($tindakLanjutRapat->rapatTindakLanjutFile as $file) {
                         Storage::delete('tindakLanjut/' . $file->nama_file);
@@ -68,7 +68,7 @@ class TindakLanjutRapatService
                     $tindakLanjutRapat->rapatTindakLanjutFile()->delete();
                 }
                 $fileTugas = [];
-                foreach ($request->file('file_tugas') as $index => $fileTugas) {
+                foreach ($data['file_tugas'] as $index => $fileTugas) {
                     $fileName = time() . "_{$index}_" . $fileTugas->getClientOriginalName();
                     Storage::putFileAs('tindakLanjut', $fileTugas, $fileName);
                     $namafileTugas[] = [
@@ -79,8 +79,8 @@ class TindakLanjutRapatService
             }
             $tindakLanjutRapat->update([
                 'status'            => StatusTindakLanjut::SELESAI->value,
-                'tugas'             =>  $request->tugas,
-                'kendala'           => $request->kendala,
+                'tugas'             =>  $data['tugas'],
+                'kendala'           => $data['kendala'],
                 'tanggal_selesai'   => now()
             ]);
             DB::commit();

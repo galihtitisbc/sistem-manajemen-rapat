@@ -143,7 +143,7 @@
                                 <td class="text-center">{{ $peserta->name }}</td>
                                 <td class="text-center">082232123</td>
                                 <td class="text-center"><span
-                                        class="badge bg-{{ $statusPeserta[$peserta->pivot->status] }}">{{ $peserta->pivot->status }}</span>
+                                        class="badge bg-{{ $statusPeserta[$peserta->pivot->status] }}">{{ \Modules\Rapat\Http\Helper\StatusPesertaRapat::from($peserta->pivot->status)->label() }}</span>
                                 </td>
                             </tr>
                         @endforeach

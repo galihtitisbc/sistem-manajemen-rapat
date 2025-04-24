@@ -133,7 +133,7 @@
                     <hr>
                     <x-adminlte-card title="Unggah File Notulen ( Jika Ada ) :" theme="primary">
                         <div class="form-group">
-                            <input type="file" class="form-control-file" name="notulen_file" multiple
+                            <input type="file" class="form-control-file" name="notulen_file[]" multiple
                                 id="exampleFormControlFile1">
                         </div>
                     </x-adminlte-card>
@@ -141,7 +141,7 @@
                 <div class="dokumentasi-upload mt-5">
                     <x-adminlte-card title="Unggah Dokumentasi Rapat :" theme="primary">
                         <div class="form-group">
-                            <input type="file" name="dokumentasi_file" class="form-control-file" multiple
+                            <input type="file" name="dokumentasi_file[]" class="form-control-file" multiple
                                 id="exampleFormControlFile1">
                         </div>
                     </x-adminlte-card>

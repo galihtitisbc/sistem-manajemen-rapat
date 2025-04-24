@@ -85,4 +85,8 @@ class RapatAgenda extends Model
     {
         return $this->belongsTo(Kepanitiaan::class, 'kepanitiaan_id');
     }
+    public function rapatNotulen()
+    {
+        return $this->hasOne(RapatNotulen::class, 'rapat_agenda_id');
+    }
 }

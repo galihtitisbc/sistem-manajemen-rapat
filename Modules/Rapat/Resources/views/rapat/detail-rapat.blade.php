@@ -13,9 +13,9 @@
         \Carbon\Carbon::setLocale('id');
         $statusPeserta = [
             'BERSEDIA' => 'primary',
-            'TIDAK BERSEDIA' => 'danger',
+            'TIDAK_BERSEDIA' => 'danger',
             'HADIR' => 'success',
-            'TIDAK HADIR' => 'secondary',
+            'TIDAK_HADIR' => 'secondary',
             'MENUNGGU' => 'warning',
         ];
         $statusRapat = [
@@ -42,19 +42,19 @@
             <h4 class="text-center mb-4">{{ $rapat->agenda_rapat }}</h4>
             <x-adminlte-card>
                 <div class="row d-flex justify-content-between">
-                    <div class="col">
+                    <div class="col-lg-4 col-sm-12 col-md-12">
                         <b class="text-primary mb-2">Status</b>
                         <div class="p-2 mb-1 bg-{{ $statusRapat[$rapat->status][0] }} text-center">
                             {{ $statusRapat[$rapat->status][1] }}
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-lg-4 col-sm-12 col-md-12">
                         <b class="text-primary mb-2">Waktu</b>
                         <div class="p-2 mb-1 bg-primary text-center">
                             {{ \Carbon\Carbon::parse($rapat->waktu_mulai)->translatedFormat('l, d F Y H:i') }}
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-lg-4 col-sm-12 col-md-12">
                         <b class="text-primary mb-2">Tempat</b>
                         <div class="p-2 mb-1 bg-secondary text-center">{{ $rapat->tempat }}</div>
                     </div>
@@ -77,7 +77,7 @@
                     <hr>
                 </div>
                 <div class="col-8">
-                    <span>{{ $rapat->calendar_link }}</span>
+                    <span><a href="{{ $rapat->calendar_link }}" target="_blank">Google Calendar</a></span>
                     <hr>
                 </div>
                 <div class="col-4">

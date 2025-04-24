@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
         'permission' => \App\Http\Middleware\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
         'pimpinanRapat' => \Modules\Rapat\Http\Middleware\PimpinanRapatMiddleware::class,
-        'kepegawaian' => \Modules\Rapat\Http\Middleware\KepegawaianMiddleware::class
+        'kepegawaian' => \Modules\Rapat\Http\Middleware\KepegawaianMiddleware::class,
+        'notulis' => \Modules\Rapat\Http\Middleware\NotulisMiddleware::class
     ];
 }

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Modules\Rapat\Http\Helper\StatusPesertaRapat;
 
 class RapatPeserta extends Migration
 {
@@ -17,7 +18,7 @@ class RapatPeserta extends Migration
             $table->id();
             $table->foreignId('rapat_agenda_id')->constrained('rapat_agendas');
             $table->foreignId('user_id')->constrained('users');
-            $table->enum('status', ['BERSEDIA', 'TIDAK BERSEDIA', 'HADIR', 'TIDAK HADIR', 'MENUNGGU'])->default('MENUNGGU');
+            $table->enum('status', [StatusPesertaRapat::BERSEDIA->value, StatusPesertaRapat::TIDAK_BERSEDIA->value, StatusPesertaRapat::HADIR->value, StatusPesertaRapat::TIDAK_HADIR->value, StatusPesertaRapat::MENUNGGU->value])->default(StatusPesertaRapat::MENUNGGU->value);
             $table->boolean('is_penugasan')->default(false);
             $table->timestamps();
         });

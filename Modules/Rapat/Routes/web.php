@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Rapat\Http\Controllers\NotulisController;
 use Modules\Rapat\Http\Controllers\RapatController;
 use Modules\Rapat\Http\Controllers\RapatDashboardController;
 use Modules\Rapat\Http\Controllers\TindakLanjutRapatController;
@@ -29,9 +30,11 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
                 Route::get('/{rapatAgenda:slug}/edit', [RapatController::class, 'edit']);
                 Route::get('/{rapatAgenda:slug}/batal', [RapatController::class, 'ubahStatusRapat']);
             });
-            Route::get('/{rapatAgenda:slug}/tugas', [TindakLanjutRapatController::class, 'isiPenugasan']);
-            Route::get('/{rapatAgenda:slug}/tugaskan/{user}', [TindakLanjutRapatController::class, 'tugaskanPesertaRapat']);
-            Route::post('/{rapatAgenda:slug}/tugaskan/{user}', [TindakLanjutRapatController::class, 'createTugasPesertaRapat']);
+            Route::middleware(['notulis'])->group(function () {
+                Route::get('/{rapatAgenda:slug}/tugas', [TindakLanjutRapatController::class, 'isiPenugasan']);
+                Route::get('/{rapatAgenda:slug}/tugaskan/{user}', [TindakLanjutRapatController::class, 'tugaskanPesertaRapat']);
+                Route::post('/{rapatAgenda:slug}/tugaskan/{user}', [TindakLanjutRapatController::class, 'createTugasPesertaRapat']);
+            });
         });
         Route::prefix('tindak-lanjut-rapat')->group(function () {
             Route::get('/', [TindakLanjutRapatController::class, 'index']);
@@ -42,6 +45,12 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             Route::get('/tugas/{rapatTindakLanjut:slug}/ubah-tugas', [TindakLanjutRapatController::class, 'showEditTugas']);
             Route::put('/tugas/{rapatTindakLanjut:slug}/ubah-tugas', [TindakLanjutRapatController::class, 'editTugas']);
             Route::post('/{rapatTindakLanjut:slug}/detail/simpan-tugas', [TindakLanjutRapatController::class, 'simpanTugas']);
+        });
+        Route::prefix('agenda-rapat/notulis')->group(function () {
+            Route::middleware(['notulis'])->group(function () {
+                Route::get('/{rapatAgenda:slug}/unggah-notulen', [NotulisController::class, 'formUnggahNotulen']);
+                Route::post('/{rapatAgenda:slug}/unggah-notulen', [NotulisController::class, 'storeNotulen']);
+            });
         });
     });
 });

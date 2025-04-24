@@ -1,6 +1,8 @@
 <?php
+
 namespace Modules\Rapat\Http\Service\Implementation;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -14,6 +16,7 @@ class RapatService
     {
         try {
             DB::beginTransaction();
+            $googleCalendarLink = $this->generateGoogleCalendarLink($data);
             $agendaRapat = RapatAgenda::create([
                 'user_id'        => $data['user_id'],
                 'pimpinan_id'    => $data['pimpinan_id'],
@@ -25,7 +28,7 @@ class RapatService
                 'agenda_rapat'   => $data['agenda_rapat'],
                 'tempat'         => $data['tempat'],
                 'status'         => 'SCHEDULED',
-                'calendar_link'  => 'lorem ipsum',
+                'calendar_link'  => $googleCalendarLink,
             ]);
             if (isset($data['lampiran'])) {
                 //simpan lampiran ke storage
@@ -78,7 +81,6 @@ class RapatService
                 'waktu_selesai'  => $data['waktu_selesai'],
                 'agenda_rapat'   => $data['agenda_rapat'],
                 'tempat'         => $data['tempat'],
-                'calendar_link'  => 'lorem ipsum',
             ]);
             if (isset($data['lampiran'])) {
                 //hapus lampiran lama
@@ -108,5 +110,31 @@ class RapatService
             DB::rollBack();
             throw new Exception("Gagal Mengubah Agenda Rapat : " . $th->getMessage());
         }
+    }
+    function generateGoogleCalendarLink(array $data)
+    {
+        $title = urlencode($data['agenda_rapat']);
+        $location = urlencode($data['tempat']);
+        $details = urlencode('Agenda Rapat: ' . $data['agenda_rapat']);
+
+        $start = Carbon::parse($data['waktu_mulai']);
+        $end = '';
+        if (strtotime($data['waktu_selesai'])) {
+            $end = Carbon::parse($data['waktu_selesai']);
+        } else {
+            $end = $start->copy()->addHour();
+        }
+
+        $startFormatted = $start->format('Ymd\THis');
+        $endFormatted = $end->format('Ymd\THis');
+
+        $url = "https://calendar.google.com/calendar/u/0/r/eventedit?" .
+            "text={$title}" .
+            "&dates={$startFormatted}/{$endFormatted}" .
+            "&details={$details}" .
+            "&location={$location}" .
+            "&ctz=Asia/Jakarta";
+
+        return $url;
     }
 }

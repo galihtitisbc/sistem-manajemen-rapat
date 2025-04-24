@@ -5,6 +5,7 @@ namespace Modules\Rapat\Http\Traits;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Modules\Rapat\Entities\RapatAgenda;
+use Modules\Rapat\Http\Helper\StatusAgendaRapat;
 
 trait AgendaRapatDatatables
 {
@@ -47,8 +48,8 @@ trait AgendaRapatDatatables
                 }
             }
 
-            if (Auth::user()->id === $rapat->notulis_id && $rapat->status !== 'CANCELED') {
-                $aksi .= '<a href="#" class="btn btn-success btn-sm">Isi Notulen</a>';
+            if (Auth::user()->id === $rapat->notulis_id && $rapat->status !== 'CANCELED' && $rapat->status == StatusAgendaRapat::STARTED->value) {
+                $aksi .= '<a href="' . url('rapat/agenda-rapat/notulis/' . $rapat->slug . '/unggah-notulen') . '" class="btn btn-success btn-sm mx-2">Isi Notulen</a>';
             }
             $tugas = '';
             if (

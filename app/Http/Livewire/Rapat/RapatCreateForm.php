@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Livewire\Rapat;
 
 use App\Models\Core\User;
@@ -30,9 +31,10 @@ class RapatCreateForm extends Component
     public $customTempat;
     public $cariPeserta;
     public $selectedKepanitiaan;
+    public $pilihanWaktuSelesai;
     public function render()
     {
-        return view('livewire.rapat.rapat-create-form', );
+        return view('livewire.rapat.rapat-create-form',);
     }
     public function mount()
     {
@@ -57,7 +59,14 @@ class RapatCreateForm extends Component
         $this->pesertaRapat = $this->pesertaRapat->reject(function ($item) {
             return true;
         });
-
+    }
+    public function updatedPilihanWaktuSelesai($value)
+    {
+        if ($value === 'selesai') {
+            $this->waktuSelesai = "SELESAI";
+        } else if ($value !== 'manual') {
+            $this->waktuSelesai = Carbon::parse($this->waktuMulai)->addHour()->format('Y-m-d H:i:s');
+        }
     }
     public function updatedCariPeserta($value)
     {

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Livewire\Rapat;
 
 use Carbon\Carbon;
@@ -30,6 +31,7 @@ class RapatEditForm extends Component
     public $customTempat;
     public $cariPeserta;
     public $selectedKepanitiaan;
+    public $pilihanWaktuSelesai;
 
     public function render()
     {
@@ -49,6 +51,7 @@ class RapatEditForm extends Component
         $this->pimpinanRapat       = $this->agendaRapatLoad->pimpinan_id;
         $this->notulisRapat        = $this->agendaRapatLoad->notulis_id;
         $this->lampiranOld         = $this->agendaRapatLoad->rapatLampiran->pluck('nama_file')->toArray();
+        $this->pilihanWaktuSelesai = $this->agendaRapatLoad->waktu_selesai == null ? '' : 'manual';
     }
     protected function rules()
     {
@@ -61,6 +64,14 @@ class RapatEditForm extends Component
     public function updatedWaktuSelesai($value)
     {
         $this->waktuSelesai = Carbon::parse($value)->format('Y-m-d H:i:s');
+    }
+    public function updatedPilihanWaktuSelesai($value)
+    {
+        if ($value === 'selesai') {
+            $this->waktuSelesai = "SELESAI";
+        } else if ($value !== 'manual') {
+            $this->waktuSelesai = Carbon::parse($this->waktuMulai)->addHour()->format('Y-m-d H:i:s');
+        }
     }
     public function updatedCariPeserta($value)
     {

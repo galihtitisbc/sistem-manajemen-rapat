@@ -22,7 +22,7 @@ class CreateRapatAgendasTable extends Migration
             $table->string('nomor_surat');
             $table->string('slug');
             $table->dateTime('waktu_mulai');
-            $table->dateTime('waktu_selesai');
+            $table->dateTime('waktu_selesai')->nullable();
             $table->text('agenda_rapat');
             $table->string('tempat');
             $table->enum('status', [StatusAgendaRapat::STARTED->value, StatusAgendaRapat::CANCELLED->value, StatusAgendaRapat::COMPLETED->value, StatusAgendaRapat::SCHEDULED->value])->default(StatusAgendaRapat::SCHEDULED->value);

@@ -35,10 +35,21 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="mb-3">
-                        <label for="waktu-selesai" class="form-label">Waktu Selesai :</label>
-                        <input type="datetime-local" wire:model.debounce.250ms="waktuSelesai"
-                            class="form-control @error('waktu_selesai') is-invalid @enderror" id="waktu-mulai">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="waktu-selesai" class="form-label">Waktu Selesai :</label>
+                            @if ($waktuMulai !== null)
+                                <select wire:model="pilihanWaktuSelesai" class="form-control mb-2">
+                                    <option value="">-- Pilih --</option>
+                                    <option value="manual">Masukkan Tanggal</option>
+                                    <option value="selesai">Selesai</option>
+                                </select>
+                            @endif
+                        </div>
+                        @if ($pilihanWaktuSelesai === 'manual')
+                            <input type="datetime-local" wire:model.debounce.250ms="waktuSelesai"
+                                class="form-control @error('waktu_selesai') is-invalid @enderror" id="waktu-selesai">
+                        @endif
                         @error('waktu_selesai')
                             <div id="validationServer03Feedback" class="invalid-feedback">
                                 {{ $message }}

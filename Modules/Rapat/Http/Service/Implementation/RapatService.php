@@ -24,7 +24,7 @@ class RapatService
                 'kepanitiaan_id' => $data['kepanitiaan_id'] == "" ? null : $data['kepanitiaan_id'],
                 'nomor_surat'    => $data['nomor_surat'],
                 'waktu_mulai'    => $data['waktu_mulai'],
-                'waktu_selesai'  => $data['waktu_selesai'],
+                'waktu_selesai'  => $data['waktu_selesai'] == "SELESAI" ? null : $data['waktu_selesai'],
                 'agenda_rapat'   => $data['agenda_rapat'],
                 'tempat'         => $data['tempat'],
                 'status'         => 'SCHEDULED',
@@ -78,7 +78,7 @@ class RapatService
                 'kepanitiaan_id' => $data['kepanitiaan_id'] == "" ? null : $data['kepanitiaan_id'],
                 'nomor_surat'    => $data['nomor_surat'],
                 'waktu_mulai'    => $data['waktu_mulai'],
-                'waktu_selesai'  => $data['waktu_selesai'],
+                'waktu_selesai'  => $data['waktu_selesai'] == "SELESAI" ? null : $data['waktu_selesai'],
                 'agenda_rapat'   => $data['agenda_rapat'],
                 'tempat'         => $data['tempat'],
             ]);

@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Rapat\Http\Service\Implementation;
 
 use Carbon\Carbon;
@@ -32,14 +33,14 @@ class ZoomServiceImpl implements MeetingServiceInterface
         }
         try {
             $waktuMulai   = Carbon::parse($data->waktu_mulai)->setTimezone('UTC')->toIso8601String();
-            $waktuSelesai = Carbon::parse($data->waktu_selesai)->setTimezone('UTC')->toIso8601String();
+            $waktuSelesai = $data->waktu_selesai !== null ? Carbon::parse($data->waktu_selesai)->setTimezone('UTC')->toIso8601String() : "SELESAI";
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . Session::get('zoom_token'),
                 'Content-Type'  => 'application/json',
             ])->post('https://api.zoom.us/v2/users/me/meetings', [
                 "agenda"            => $data->agenda_rapat,
-                "duration"          => (int) Carbon::parse($waktuSelesai)->diffInSeconds(Carbon::parse($waktuMulai)) / 60,
+                "duration"          => (int) Carbon::parse($waktuSelesai !== "SELESAI" ? $waktuSelesai : $waktuMulai)->diffInSeconds(Carbon::parse($waktuMulai)) / 60,
                 "password"          => "123456",
                 "alternative_hosts" => $data->rapatAgendaPimpinan->email,
                 "settings"          => [

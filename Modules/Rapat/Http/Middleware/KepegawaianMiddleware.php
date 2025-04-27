@@ -4,6 +4,7 @@ namespace Modules\Rapat\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class KepegawaianMiddleware
 {
@@ -16,6 +17,10 @@ class KepegawaianMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
+        $user = Auth::user();
+        if (!$user->hasAnyRole(['kepegawaian'])) {
+            abort(403);
+        }
         return $next($request);
     }
 }

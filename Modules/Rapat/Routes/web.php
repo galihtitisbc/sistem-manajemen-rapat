@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Rapat\Http\Controllers\KepegawaianController;
 use Modules\Rapat\Http\Controllers\NotulisController;
 use Modules\Rapat\Http\Controllers\RapatController;
 use Modules\Rapat\Http\Controllers\RapatDashboardController;
@@ -50,6 +51,16 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             Route::middleware(['notulis'])->group(function () {
                 Route::get('/{rapatAgenda:slug}/unggah-notulen', [NotulisController::class, 'formUnggahNotulen']);
                 Route::post('/{rapatAgenda:slug}/unggah-notulen', [NotulisController::class, 'storeNotulen']);
+            });
+        });
+        Route::prefix('/panitia')->group(function () {
+            Route::get('/', [KepegawaianController::class, 'index']);
+            Route::middleware(['kepegawaian'])->group(function () {
+                Route::get('/create', [KepegawaianController::class, 'create']);
+                Route::post('/', [KepegawaianController::class, 'store']);
+                Route::get('/{kepanitiaan}/edit', [KepegawaianController::class, 'edit']);
+                Route::put('/{kepanitiaan}', [KepegawaianController::class, 'update']);
+                Route::patch('/{kepanitiaan}/change-status', [KepegawaianController::class, 'changeStatus']);
             });
         });
     });

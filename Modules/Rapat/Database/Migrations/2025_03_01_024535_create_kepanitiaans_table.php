@@ -20,7 +20,7 @@ class CreateKepanitiaansTable extends Migration
             $table->date('tanggal_mulai');
             $table->date('tanggal_berakhir');
             $table->string('tujuan');
-            $table->enum('status', ['AKTIF', 'NON AKTIF'])->default('AKTIF');
+            $table->enum('status', ['AKTIF', 'NON_AKTIF'])->default('AKTIF');
             $table->timestamps();
         });
     }

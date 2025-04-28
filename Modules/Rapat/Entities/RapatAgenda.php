@@ -3,14 +3,14 @@
 namespace Modules\Rapat\Entities;
 
 use App\Models\Core\User;
-use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Rapat\Http\Helper\StatusTindakLanjut;
+use Illuminate\Support\Str;
 
 class RapatAgenda extends Model
 {
-    use HasFactory, Sluggable;
+    use HasFactory;
 
     protected $guarded = ['id'];
 
@@ -18,13 +18,18 @@ class RapatAgenda extends Model
     {
         return \Modules\Rapat\Database\factories\RapatAgendaFactory::new();
     }
-    public function sluggable(): array
+    protected static function boot()
     {
-        return [
-            'slug' => [
-                'source' => 'agenda_rapat',
-            ],
-        ];
+        parent::boot();
+        static::creating(function ($rapatAgenda) {
+            $rapatAgenda->slug = static::generateUniqueSlug($rapatAgenda->agenda_rapat);
+        });
+
+        static::updating(function ($rapatAgenda) {
+            if ($rapatAgenda->isDirty('agenda_rapat')) {
+                $rapatAgenda->slug = static::generateUniqueSlug($rapatAgenda->agenda_rapat, $rapatAgenda->id);
+            }
+        });
     }
     public function scopeUserIsPesertaOrCreator($query, $userId)
     {
@@ -89,5 +94,21 @@ class RapatAgenda extends Model
     public function rapatNotulen()
     {
         return $this->hasOne(RapatNotulen::class, 'rapat_agenda_id');
+    }
+    private static function generateUniqueSlug($judul, $ignoreId = null)
+    {
+        $slug = Str::slug($judul);
+        $originalSlug = $slug;
+        $count = 1;
+        while (static::where('slug', $slug)
+            ->when($ignoreId, function ($query) use ($ignoreId) {
+                $query->where('id', '!=', $ignoreId);
+            })
+            ->exists()
+        ) {
+            $slug = $originalSlug . '-' . $count++;
+        }
+
+        return $slug;
     }
 }

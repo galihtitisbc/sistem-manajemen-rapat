@@ -20,7 +20,7 @@ class CreateRapatAgendasTable extends Migration
             $table->foreignId('pimpinan_id')->constrained('users');
             $table->foreignId('notulis_id')->constrained('users');
             $table->string('nomor_surat');
-            $table->string('slug');
+            $table->string('slug')->nullable();
             $table->dateTime('waktu_mulai');
             $table->dateTime('waktu_selesai')->nullable();
             $table->text('agenda_rapat');

@@ -6,7 +6,6 @@ use App\Models\Core\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Entities\RapatTindakLanjut;
 use Modules\Rapat\Http\Helper\FlashMessage;
@@ -89,6 +88,12 @@ class TindakLanjutRapatController extends Controller
         $data = [];
         $btnPenugasan = '';
         foreach ($rapatAgenda->rapatAgendaPeserta as $key => $peserta) {
+            if ($peserta->id == $rapatAgenda->notulis_id) {
+                continue;
+            }
+            if ($peserta->id == $rapatAgenda->pimpinan_id) {
+                continue;
+            }
             if ($peserta->pivot->is_penugasan == false) {
                 $btnPenugasan = '<a href="' . url('/rapat/agenda-rapat/' . $rapatAgenda->slug . '/tugaskan/' . $peserta->id) . '" class="btn btn-primary">Tugaskan</a>';
             } else {

@@ -3,14 +3,13 @@
 namespace Modules\Rapat\Entities;
 
 use App\Models\Core\User;
-use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Rapat\Http\Helper\StatusTindakLanjut;
+use Illuminate\Support\Str;
 
 class RapatTindakLanjut extends Model
 {
-    use HasFactory, Sluggable;
+    use HasFactory;
 
     protected $guarded = ['id'];
 
@@ -18,13 +17,18 @@ class RapatTindakLanjut extends Model
     // {
     //     return \Modules\Rapat\Database\factories\RapatTindakLanjutFactory::new();
     // }
-    public function sluggable(): array
+    protected static function boot()
     {
-        return [
-            'slug' => [
-                'source' => 'deskripsi_tugas',
-            ],
-        ];
+        parent::boot();
+        static::creating(function ($rapatTindakLanjut) {
+            $rapatTindakLanjut->slug = static::generateUniqueSlug($rapatTindakLanjut->deskripsi_tugas);
+        });
+
+        static::updating(function ($rapatTindakLanjut) {
+            if ($rapatTindakLanjut->isDirty('deskripsi_tugas')) {
+                $rapatTindakLanjut->slug = static::generateUniqueSlug($rapatTindakLanjut->deskripsi_tugas, $rapatTindakLanjut->id);
+            }
+        });
     }
 
     public function scopeUserHaveTugas($query, $user, $rapatAgenda)
@@ -57,5 +61,21 @@ class RapatTindakLanjut extends Model
     public function rapatTindakLanjutFile()
     {
         return $this->hasMany(RapatTindakLanjutFile::class, 'rapat_tindak_lanjut_id');
+    }
+    private static function generateUniqueSlug($judul, $ignoreId = null)
+    {
+        $slug = Str::slug($judul);
+        $originalSlug = $slug;
+        $count = 1;
+        while (static::where('slug', $slug)
+            ->when($ignoreId, function ($query) use ($ignoreId) {
+                $query->where('id', '!=', $ignoreId);
+            })
+            ->exists()
+        ) {
+            $slug = $originalSlug . '-' . $count++;
+        }
+
+        return $slug;
     }
 }

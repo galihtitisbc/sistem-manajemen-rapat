@@ -51,7 +51,7 @@ class RapatEditForm extends Component
         $this->pimpinanRapat       = $this->agendaRapatLoad->pimpinan_id;
         $this->notulisRapat        = $this->agendaRapatLoad->notulis_id;
         $this->lampiranOld         = $this->agendaRapatLoad->rapatLampiran->pluck('nama_file')->toArray();
-        $this->pilihanWaktuSelesai = $this->agendaRapatLoad->waktu_selesai == null ? '' : 'manual';
+        $this->pilihanWaktuSelesai = $this->agendaRapatLoad->waktu_selesai == null ? 'selesai' : 'manual';
     }
     protected function rules()
     {

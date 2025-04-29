@@ -42,6 +42,11 @@ class RapatController extends Controller
             'kepanitiaans' => $kepanitiaan,
         ]);
     }
+    public function ajaxPesertaRapat()
+    {
+        $users = User::with(['rapatAgendaPeserta', 'kepanitiaans'])->paginate(10);
+        return response()->json($users);
+    }
     public function show(RapatAgenda $rapatAgenda)
     {
         $rapatAgenda->load(['rapatAgendaPimpinan', 'rapatAgendaNotulis', 'rapatAgendaPeserta', 'rapatLampiran']);

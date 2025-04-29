@@ -6,34 +6,11 @@
 @stop
 
 @push('css')
-    @livewireStyles
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
 @endpush
 
 @section('content')
-    @php
-        $heads = [
-            ['label' => 'No', 'width' => 5],
-            ['label' => 'Nama', 'width' => 30],
-            ['label' => 'Whatsapp', 'width' => 30],
-            ['label' => 'Undang', 'width' => 20],
-        ];
-        $checkBox = '<input type="checkbox" class="form-check-input">';
-        $data = [];
-        $nomor = [];
-        foreach ($users as $key => $user) {
-            $data[] = [$key + 1, $user->name, '12312321321', $checkBox];
-        }
-        $config = [
-            'data' => $data,
-            'order' => [[0, 'asc']],
-            'columns' => [
-                null,
-                null,
-                null,
-                ['orderable' => false, 'className' => 'text-center', 'searchable' => false],
-            ],
-        ];
-    @endphp
+
     <x-adminlte-card>
         <div class="d-flex justify-content-center">
             {{-- @if ($errors->any())
@@ -141,15 +118,18 @@
                         <div class="d-flex justify-content-between">
                             <label>Pilih Peserta Rapat :</label>
                         </div>
-                        <x-adminlte-datatable id="table1" :heads="$heads" :config="$config">
-                            @foreach ($config['data'] as $row)
+                        <table id="daftar-peserta-rapat" class="table table-hover">
+                            <thead>
                                 <tr>
-                                    @foreach ($row as $cell)
-                                        <td>{!! $cell !!}</td>
-                                    @endforeach
+                                    <th scope="col">id</th>
+                                    <th scope="col">name</th>
+                                    <th scope="col">email</th>
                                 </tr>
-                            @endforeach
-                        </x-adminlte-datatable>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
                     </div>
                     <div class="mb-3">
                         <label>Lampiran : ( Jika Ada )</label>
@@ -184,92 +164,26 @@
                             @endforeach
                         </div>
                     @endif --}}
-
                     </div>
                     <div class="my-4">
                         <label>Pilih Pimpinan Rapat :</label>
                         <div style="max-height: 300px; overflow-y: scroll;">
-                            {{-- @if ($pesertaRapat->isNotEmpty())
-                            <table class="table table-bordered text-center">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">No</th>
-                                        <th>Nama</th>
-                                        <th>Prodi</th>
-                                        <th>Pilih</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($pesertaRapat->sortByDesc(fn($item, $key) => $key)->values() as $item)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item['name'] }}</td>
-                                            <td>TRPL</td>
-                                            <td>
-                                                @if ($item['id'] != $notulisRapat)
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio"
-                                                            wire:model="pimpinanRapat" value="{{ $item['id'] }}">
-                                                    </div>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        @else
-                            <h5 class="text-center text-danger">Silahkan Pilih Peserta Rapat Terlebih dahulu</h5>
-                        @endif
+                        </div>
+                        @error('pimpinan_id')
+                            <span class="text-danger d-block">{{ $message }}</span>
+                        @enderror
                     </div>
-                    @error('pimpinan_id')
-                        <span class="text-danger d-block">{{ $message }}</span>
-                    @enderror --}}
+                    <div class="mb-3 my-4">
+                        <label>Pilih Notulis Rapat :</label>
+                        <div style="max-height: 300px; overflow-y: scroll;">
                         </div>
-                        <div class="mb-3 my-4">
-                            <label>Pilih Notulis Rapat :</label>
-                            <div style="max-height: 300px; overflow-y: scroll;">
-                                {{-- @if ($pesertaRapat->isNotEmpty())
-                            <table class="table table-bordered text-center">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">No</th>
-                                        <th>Nama</th>
-                                        <th>Prodi</th>
-                                        <th>Undang</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($pesertaRapat->sortByDesc(fn($item, $key) => $key)->values() as $item)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item['name'] }}</td>
-                                            <td>TRPL</td>
-                                            <td>
-                                                @if ($item['id'] != $pimpinanRapat)
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio"
-                                                            wire:model="notulisRapat" value="{{ $item['id'] }}">
-                                                    </div>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        @else
-                            <h5 class="text-center text-danger">Silahkan Pilih Peserta Rapat Terlebih dahulu</h5>
-                        @endif --}}
-                            </div>
-                            @error('notulis_id')
-                                <span class="text-danger d-block">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary mx-auto">Submit</button>
-                        </div>
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
+                        @error('notulis_id')
+                            <span class="text-danger d-block">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary mx-auto">Submit</button>
+                    </div>
             </form>
         </div>
     </x-adminlte-card>
@@ -277,6 +191,7 @@
 
 @push('js')
     {{-- @livewireScripts --}}
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
     <script src="{{ asset('assets/js/rapat/createRapat.js') }}"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {

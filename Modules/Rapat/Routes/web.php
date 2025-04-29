@@ -23,6 +23,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::get('/dashboard', [RapatDashboardController::class, 'index']);
         Route::prefix('agenda-rapat')->group(function () {
             Route::get('/', [RapatController::class, 'index']);
+            Route::get('/ajax-peserta-rapat', [RapatController::class, 'ajaxPesertaRapat']);
             Route::get('/create', [RapatController::class, 'create']);
             Route::post('/store', [RapatController::class, 'store']);
             Route::get('/{rapatAgenda:slug}/detail', [RapatController::class, 'show']);

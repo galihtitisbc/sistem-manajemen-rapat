@@ -13,11 +13,11 @@ class Pegawai extends Model
     use HasFactory;
     protected $connection = 'mysql';
     protected $guarded = ['id'];
-    
-    protected static function newFactory()
-    {
-        return \Modules\Kepegawaian\Database\factories\PegawaiFactory::new();
-    }
+
+    // protected static function newFactory()
+    // {
+    //     return \Modules\Kepegawaian\Database\factories\PegawaiFactory::new();
+    // }
 
     // Relasi ke SubPerencanaan sebagai PIC
     public function subPerencanaansAsPic()

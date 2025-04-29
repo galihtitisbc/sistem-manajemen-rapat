@@ -6,7 +6,6 @@
 @stop
 
 @push('css')
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
 @endpush
 
 @section('content')
@@ -115,15 +114,16 @@
                 </div>
                 <div class="mb-3 my-4">
                     <div class="my-4" id="peserta-rapat">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between mb-4">
                             <label>Pilih Peserta Rapat :</label>
                         </div>
-                        <table id="daftar-peserta-rapat" class="table table-hover">
+                        <table id="table-peserta-rapat" class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th scope="col">id</th>
-                                    <th scope="col">name</th>
-                                    <th scope="col">email</th>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Nama Peserta</th>
+                                    <th scope="col">Whatsapp</th>
+                                    <th scope="col">Pilih</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -167,8 +167,19 @@
                     </div>
                     <div class="my-4">
                         <label>Pilih Pimpinan Rapat :</label>
-                        <div style="max-height: 300px; overflow-y: scroll;">
-                        </div>
+                        <table id="table-pimpinan-rapat" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Nama Peserta</th>
+                                    <th scope="col">Whatsapp</th>
+                                    <th scope="col">Undang</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
                         @error('pimpinan_id')
                             <span class="text-danger d-block">{{ $message }}</span>
                         @enderror
@@ -190,8 +201,6 @@
 @endsection
 
 @push('js')
-    {{-- @livewireScripts --}}
-    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
     <script src="{{ asset('assets/js/rapat/createRapat.js') }}"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {

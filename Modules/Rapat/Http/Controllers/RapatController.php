@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Modules\Rapat\Entities\Kepanitiaan;
+use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Http\Helper\FlashMessage;
 use Modules\Rapat\Http\Service\Implementation\RapatService;
@@ -35,17 +36,61 @@ class RapatController extends Controller
     }
     public function create()
     {
-        $users       = User::with(['rapatAgendaPeserta', 'kepanitiaans'])->get();
+        $users       = User::with(['rapatAgendaPeserta', 'kepanitiaans'])->paginate(10);
         $kepanitiaan = Kepanitiaan::with('users')->where('status', 'AKTIF')->get();
         return view('rapat::rapat.create', [
             'users'        => $users,
             'kepanitiaans' => $kepanitiaan,
         ]);
     }
-    public function ajaxPesertaRapat()
+    public function ajaxPesertaRapat(Request $request)
     {
-        $users = User::with(['rapatAgendaPeserta', 'kepanitiaans'])->paginate(10);
-        return response()->json($users);
+        $query = User::with(['rapatAgendaPeserta', 'kepanitiaans']);
+        if ($search = $request->input('search.value')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+        $total = User::count();
+        $filtered = $query->count();
+
+        $data = $query
+            ->offset($request->input('start'))
+            ->limit($request->input('length'))
+            ->get();
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $total,
+            'recordsFiltered' => $filtered,
+            'data' => $data,
+        ]);
+    }
+    public function ajaxSelectedPesertaRapat(Request $request)
+    {
+        $idPeserta = explode(',', $request->id);
+        $query = User::whereIn('id', $idPeserta);
+        if ($search = $request->input('search.value')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+        $total = User::count();
+        $filtered = $query->count();
+
+        $data = $query
+            ->offset($request->input('start'))
+            ->limit($request->input('length'))
+            ->get();
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $total,
+            'recordsFiltered' => $filtered,
+            'data' => $data,
+        ]);
     }
     public function show(RapatAgenda $rapatAgenda)
     {

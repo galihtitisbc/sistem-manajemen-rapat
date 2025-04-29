@@ -1,13 +1,14 @@
 <?php
+
 namespace App\Models\Core;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Modules\Kepegawaian\Entities\Pegawai;
 use Modules\Pengadaan\Entities\Unit;
 use Modules\Rapat\Entities\Kepanitiaan;
+use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Entities\RapatTindakLanjut;
 use Spatie\Permission\Traits\HasRoles;
@@ -113,7 +114,7 @@ class User extends Authenticatable
 
     public function pegawai()
     {
-        return $this->belongsTo(Pegawai::class, 'pegawais_id', 'id');
+        return $this->hasOne(Pegawai::class, 'username', 'username');
     }
     public function rapatAgenda()
     {

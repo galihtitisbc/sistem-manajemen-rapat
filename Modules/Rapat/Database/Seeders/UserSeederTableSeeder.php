@@ -1,9 +1,11 @@
 <?php
+
 namespace Modules\Rapat\Database\Seeders;
 
 use App\Models\Core\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeederTableSeeder extends Seeder
@@ -88,27 +90,26 @@ class UserSeederTableSeeder extends Seeder
             'status'     => 2,
         ]);
         $multi->assignRole(['pejabat', 'dosen']);
-
         $roles       = ['pimpinan', 'pejabat', 'sekretaris', 'kepegawaian', 'dosen'];
-        $customNames = ['Andi', 'Budi', 'Citra', 'Dewi', 'Yanto', 'Fajar', 'Gita', 'Hadi', 'Indra', 'Joko', 'Kiki', 'Lina', 'Mira', 'Novi', 'Oscar'];
+        $pegawaiRecords = DB::table('pegawais')->get();
+        foreach ($pegawaiRecords as $pegawai) {
+            $randomRole = $roles[array_rand($roles)];
 
-        for ($i = 0; $i < 15; $i++) {
-            $role = $roles[array_rand($roles)];
-            $name = $customNames[$i];
+            $email = $pegawai->username . '@example.com';
 
             $user = User::create([
-                'username'   => strtolower($name),
-                'name'       => $name . ' ' . ucfirst($role),
-                'email'      => strtolower($name) . '@gmail.com',
+                'username'   => $pegawai->username ?? 'Tidak Ada Username',
+                'name'       => $randomRole . ' ' . $pegawai->nama,
+                'email'      => $email,
                 'password'   => Hash::make('password'),
-                'role_aktif' => $role,
-                'unit'       => 0,
-                'staff'      => 0,
+                'role_aktif' => $randomRole,
+                'unit'       => $pegawai->jurusan ?? 0,
+                'staff'      => $pegawai->staff ?? 0,
                 'status'     => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
-
-            $user->assignRole($role);
+            $user->assignRole($randomRole);
         }
-
     }
 }

@@ -1,10 +1,7 @@
 <?php
-
 namespace Modules\Rapat\Http\Controllers;
 
 use App\Models\Core\User;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Rapat\Entities\Kepanitiaan;
 use Modules\Rapat\Http\Helper\FlashMessage;
@@ -16,14 +13,26 @@ class KepegawaianController extends Controller
     {
         $kepanitiaans = Kepanitiaan::with('users')->get();
         return view('rapat::kepegawaian.index', [
-            'kepanitiaans' => $kepanitiaans
+            'kepanitiaans' => $kepanitiaans,
         ]);
+    }
+    public function ajaxKepanitiaanRapat($id)
+    {
+        try {
+            $kepanitiaan = Kepanitiaan::with('pegawai')->where('id', $id)->firstOrFail();
+            return response()->json($kepanitiaan);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Kepanitiaan Tidak Ditemukan',
+            ], 200);
+        }
     }
     public function create()
     {
         $users = User::all();
         return view('rapat::kepegawaian.create', [
-            'users' => $users
+            'users' => $users,
         ]);
     }
 
@@ -42,12 +51,12 @@ class KepegawaianController extends Controller
 
     public function edit(Kepanitiaan $kepanitiaan)
     {
-        $users = User::all();
+        $users         = User::all();
         $selectedUsers = $kepanitiaan->users->pluck('id')->toArray();
         return view('rapat::kepegawaian.edit', [
-            'kepanitiaan' => $kepanitiaan,
-            'users' => $users,
-            'selectedUsers' => $selectedUsers
+            'kepanitiaan'   => $kepanitiaan,
+            'users'         => $users,
+            'selectedUsers' => $selectedUsers,
         ]);
     }
 

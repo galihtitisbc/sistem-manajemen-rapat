@@ -1,12 +1,10 @@
 <?php
-
 namespace Modules\Rapat\Entities;
 
-use App\Models\Core\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Rapat\Http\Helper\StatusTindakLanjut;
 use Illuminate\Support\Str;
+use Modules\Rapat\Http\Helper\StatusTindakLanjut;
 
 class RapatAgenda extends Model
 {
@@ -16,7 +14,7 @@ class RapatAgenda extends Model
 
     protected static function newFactory()
     {
-        return \Modules\Rapat\Database\factories\RapatAgendaFactory::new();
+        return \Modules\Rapat\Database\factories\RapatAgendaFactory::new ();
     }
     protected static function boot()
     {
@@ -31,12 +29,12 @@ class RapatAgenda extends Model
             }
         });
     }
-    public function scopeUserIsPesertaOrCreator($query, $userId)
+    public function scopePegawaiIsPesertaOrCreator($query, $username)
     {
-        $query->whereHas('rapatAgendaPeserta', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
+        $query->whereHas('rapatAgendaPeserta', function ($q) use ($username) {
+            $q->where('pegawai_username', $username);
         })
-            ->orWhere('user_id', $userId);
+            ->orWhere('pegawai_username', $username);
         return $query;
     }
     // public function scopeShowTindakLanjut($query, $userId)
@@ -59,21 +57,21 @@ class RapatAgenda extends Model
         }
         return StatusTindakLanjut::SELESAI->value;
     }
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
+    // public function user()
+    // {
+    //     return $this->belongsTo(User::class, 'user_id');
+    // }
     public function rapatAgendaPimpinan()
     {
-        return $this->belongsTo(User::class, 'pimpinan_id');
+        return $this->belongsTo(Pegawai::class, 'pimpinan_username', 'username', 'id');
     }
     public function rapatAgendaNotulis()
     {
-        return $this->belongsTo(User::class, 'notulis_id');
+        return $this->belongsTo(Pegawai::class, 'notulis_username', 'username', 'id');
     }
     public function rapatAgendaPeserta()
     {
-        return $this->belongsToMany(User::class, 'rapat_pesertas')->withPivot('status', 'is_penugasan');
+        return $this->belongsToMany(Pegawai::class, 'rapat_pesertas', 'rapat_agenda_id', 'pegawai_username', 'id', 'username')->withPivot('status', 'is_penugasan');
     }
     public function rapatLampiran()
     {
@@ -97,9 +95,9 @@ class RapatAgenda extends Model
     }
     private static function generateUniqueSlug($judul, $ignoreId = null)
     {
-        $slug = Str::slug($judul);
+        $slug         = Str::slug($judul);
         $originalSlug = $slug;
-        $count = 1;
+        $count        = 1;
         while (static::where('slug', $slug)
             ->when($ignoreId, function ($query) use ($ignoreId) {
                 $query->where('id', '!=', $ignoreId);

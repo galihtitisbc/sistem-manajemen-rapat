@@ -1,7 +1,6 @@
 <?php
 namespace Modules\Rapat\Entities;
 
-use App\Models\Core\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,9 +15,9 @@ class Kepanitiaan extends Model
     //     return \Modules\Rapat\Database\factories\KepanitiaanFactory::new();
     // }
 
-    public function users()
+    public function pegawai()
     {
-        return $this->belongsToMany(User::class, 'kepanitiaan_user');
+        return $this->belongsToMany(Pegawai::class, 'kepanitiaan_pegawai', 'kepanitiaan_id', 'pegawai_username', 'id', 'username');
     }
     public function rapatAgenda()
     {

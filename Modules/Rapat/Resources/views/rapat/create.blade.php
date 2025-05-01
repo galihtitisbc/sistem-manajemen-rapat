@@ -12,37 +12,22 @@
 
     <x-adminlte-card>
         <div class="d-flex justify-content-center">
-            {{-- @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif --}}
-            <form method="POST" class="col-lg-8 col-md-6 col-sm-10" enctype="multipart/form-data">
+            <form method="POST" class="col-lg-8 col-md-6 col-sm-10" id="form-agenda-rapat" enctype="multipart/form-data">
+                <div id="form-errors" class="alert alert-danger d-none">
+                    <ul id="form-errors-list" class="mb-0"></ul>
+                </div>
                 @csrf
                 <div class="mb-3">
                     <label for="nomor-surat" class="form-label">Nomor Surat Undangan:</label>
-                    <input type="text" class="form-control @error('nomor_surat') is-invalid @enderror" id="nomor-surat">
-                    @error('nomor_surat')
-                        <div id="validationServer03Feedback" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
+                    <input type="text" name="nomor_surat" class="form-control" id="nomor-surat">
+                    <div class="invalid-feedback" id="error-nomor_surat"></div>
                 </div>
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
                             <label for="waktu-mulai" class="form-label">Waktu Mulai :</label>
-                            <input type="datetime-local" class="form-control @error('waktu_mulai') is-invalid @enderror"
-                                id="waktu-mulai">
-                            @error('waktu_mulai')
-                                <div id="validationServer03Feedback" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
+                            <input type="datetime-local" name="waktu_mulai" class="form-control" id="waktu-mulai">
+                            <div class="invalid-feedback" id="error-waktu_mulai"></div>
                         </div>
                     </div>
                     <div class="col">
@@ -54,69 +39,46 @@
                                 <option value="selesai">Selesai</option>
                             </select>
                         </div>
-                        <input type="datetime-local" class="form-control @error('waktu_selesai') is-invalid @enderror"
-                            id="waktu-selesai">
-                        @error('waktu_selesai')
-                            <div id="validationServer03Feedback" class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
+                        <input type="datetime-local" name="waktu_selesai" class="form-control" id="waktu-selesai">
+                        <div class="invalid-feedback" id="error-waktu_selesai"></div>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="tempat" class="form-label">Tempat Rapat</label>
-                    <select id="pilihan-tempat" class="form-control @error('tempat') is-invalid @enderror">
+                    <div class="invalid-feedback" id="error-tempat"></div>
+                    <select id="pilihan-tempat" class="form-control ">
                         <option selected value="">-- Pilih Tempat --</option>
                         <option value="zoom">Online</option>
                         <option value="custom">Tempat Lain</option>
                     </select>
-                    @error('tempat')
-                        <div id="validationServer03Feedback" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                    {{-- @if ($selectTempat === 'custom') --}}
                     <div class="mt-3" id="tempat-rapat-group">
                         <label for="tempat-rapat" class="form-label">Masukkan Tempat Rapat</label>
-                        <input type="text" id="tempat-rapat" class="form-control @error('tempat') is-invalid @enderror"
+                        <input type="text" id="tempat-rapat" name="tempat_rapat" class="form-control "
                             placeholder="Masukkan Tempat Rapat">
                     </div>
-                    @error('tempat')
-                        <div id="validationServer03Feedback" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                    {{-- @endif --}}
                 </div>
                 <div class="mb-3">
                     <label>Agenda Rapat :</label>
-                    <textarea class="form-control @error('agenda_rapat') is-invalid @enderror" placeholder="Agenda Rapat"></textarea>
-                    @error('agenda_rapat')
-                        <div id="validationServer03Feedback" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
+                    <textarea class="form-control" id="agenda-rapat" name="agenda_rapat" placeholder="Agenda Rapat"></textarea>
+                    <div class="invalid-feedback" id="error-agenda_rapat"></div>
                 </div>
                 <div class="mb-3">
                     <label>Pilih Kepanitiaan : ( Jika Rapat Merupakan Rapat Kepanitiaan )</label>
-                    <select class="form-control @error('kepanitiaan') is-invalid @enderror">
+                    <div class="invalid-feedback" id="error-kepanitiaan_id"></div>
+                    <select class="form-control" id="kepanitiaan" name="kepanitiaan_id">
                         <option value="">-- Pilih Kepanitiaan --</option>
-                        {{-- @foreach ($kepanitiaans as $kepanitiaan)
+                        @foreach ($kepanitiaans as $kepanitiaan)
                             <option value="{{ $kepanitiaan->id }}">{{ $kepanitiaan->nama_kepanitiaan }}
                             </option>
-                        @endforeach --}}
+                        @endforeach
                     </select>
-                    @error('kepanitiaan')
-                        <div id="validationServer03Feedback" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
                 </div>
                 <div class="mb-3 my-4">
                     <div class="my-4" id="peserta-rapat">
                         <div class="d-flex justify-content-between mb-4">
                             <label>Pilih Peserta Rapat :</label>
                         </div>
+                        <div class="invalid-feedback" id="error-peserta_rapat"></div>
                         <table id="table-peserta-rapat" class="table table-hover">
                             <thead>
                                 <tr>
@@ -133,40 +95,14 @@
                     </div>
                     <div class="mb-3">
                         <label>Lampiran : ( Jika Ada )</label>
-                        <input type="file" class="form-control" id="lampiran-file" multiple>
+                        <input type="file" name="lampiran[]" class="form-control" id="lampiran-file" multiple>
                         @error('lampiran.*')
                             <span class="text-danger d-block">{{ $message }}</span>
                         @enderror
-
-                        {{-- File Preview --}}
-                        {{-- @if ($lampiran)
-                        <div class="mt-3">
-                            @foreach ($lampiran as $item)
-                                @php
-                                    $extension = strtolower($item->getClientOriginalExtension());
-                                    $icons = [
-                                        'jpg' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
-                                        'jpeg' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
-                                        'png' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
-                                        'doc' => ['icon' => 'fas fa-file-word', 'color' => '#1E90FF'],
-                                        'docx' => ['icon' => 'fas fa-file-word', 'color' => '#1E90FF'],
-                                        'xls' => ['icon' => 'fas fa-file-excel', 'color' => '#008000'],
-                                        'xlsx' => ['icon' => 'fas fa-file-excel', 'color' => '#008000'],
-                                        'pdf' => ['icon' => 'fas fa-file-pdf', 'color' => '#FF0000'],
-                                        'txt' => ['icon' => 'fas fa-file-alt', 'color' => '#808080'],
-                                    ];
-                                    $fileData = $icons[$extension] ?? ['icon' => 'fas fa-file', 'color' => '#A9A9A9'];
-                                @endphp
-                                <i class="{{ $fileData['icon'] }}"
-                                    style="color: {{ $fileData['color'] }}; fa-lg  mr-2"></i>
-                                {{ $item->getClientOriginalName() }}
-                                <br>
-                            @endforeach
-                        </div>
-                    @endif --}}
                     </div>
                     <div class="my-4">
                         <label>Pilih Pimpinan Rapat :</label>
+                        <div class="invalid-feedback" id="error-pimpinan_username"></div>
                         <table id="table-pimpinan-rapat" class="table table-hover">
                             <thead>
                                 <tr>
@@ -180,17 +116,23 @@
 
                             </tbody>
                         </table>
-                        @error('pimpinan_id')
-                            <span class="text-danger d-block">{{ $message }}</span>
-                        @enderror
                     </div>
                     <div class="mb-3 my-4">
                         <label>Pilih Notulis Rapat :</label>
-                        <div style="max-height: 300px; overflow-y: scroll;">
-                        </div>
-                        @error('notulis_id')
-                            <span class="text-danger d-block">{{ $message }}</span>
-                        @enderror
+                        <table id="table-notulis-rapat" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Nama Peserta</th>
+                                    <th scope="col">Whatsapp</th>
+                                    <th scope="col">Undang</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                        <div class="invalid-feedback" id="error-notulis_username"></div>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary mx-auto">Submit</button>

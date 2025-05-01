@@ -16,9 +16,15 @@ class CreateRapatAgendasTable extends Migration
     {
         Schema::create('rapat_agendas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('pimpinan_id')->constrained('users');
-            $table->foreignId('notulis_id')->constrained('users');
+            $table->string('pegawai_username');
+            $table->foreign('pegawai_username')->references('username')->on('pegawais');
+
+            $table->string('pimpinan_username');
+            $table->foreign('pimpinan_username')->references('username')->on('pegawais');
+
+            $table->string('notulis_username');
+            $table->foreign('notulis_username')->references('username')->on('pegawais');
+
             $table->string('nomor_surat');
             $table->string('slug')->nullable();
             $table->dateTime('waktu_mulai');

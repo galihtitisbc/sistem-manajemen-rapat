@@ -1,10 +1,10 @@
 <?php
 namespace Modules\Rapat\Database\Seeders;
 
-use App\Models\Core\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Modules\Rapat\Entities\Kepanitiaan;
+use Modules\Rapat\Entities\Pegawai;
 
 class RapatKepanitiaanTableSeeder extends Seeder
 {
@@ -27,21 +27,11 @@ class RapatKepanitiaanTableSeeder extends Seeder
                 'created_at'       => now(),
                 'updated_at'       => now(),
             ],
-            [
-                'nama_kepanitiaan' => 'Panitia Bakti Sosial',
-                'deskripsi'        => 'Panitia yang mengorganisir kegiatan bakti sosial tahunan.',
-                'tanggal_mulai'    => now()->subDays(20)->toDateString(),
-                'tanggal_berakhir' => now()->addDays(5)->toDateString(),
-                'tujuan'           => 'Membantu masyarakat dengan kegiatan sosial.',
-                'status'           => 'AKTIF',
-                'created_at'       => now(),
-                'updated_at'       => now(),
-            ],
         ];
         Kepanitiaan::insert($kepanitiaans);
-        $users = User::whereBetween('id', [2, 7])->get();
-        Kepanitiaan::each(function ($kepanitiaan) use ($users) {
-            $kepanitiaan->users()->attach($users);
+        $pegawai = ['tefa', 'dimdim', 'jaeni', 'eka'];
+        Kepanitiaan::each(function ($kepanitiaan) use ($pegawai) {
+            $kepanitiaan->pegawai()->attach($pegawai);
         });
         $panitia = Kepanitiaan::create([
             'nama_kepanitiaan' => 'Panitia Konsumsi',
@@ -51,7 +41,7 @@ class RapatKepanitiaanTableSeeder extends Seeder
             'tujuan'           => 'menyediakan konsumsi.',
             'status'           => 'AKTIF',
         ]);
-        $users = User::whereBetween('id', [17, 22])->get();
-        $panitia->users()->attach($users);
+        $pegawai = ['eka', 'haris', 'erna'];
+        $panitia->pegawai()->attach($pegawai);
     }
 }

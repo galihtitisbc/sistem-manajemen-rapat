@@ -23,10 +23,11 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::get('/dashboard', [RapatDashboardController::class, 'index']);
         Route::prefix('agenda-rapat')->group(function () {
             Route::get('/', [RapatController::class, 'index']);
+            Route::get('/create', [RapatController::class, 'create']);
             //fetch data untuk datatables
             Route::get('/ajax-peserta-rapat', [RapatController::class, 'ajaxPesertaRapat']);
             Route::get('/ajax-selected-peserta/', [RapatController::class, 'ajaxSelectedPesertaRapat']);
-            Route::get('/create', [RapatController::class, 'create']);
+            Route::get('/ajax-kepanitiaan/{id}', [KepegawaianController::class, 'ajaxKepanitiaanRapat']);
             Route::post('/store', [RapatController::class, 'store']);
             Route::get('/{rapatAgenda:slug}/detail', [RapatController::class, 'show']);
             Route::get('/{file}/download', [RapatController::class, 'downloadLampiran']);

@@ -115,7 +115,7 @@
                     <hr>
                 </div>
                 <div class="col-8">
-                    <span style="font-weight: bold">{{ $rapat->rapatAgendaPimpinan->name }}</span>
+                    <span style="font-weight: bold">{{ $rapat->rapatAgendaPimpinan->nama }}</span>
                     <hr>
                 </div>
                 <div class="col-4">
@@ -123,7 +123,7 @@
                     <hr>
                 </div>
                 <div class="col-8">
-                    <span style="font-weight: bold">{{ $rapat->rapatAgendaNotulis->name }}</span>
+                    <span style="font-weight: bold">{{ $rapat->rapatAgendaNotulis->nama }}</span>
                     <hr>
                 </div>
             </div>
@@ -140,7 +140,7 @@
                         @foreach ($rapat->rapatAgendaPeserta as $peserta)
                             <tr>
                                 <td class="text-center">{{ $loop->iteration }}</td>
-                                <td class="text-center">{{ $peserta->name }}</td>
+                                <td class="text-center">{{ $peserta->nama }}</td>
                                 <td class="text-center">082232123</td>
                                 <td class="text-center"><span
                                         class="badge bg-{{ $statusPeserta[$peserta->pivot->status] }}">{{ \Modules\Rapat\Http\Helper\StatusPesertaRapat::from($peserta->pivot->status)->label() }}</span>

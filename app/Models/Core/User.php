@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models\Core;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -7,7 +6,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Pengadaan\Entities\Unit;
-use Modules\Rapat\Entities\Kepanitiaan;
 use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Entities\RapatTindakLanjut;
@@ -136,8 +134,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(RapatTindakLanjut::class, 'user_id');
     }
-    public function kepanitiaans()
-    {
-        return $this->belongsToMany(Kepanitiaan::class, 'kepanitiaan_user');
-    }
+    // public function kepanitiaans()
+    // {
+    //     return $this->belongsToMany(Kepanitiaan::class, 'kepanitiaan_user');
+    // }
 }

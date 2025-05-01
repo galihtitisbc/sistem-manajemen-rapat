@@ -1,10 +1,9 @@
 <?php
-
 namespace Modules\Rapat\Entities;
 
 use App\Models\Core\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Pegawai extends Model
 {
@@ -20,5 +19,22 @@ class Pegawai extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'username', 'username');
+    }
+    public function kepanitiaans()
+    {
+        return $this->belongsToMany(Kepanitiaan::class, 'kepanitiaan_pegawai', 'pegawai_username', 'kepanitiaan_id', 'username', 'id');
+    }
+
+    public function rapatAgendaPimpinan()
+    {
+        return $this->hasMany(Pegawai::class, 'pimpinan_username', 'username', 'id');
+    }
+    public function rapatAgendaNotulis()
+    {
+        return $this->hasMany(Pegawai::class, 'notulis_username', 'username', 'id');
+    }
+    public function rapatAgendaPeserta()
+    {
+        return $this->belongsToMany(Pegawai::class, 'rapat_pesertas', 'pegawai_username', 'rapat_agenda_id', 'username', 'id')->withPivot('status', 'is_penugasan');
     }
 }

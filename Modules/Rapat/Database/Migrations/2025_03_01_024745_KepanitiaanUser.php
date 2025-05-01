@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class KepanitiaanUser extends Migration
@@ -13,10 +11,10 @@ class KepanitiaanUser extends Migration
      */
     public function up()
     {
-        Schema::create('kepanitiaan_user', function (Blueprint $table) {
-            $table->foreignId('kepanitiaan_id')->constrained('kepanitiaans');
-            $table->foreignId('user_id')->constrained('users');
-        });
+        // Schema::create('kepanitiaan_pegawai', function (Blueprint $table) {
+        //     $table->foreignId('kepanitiaan_id')->constrained('kepanitiaans');
+        //     $table->foreignId('username')->constrained('pegawais');
+        // });
     }
 
     /**

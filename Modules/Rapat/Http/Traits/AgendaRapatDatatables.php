@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Rapat\Http\Traits;
 
 use Carbon\Carbon;
@@ -12,22 +11,22 @@ trait AgendaRapatDatatables
     public function getAgendaRapatDatatables()
     {
         Carbon::setLocale('id');
-        $rapats  = RapatAgenda::userIsPesertaOrCreator(Auth::user()->id)->orderBy('created_at', 'desc')->get();
+        $rapats      = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)->orderBy('created_at', 'desc')->get();
         $statusRapat = [
-            'CANCELED' => ['danger', 'Di Batalkan'],
+            'CANCELED'  => ['danger', 'Di Batalkan'],
             'SCHEDULED' => ['warning', 'Di Jadwalkan'],
             'COMPLETED' => ['success', 'Selesai'],
-            'STARTED' => ['primary', 'Sedang Berlangsung'],
+            'STARTED'   => ['primary', 'Sedang Berlangsung'],
         ];
         $statusKeaktifan = [
             'SCHEDULED' => ['fa-calendar-times', '#ff0000'],
-            'CANCELED' => ['fa-undo', '#5cb85c'],
+            'CANCELED'  => ['fa-undo', '#5cb85c'],
             'COMPLETED' => ['fas fa-check-circle', '#28a745'],
-            'STARTED' => ['fas fa-play-circle', '#0275d8'],
+            'STARTED'   => ['fas fa-play-circle', '#0275d8'],
         ];
         $data = [];
         foreach ($rapats as $index => $rapat) {
-            $startTime = Carbon::parse($rapat->waktu_mulai)->translatedFormat('l, d F Y H:i');
+            $startTime   = Carbon::parse($rapat->waktu_mulai)->translatedFormat('l, d F Y H:i');
             $statusBadge = '<span class="badge bg-' . $statusRapat[$rapat->status][0] . '">' . $statusRapat[$rapat->status][1] . '</span>';
 
             $aksi = '<a href="' . url('rapat/agenda-rapat/' . $rapat->slug . '/detail') . '">
@@ -81,7 +80,7 @@ trait AgendaRapatDatatables
         ];
 
         $config = [
-            'data' => $data,
+            'data'    => $data,
             'columns' => [
                 ['className' => 'text-center'],
                 null,
@@ -89,7 +88,7 @@ trait AgendaRapatDatatables
                 ['className' => 'text-center'],
                 ['className' => 'text-center', 'orderable' => false],
                 ['className' => 'text-center', 'orderable' => false],
-            ]
+            ],
         ];
         return ['heads' => $heads, 'config' => $config];
     }

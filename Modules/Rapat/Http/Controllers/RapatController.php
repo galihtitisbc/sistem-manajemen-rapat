@@ -4,6 +4,7 @@ namespace Modules\Rapat\Http\Controllers;
 use App\Models\Core\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
@@ -134,16 +135,21 @@ class RapatController extends Controller
             ], 422);
         }
         try {
-            $validated = $validator->validated();
+            $validated                     = $validator->validated();
+            $validated['pegawai_username'] = Auth::user()->pegawai->username;
             $this->rapatService->store($validated);
             return response()->json([
                 'success' => true,
+                'title'   => 'Berhasil',
                 'message' => 'Rapat berhasil ditambahkan.',
+                'icon'    => 'success',
             ]);
         } catch (\Throwable $e) {
             return response()->json([
                 'fail'    => true,
                 'message' => $e->getMessage(),
+                'title'   => 'Gagak',
+                'icon'    => 'error',
             ]);
         }
     }

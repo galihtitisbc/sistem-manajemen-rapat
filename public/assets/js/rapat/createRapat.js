@@ -1,5 +1,7 @@
 $(document).ready(function () {
-    //array untuk menampung data peserta rpat yang dipilih
+    //array untuk menampung data peserta rapat yang dipilih
+    let pesertaManual = [];
+    let pesertaKepanitiaan = [];
     let pesertaRapat = [];
     let pimpinanRapatUsername = "";
     let notulisRapatUsername = "";
@@ -71,11 +73,14 @@ $(document).ready(function () {
     //function untuk menambahkan data peserta rapat ke dalam array
     $("#table-peserta-rapat").on("click", ".add-peserta", function (event) {
         const username = $(this).data("id");
-        if (pesertaRapat.includes(username)) {
-            pesertaRapat = pesertaRapat.filter((item) => item !== username);
+
+        if (pesertaManual.includes(username)) {
+            pesertaManual = pesertaManual.filter((item) => item !== username);
         } else {
-            pesertaRapat.push(username);
+            pesertaManual.push(username);
         }
+        pesertaRapat = [...new Set([...pesertaManual, ...pesertaKepanitiaan])];
+
         tablePimpinanRapat.ajax.reload();
         tableNotulisRapat.ajax.reload();
     });
@@ -104,9 +109,13 @@ $(document).ready(function () {
                 data: null,
                 render: function (data, type, row) {
                     if (row.username == notulisRapatUsername) {
-                        return "";
+                        return "-";
                     }
-                    return `<input type="radio" name="pimpinan_username" class="select-radio select-pimpinan" data-id="${row.username}">`;
+                    return `<input type="radio" name="pimpinan_username" class="select-radio select-pimpinan" data-id="${
+                        row.username
+                    }" ${
+                        pimpinanRapatUsername === row.username ? "checked" : ""
+                    }>`;
                 },
             },
         ],
@@ -115,14 +124,7 @@ $(document).ready(function () {
         searching: true,
         ordering: true,
     });
-    $("#table-pimpinan-rapat").on(
-        "click",
-        ".select-pimpinan",
-        function (event) {
-            pimpinanRapatUsername = $(this).data("id");
-            tableNotulisRapat.draw();
-        }
-    );
+
     //untuk table menampilkan notulis rapat
     let tableNotulisRapat = $("#table-notulis-rapat").DataTable({
         serverSide: true,
@@ -148,13 +150,13 @@ $(document).ready(function () {
                 data: null,
                 render: function (data, type, row) {
                     if (row.username == pimpinanRapatUsername) {
-                        return "";
+                        return "-";
                     }
-                    return `<input type="radio" name="notulis_username" ${
-                        pimpinanRapatUsername === row.username ? "checked" : ""
-                    } class="select-radio select-notulis" data-id="${
+                    return `<input type="radio" name="notulis_username" class="select-radio select-notulis" data-id="${
                         row.username
-                    }">`;
+                    }" ${
+                        notulisRapatUsername === row.username ? "checked" : ""
+                    }>`;
                 },
             },
         ],
@@ -167,13 +169,19 @@ $(document).ready(function () {
         notulisRapatUsername = $(this).data("id");
         tablePimpinanRapat.draw();
     });
-
+    $("#table-pimpinan-rapat").on(
+        "click",
+        ".select-pimpinan",
+        function (event) {
+            pimpinanRapatUsername = $(this).data("id");
+            tableNotulisRapat.draw();
+        }
+    );
     //untuk handle jika rapat adalah rapat kepanitiaan, maka auto check pada peserta rapat sesuai
     //anggota kepanitiaan
     $("#kepanitiaan").on("change", function () {
         let kepanitiaan_id = $(this).val();
         let kepanitiaanPegawai = [];
-
         $.ajax({
             url: `/rapat/agenda-rapat/ajax-kepanitiaan/${
                 kepanitiaan_id ? kepanitiaan_id : "-"
@@ -181,16 +189,25 @@ $(document).ready(function () {
             type: "GET",
             dataSrc: "data",
             success: function (response) {
-                kepanitiaanPegawai = response.pegawai.map((pegawai) => {
-                    return pegawai.username;
-                });
-                pesertaRapat = [...pesertaRapat, ...kepanitiaanPegawai];
-                pesertaRapat = [...new Set(pesertaRapat)];
-                console.log(pesertaRapat);
+                console.log(response);
+                pesertaKepanitiaan = response.pegawai.map(
+                    (pegawai) => pegawai.username
+                );
+                pesertaRapat = [
+                    ...new Set([...pesertaManual, ...pesertaKepanitiaan]),
+                ];
 
                 tablePesertaRapat.ajax.reload();
                 tablePimpinanRapat.ajax.reload();
                 tableNotulisRapat.ajax.reload();
+            },
+            error: function (xhr) {
+                pesertaRapat = [];
+                pesertaKepanitiaan = [];
+                pesertaRapat = [...pesertaManual];
+                tablePesertaRapat.draw();
+                tablePimpinanRapat.draw();
+                tableNotulisRapat.draw();
             },
         });
     });
@@ -237,10 +254,17 @@ $(document).ready(function () {
             success: function (response) {
                 $(".invalid-feedback").text("");
                 $("input, select, textarea").removeClass("is-invalid");
-                console.log(response);
+                $("#form-errors-list").hide();
+                Swal.fire({
+                    title: `${response.title}`,
+                    text: `${response.message}`,
+                    icon: `${response.icon}`,
+                });
+                setTimeout(() => {
+                    window.location.href = "/rapat/agenda-rapat";
+                }, 2000);
             },
             error: function (xhr) {
-                console.log(xhr.responseJSON);
                 let errors = xhr.responseJSON.errors;
                 $(".invalid-feedback").text("");
                 $("input, select, textarea").removeClass("is-invalid");
@@ -268,6 +292,11 @@ $(document).ready(function () {
                     },
                     500
                 );
+                Swal.fire({
+                    title: `Gagal`,
+                    text: `Gagal Menambahkan Agenda Rapat`,
+                    icon: `error`,
+                });
             },
         });
     });

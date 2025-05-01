@@ -33,7 +33,7 @@ trait AgendaRapatDatatables
                     <i class="fas fa-eye fa-lg" data-bs-toggle="tooltip" data-bs-placement="top" title="Detail Rapat"></i>
                 </a>';
 
-            if (Auth::user()->id === $rapat->user_id || Auth::user()->id === $rapat->pimpinan_id) {
+            if (Auth::user()->pegawai->username === $rapat->pegawai_username || Auth::user()->pegawai->username === $rapat->pimpinan_username) {
                 $aksi .= '<a href="' . url('rapat/agenda-rapat/' . $rapat->slug . '/edit') . '" class="mx-2 my-2">
                         <i class="fas fa-edit fa-lg" style="color: #FFD43B;" title="Edit Rapat"></i>
                       </a>';
@@ -47,12 +47,12 @@ trait AgendaRapatDatatables
                 }
             }
 
-            if (Auth::user()->id === $rapat->notulis_id && $rapat->status !== 'CANCELED' && $rapat->status == StatusAgendaRapat::STARTED->value) {
+            if (Auth::user()->pegawai->username === $rapat->notulis_username && $rapat->status !== 'CANCELED' && $rapat->status == StatusAgendaRapat::STARTED->value) {
                 $aksi .= '<a href="' . url('rapat/agenda-rapat/notulis/' . $rapat->slug . '/unggah-notulen') . '" class="btn btn-success btn-sm mx-2">Isi Notulen</a>';
             }
             $tugas = '';
             if (
-                in_array(Auth::user()->id, [$rapat->notulis_id, $rapat->user_id, $rapat->pimpinan_id]) &&
+                in_array(Auth::user()->pegawai->username, [$rapat->notulis_username, $rapat->pimpinan_username]) &&
                 in_array($rapat->status, ['COMPLETED', 'STARTED'])
             ) {
                 $tugas = '<a href="' . url('rapat/agenda-rapat/' . $rapat->slug . '/tugas') . '">
@@ -72,7 +72,7 @@ trait AgendaRapatDatatables
 
         $heads = [
             ['label' => 'No', 'width' => 5, 'class' => 'text-center'],
-            ['label' => 'Topik Rapat', 'width' => 25],
+            ['label' => 'Agenda Rapat', 'width' => 25],
             ['label' => 'Waktu Mulai', 'width' => 25, 'class' => 'text-center'],
             ['label' => 'Status', 'width' => 10, 'class' => 'text-center'],
             ['label' => 'Aksi', 'width' => 20, 'class' => 'text-center'],

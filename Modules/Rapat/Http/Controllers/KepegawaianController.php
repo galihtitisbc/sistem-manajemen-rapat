@@ -21,11 +21,10 @@ class KepegawaianController extends Controller
         try {
             $kepanitiaan = Kepanitiaan::with('pegawai')->where('id', $id)->firstOrFail();
             return response()->json($kepanitiaan);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'Kepanitiaan Tidak Ditemukan',
-            ], 200);
+            ], 404);
         }
     }
     public function create()

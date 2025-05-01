@@ -25,68 +25,6 @@
                 </tr>
             @endforeach
         </x-adminlte-datatable>
-        {{-- <table class="table table-striped mx-auto" id="agenda-rapat">
-            <thead class="text-center">
-                <tr>
-                    <th scope="col">No</th>
-                    <th scope="col">Topik Rapat</th>
-                    <th scope="col">Tanggal</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Aksi</th>
-                    <th scope="col">Tugas</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($rapats as $rapat)
-                    @php
-                        $startTime = Carbon::parse($rapat->waktu_mulai);
-                        $endTime = Carbon::parse($rapat->waktu_selesai);
-                    @endphp
-                    <tr>
-                        <td class="text-center">{{ $loop->iteration }}</td>
-                        <td style="width: 25%">
-                            {{ $rapat->agenda_rapat }}</td>
-                        <td class="text-center"> {{ $startTime->translatedFormat('l, d F Y, H:i') }} WIB</td>
-                        <td class="text-center">
-                            <span
-                                class="badge bg-{{ $statusRapat[$rapat->status][0] }}">{{ $statusRapat[$rapat->status][1] }}</span>
-                        </td>
-                        <td class="text-center">
-                            <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/detail') }}">
-                                <i class="fas fa-eye fa-lg" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="Detail Rapat"></i>
-                            </a>
-                            @if ($rapat->user_id == Auth::user()->id || $rapat->pimpinan_id == Auth::user()->id)
-                                <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/edit') }}" class="mx-2 my-2">
-                                    <i class="fas fa-edit fa-lg" style="color: #FFD43B;" data-bs-toggle="tooltip"
-                                        data-bs-placement="top" title="Edit Rapat"></i>
-                                </a>
-                                <a
-                                    @if ($rapat->status == 'CANCELED' || $rapat->status == 'SCHEDULED') href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/batal') }}"
-                                                onclick="return batalkanRapat(event,this.href,'{{ $rapat->status }}')" @endif>
-                                    <i class="fas {{ $statusKeaktifan[$rapat->status][0] }} fa-lg"
-                                        style="color: {{ $statusKeaktifan[$rapat->status][1] }};" data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        title="{{ $rapat->status == \Modules\Rapat\Http\Helper\StatusAgendaRapat::SCHEDULED->value ? 'Batalkan Rapat' : 'Jadwalkan Kembali' }}"></i>
-                                </a>
-                            @endif
-                            @if ($rapat->notulis_id == Auth::user()->id && $rapat->status != 'CANCELED')
-                                <a href="#" class="btn btn-success">Isi Notulen</a>
-                            @endif
-                        </td>
-                        <td class="text-center" style="width: 10%">
-                            @if ($rapat->notulis_id == Auth::user()->id || $rapat->user_id == Auth::user()->id || $rapat->pimpinan_id == Auth::user()->id)
-                                @if ($rapat->status == 'COMPLETED' || $rapat->status == 'STARTED')
-                                    <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/tugas') }}">
-                                        <span class="badge bg-primary p-2">Input Tugas</span>
-                                    </a>
-                                @endif
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table> --}}
     </x-adminlte-card>
 @endsection
 

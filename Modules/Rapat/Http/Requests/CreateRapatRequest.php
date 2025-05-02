@@ -65,10 +65,6 @@ class CreateRapatRequest extends FormRequest
         ];
     }
 
-    public function validated($data = [])
-    {
-        return validator($data, $this->rules(), $this->messages())->validate();
-    }
     /**
      * Determine if the user is authorized to make this request.
      *

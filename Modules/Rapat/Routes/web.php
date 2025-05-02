@@ -34,6 +34,8 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             Route::middleware(['pimpinanRapat'])->group(function () {
                 Route::get('/create', [RapatController::class, 'create']);
                 Route::get('/{rapatAgenda:slug}/edit', [RapatController::class, 'edit']);
+                Route::get('/ajax-edit/{rapatAgenda:slug}', [RapatController::class, 'ajaxEditRapat']);
+                Route::put('/{rapatAgenda:slug}/update', [RapatController::class, 'update']);
                 Route::get('/{rapatAgenda:slug}/batal', [RapatController::class, 'ubahStatusRapat']);
             });
             Route::middleware(['notulis'])->group(function () {

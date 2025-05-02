@@ -143,6 +143,11 @@
 @endsection
 
 @push('js')
+    <script src="{{ asset('assets/js/rapat/variable.js') }}"></script>
+    <script src="{{ asset('assets/js/rapat/pesertaRapatTable.js') }}"></script>
+    <script src="{{ asset('assets/js/rapat/pimpinanRapatTable.js') }}"></script>
+    <script src="{{ asset('assets/js/rapat/notulisRapatTable.js') }}"></script>
+    <script src="{{ asset('assets/js/rapat/kepanitiaanRapat.js') }}"></script>
     <script src="{{ asset('assets/js/rapat/createRapat.js') }}"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {

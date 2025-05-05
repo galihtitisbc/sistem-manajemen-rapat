@@ -143,16 +143,16 @@
 @endsection
 
 @push('js')
-    <script>
-        const slug = "{{ $slug }}";
-        const rapat = <?php echo json_encode($rapatAgenda); ?>;
-    </script>
     <script src="{{ asset('assets/js/rapat/variable.js') }}"></script>
     <script src="{{ asset('assets/js/rapat/pesertaRapatTable.js') }}"></script>
     <script src="{{ asset('assets/js/rapat/pimpinanRapatTable.js') }}"></script>
     <script src="{{ asset('assets/js/rapat/notulisRapatTable.js') }}"></script>
     <script src="{{ asset('assets/js/rapat/kepanitiaanRapat.js') }}"></script>
     <script src="{{ asset('assets/js/rapat/editRapat.js') }}"></script>
+    <script>
+        const slug = "{{ $slug }}";
+        const rapat = <?php echo json_encode($rapatAgenda); ?>;
+    </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

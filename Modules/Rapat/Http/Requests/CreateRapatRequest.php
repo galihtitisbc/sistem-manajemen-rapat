@@ -20,7 +20,7 @@ class CreateRapatRequest extends FormRequest
             'notulis_username'  => 'required|exists:pegawais,username',
             'nomor_surat'       => 'required|string|max:255',
             'waktu_mulai'       => 'required',
-            'waktu_selesai'     => 'nullable',
+            'waktu_selesai'     => 'required',
             'agenda_rapat'      => 'required|string',
             'tempat'            => 'required|string|max:255',
             'lampiran.*'        => 'nullable|file|mimes:jpg,jpeg,png,doc,docx,xls,xlsx,pdf,txt|max:2048',

@@ -38,9 +38,10 @@ $(document).ready(function () {
 
         let pilihanTempat = $("#pilihan-tempat").val();
         const waktuMulai = formatDateTimeLocalToYMDHIS($("#waktu-mulai").val());
-        const waktuSelesai = formatDateTimeLocalToYMDHIS(
-            $("#waktu-selesai").val()
-        );
+        const waktuSelesai =
+            pilihanWaktuSelesai.val() == "manual"
+                ? formatDateTimeLocalToYMDHIS($("#waktu-selesai").val())
+                : "SELESAI";
         let formData = new FormData(this);
 
         let tempat =
@@ -82,7 +83,7 @@ $(document).ready(function () {
                 });
                 setTimeout(() => {
                     window.location.href = "/rapat/agenda-rapat";
-                }, 2000);
+                }, 1500);
             },
             error: function (xhr) {
                 let errors = xhr.responseJSON.errors;
@@ -105,6 +106,11 @@ $(document).ready(function () {
                     });
                 });
 
+                Swal.fire({
+                    title: `Gagal`,
+                    text: `Gagal Menambahkan Agenda Rapat`,
+                    icon: `error`,
+                });
                 // Optional: scroll ke atas ke pesan error
                 $("html, body").animate(
                     {
@@ -112,11 +118,6 @@ $(document).ready(function () {
                     },
                     500
                 );
-                Swal.fire({
-                    title: `Gagal`,
-                    text: `Gagal Menambahkan Agenda Rapat`,
-                    icon: `error`,
-                });
             },
         });
     });

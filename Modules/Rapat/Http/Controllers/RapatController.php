@@ -142,9 +142,21 @@ class RapatController extends Controller
         $validated = $request->validated();
         try {
             $this->rapatService->update($validated, $rapatAgenda);
-            return response()->json($validated);
-        } catch (\Throwable $th) {
-            return response()->json($th->getMessage());
+            return response()->json([
+                'success' => true,
+                'title'   => 'Berhasil',
+                'message' => 'Rapat berhasil Diubah.',
+                'icon'    => 'success',
+            ]);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'fail'    => true,
+                'message' => $e->getMessage(),
+                'title'   => 'Gagak',
+                'icon'    => 'error',
+            ]);
+
         }
     }
     public function ubahStatusRapat(RapatAgenda $rapatAgenda)

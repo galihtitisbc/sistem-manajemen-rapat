@@ -12,6 +12,7 @@ use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Http\Helper\FlashMessage;
 use Modules\Rapat\Http\Requests\CreateRapatRequest;
+use Modules\Rapat\Http\Requests\UpdateRapatRequest;
 use Modules\Rapat\Http\Service\Implementation\RapatService;
 use Modules\Rapat\Http\Traits\AgendaRapatDatatables;
 
@@ -124,9 +125,10 @@ class RapatController extends Controller
     public function edit(RapatAgenda $rapatAgenda)
     {
         $kepanitiaan = Kepanitiaan::where('status', 'AKTIF')->get();
-        // $rapatAgenda->load(['rapatAgendaPimpinan', 'rapatAgendaNotulis', 'rapatAgendaPeserta', 'rapatLampiran']);
+        $rapatAgenda->load(['rapatAgendaPimpinan', 'rapatKepanitiaan', 'rapatKepanitiaan.pegawai', 'rapatAgendaNotulis', 'rapatAgendaPeserta', 'rapatLampiran']);
         return view('rapat::rapat.edit-rapat', [
             'slug'         => $rapatAgenda->slug,
+            'rapatAgenda'  => $rapatAgenda,
             'kepanitiaans' => $kepanitiaan,
         ]);
     }
@@ -135,7 +137,16 @@ class RapatController extends Controller
         $rapatAgenda->load(['rapatAgendaPimpinan', 'rapatKepanitiaan', 'rapatKepanitiaan.pegawai', 'rapatAgendaNotulis', 'rapatAgendaPeserta', 'rapatLampiran']);
         return response()->json($rapatAgenda);
     }
-
+    public function update(RapatAgenda $rapatAgenda, UpdateRapatRequest $request)
+    {
+        $validated = $request->validated();
+        try {
+            $this->rapatService->update($validated, $rapatAgenda);
+            return response()->json($validated);
+        } catch (\Throwable $th) {
+            return response()->json($th->getMessage());
+        }
+    }
     public function ubahStatusRapat(RapatAgenda $rapatAgenda)
     {
         try {

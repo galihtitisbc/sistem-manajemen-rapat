@@ -65,21 +65,20 @@ class RapatService
             throw new Exception("Gagal Mengubah Status Agenda Rapat : " . $th->getMessage());
         }
     }
-    public function update(array $data, $agendaRapatId)
+    public function update(array $data, $agendaRapat)
     {
         try {
-            $agendaRapat = RapatAgenda::with('rapatLampiran')->where('id', $agendaRapatId)->firstOrFail();
-            $oldTempat   = $agendaRapat->tempat;
+            $oldTempat = $agendaRapat->tempat;
             DB::beginTransaction();
             $agendaRapat->update([
-                'pimpinan_id'    => $data['pimpinan_id'],
-                'notulis_id'     => $data['notulis_id'],
-                'kepanitiaan_id' => $data['kepanitiaan_id'] == "" ? null : $data['kepanitiaan_id'],
-                'nomor_surat'    => $data['nomor_surat'],
-                'waktu_mulai'    => $data['waktu_mulai'],
-                'waktu_selesai'  => $data['waktu_selesai'] == "SELESAI" ? null : $data['waktu_selesai'],
-                'agenda_rapat'   => $data['agenda_rapat'],
-                'tempat'         => $data['tempat'],
+                'pimpinan_username' => $data['pimpinan_username'],
+                'notulis_username'  => $data['notulis_username'],
+                'kepanitiaan_id'    => $data['kepanitiaan_id'] == "" ? null : $data['kepanitiaan_id'],
+                'nomor_surat'       => $data['nomor_surat'],
+                'waktu_mulai'       => $data['waktu_mulai'],
+                'waktu_selesai'     => $data['waktu_selesai'] == "SELESAI" ? null : $data['waktu_selesai'],
+                'agenda_rapat'      => $data['agenda_rapat'],
+                'tempat'            => $data['tempat'],
             ]);
             if (isset($data['lampiran'])) {
                 //hapus lampiran lama

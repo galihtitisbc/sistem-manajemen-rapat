@@ -12,7 +12,7 @@
     <x-adminlte-card>
         <x-adminlte-card>
             <div class="d-flex justify-content-center">
-                <form method="POST" class="col-lg-8 col-md-6 col-sm-10" id="form-agenda-rapat" enctype="multipart/form-data">
+                <form class="col-lg-8 col-md-6 col-sm-10" id="form-update-rapat" enctype="multipart/form-data">
                     <div id="form-errors" class="alert alert-danger d-none">
                         <ul id="form-errors-list" class="mb-0"></ul>
                     </div>
@@ -145,6 +145,7 @@
 @push('js')
     <script>
         const slug = "{{ $slug }}";
+        const rapat = <?php echo json_encode($rapatAgenda); ?>;
     </script>
     <script src="{{ asset('assets/js/rapat/variable.js') }}"></script>
     <script src="{{ asset('assets/js/rapat/pesertaRapatTable.js') }}"></script>

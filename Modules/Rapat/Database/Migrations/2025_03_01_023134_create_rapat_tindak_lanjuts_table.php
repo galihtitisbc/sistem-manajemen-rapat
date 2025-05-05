@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Modules\Rapat\Http\Helper\KriteriaPenilaian;
 use Modules\Rapat\Http\Helper\StatusTindakLanjut;
 
@@ -18,7 +18,8 @@ class CreateRapatTindakLanjutsTable extends Migration
         Schema::create('rapat_tindak_lanjuts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('rapat_agenda_id')->constrained('rapat_agendas');
-            $table->foreignId('user_id')->constrained('users');
+            $table->string('pegawai_username');
+            $table->foreign('pegawai_username')->references('username')->on('pegawais');
             $table->text('deskripsi_tugas');
             $table->text('slug');
             $table->date('batas_waktu');

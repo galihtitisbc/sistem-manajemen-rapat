@@ -17,12 +17,12 @@
                 <hr>
             </div>
             <div class="col-8">
-                <p>{{ $peserta->name }}</p>
+                <p>{{ $peserta->nama }}</p>
                 <hr>
             </div>
         </div>
-        <form class="col-8 mx-auto" action="{{ url('/rapat/agenda-rapat/' . $rapat->slug . '/tugaskan/' . $peserta->id) }}"
-            method="POST">
+        <form class="col-8 mx-auto"
+            action="{{ url('/rapat/agenda-rapat/' . $rapat->slug . '/tugaskan/' . $peserta->username) }}" method="POST">
             @csrf
             <div class="mb-3">
                 <label for="deskripsi-tugas" class="form-label">Deskripsi Tugas :</label>

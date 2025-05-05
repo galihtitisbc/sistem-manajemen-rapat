@@ -72,7 +72,7 @@
                 <hr>
             </div>
         </div>
-        @if ($tindakLanjut->rapatAgenda->pimpinan_id == Auth::user()->id)
+        @if ($tindakLanjut->rapatAgenda->pimpinan_username == Auth::user()->pegawai->username)
             <hr>
             <form class="col-8 mx-auto"
                 action="{{ url('/rapat/tindak-lanjut-rapat/' . $tindakLanjut->slug . '/detail/simpan-tugas') }}"
@@ -115,7 +115,9 @@
                 </div>
             </form>
         @endif
-        @if ($tindakLanjut->user_id == Auth::user()->id && $tindakLanjut->penilaian != KriteriaPenilaian::BELUM_DINILAI->value)
+        @if (
+            $tindakLanjut->pegawai_username == Auth::user()->pegawai->username &&
+                $tindakLanjut->penilaian != KriteriaPenilaian::BELUM_DINILAI->value)
             <hr>
             <div class="col-8 mx-auto">
                 <div class="mb-3">

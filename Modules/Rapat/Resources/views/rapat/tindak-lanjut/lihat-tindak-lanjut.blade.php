@@ -64,7 +64,10 @@
                         '" class="btn btn-warning"> <i class="fas fa-edit" data-bs-toggle="tooltip"
                             data-bs-placement="top" title="Ubah Tugas"></i></a>';
                     $aksi = $btnDetail;
-                    if ($tindakLanjut->status == $belumSelesaiEnum && $tindakLanjut->user_id == Auth::user()->id) {
+                    if (
+                        $tindakLanjut->status == $belumSelesaiEnum &&
+                        $tindakLanjut->pegawai_username == Auth::user()->pegawai->username
+                    ) {
                         $aksi =
                             '<a href="' .
                             url('/rapat/tindak-lanjut-rapat/tugas/' . $tindakLanjut->slug . '/unggah-tugas') .
@@ -72,23 +75,23 @@
                     }
                     if (
                         $tindakLanjut->status == $belumSelesaiEnum &&
-                        $tindakLanjut->rapatAgenda->pimpinan_id == Auth::user()->id
+                        $tindakLanjut->rapatAgenda->pimpinan_username == Auth::user()->pegawai->username
                     ) {
                         $aksi = '-';
                     }
                     if (
                         $tindakLanjut->status == $selesaiEnum &&
-                        $tindakLanjut->user_id == Auth::user()->id &&
+                        $tindakLanjut->pegawai_username == Auth::user()->pegawai->username &&
                         $tindakLanjut->penilaian == KriteriaPenilaian::BELUM_DINILAI->value
                     ) {
                         $aksi .= $btnUpdate;
                     }
-                    if ($tindakLanjut->rapatAgenda->notulis_id == Auth::user()->id) {
+                    if ($tindakLanjut->rapatAgenda->notulis_username == Auth::user()->pegawai->username) {
                         $aksi = '-';
                     }
                     $data[] = [
                         $key + 1,
-                        $tindakLanjut->user->name,
+                        $tindakLanjut->pegawai->nama,
                         $tindakLanjut->deskripsi_tugas,
                         $tindakLanjut->batas_waktu,
                         $tindakLanjut->tanggal_selesai ? $tindakLanjut->tanggal_selesai : '-',

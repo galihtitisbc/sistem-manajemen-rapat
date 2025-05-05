@@ -6,7 +6,6 @@
 @stop
 
 @push('css')
-    @livewireStyles
 @endpush
 
 @section('content')
@@ -56,17 +55,8 @@
                 </div>
                 <div class="mb-3">
                     <label>Peserta</label>
-                    <x-adminlte-datatable id="usersTable" :heads="['Nama', 'Pilih']">
-                        @foreach ($users as $user)
-                            <tr>
-                                <td>{{ $user->name }}</td>
-                                <td style="text-align: center;">
-                                    <input type="checkbox" name="user_ids[]" value="{{ $user->id }}"
-                                        @if (isset($selectedUsers) && in_array($user->id, $selectedUsers)) checked @endif>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </x-adminlte-datatable>
+                    {{-- <input type="checkbox" name="pegawai_username[]" value="{{ $pegawai->username }}"
+                        @if (isset($selectedUsers) && in_array($pegawai->username, $selectedUsers)) checked @endif> --}}
                 </div>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </form>
@@ -75,4 +65,5 @@
 @endsection
 
 @push('js')
+    <script></script>
 @endpush

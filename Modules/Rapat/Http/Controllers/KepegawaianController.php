@@ -4,6 +4,7 @@ namespace Modules\Rapat\Http\Controllers;
 use App\Models\Core\User;
 use Illuminate\Routing\Controller;
 use Modules\Rapat\Entities\Kepanitiaan;
+use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Http\Helper\FlashMessage;
 use Modules\Rapat\Http\Requests\KepanitiaanRequest;
 
@@ -11,7 +12,7 @@ class KepegawaianController extends Controller
 {
     public function index()
     {
-        $kepanitiaans = Kepanitiaan::with('users')->get();
+        $kepanitiaans = Kepanitiaan::with('pegawai')->get();
         return view('rapat::kepegawaian.index', [
             'kepanitiaans' => $kepanitiaans,
         ]);
@@ -50,12 +51,12 @@ class KepegawaianController extends Controller
 
     public function edit(Kepanitiaan $kepanitiaan)
     {
-        $users         = User::all();
-        $selectedUsers = $kepanitiaan->users->pluck('id')->toArray();
+        $pegawais        = Pegawai::all();
+        $selectedPegawai = $kepanitiaan->pegawai->pluck('username')->toArray();
         return view('rapat::kepegawaian.edit', [
-            'kepanitiaan'   => $kepanitiaan,
-            'users'         => $users,
-            'selectedUsers' => $selectedUsers,
+            'kepanitiaan'     => $kepanitiaan,
+            'pegawais'        => $pegawais,
+            'selectedPegawai' => $selectedPegawai,
         ]);
     }
 

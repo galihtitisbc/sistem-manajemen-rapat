@@ -11,7 +11,7 @@
 @section('content')
     @php
         $heads = [
-            ['label' => 'ID', 'width' => 10, 'class' => 'text-center'],
+            ['label' => 'ID', 'width' => 5, 'class' => 'text-center'],
             ['label' => 'Nama', 'width' => 30, 'class' => 'text-center'],
             ['label' => 'Aksi', 'width' => 20, 'class' => 'text-center'],
         ];

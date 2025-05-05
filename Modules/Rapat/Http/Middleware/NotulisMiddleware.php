@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Rapat\Http\Middleware;
 
 use Closure;
@@ -17,9 +16,9 @@ class NotulisMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $user = Auth::user();
+        $pegawai     = Auth::user()->pegawai;
         $agendaRapat = $request->rapatAgenda;
-        if ($agendaRapat && ($agendaRapat->notulis_id === $user->id) || $agendaRapat && ($agendaRapat->pimpinan_id === $user->id)) {
+        if ($agendaRapat && ($agendaRapat->notulis_username === $pegawai->username) || $agendaRapat && ($agendaRapat->pimpinan_username === $pegawai->username)) {
             return $next($request);
         }
         abort(403);

@@ -15,7 +15,10 @@ class Pegawai extends Model
     // {
     //     return \Modules\Rapat\Database\factories\PegawaiFactory::new();
     // }
-
+    public function getRouteKeyName()
+    {
+        return 'username';
+    }
     public function user()
     {
         return $this->belongsTo(User::class, 'username', 'username');
@@ -36,5 +39,9 @@ class Pegawai extends Model
     public function rapatAgendaPeserta()
     {
         return $this->belongsToMany(Pegawai::class, 'rapat_pesertas', 'pegawai_username', 'rapat_agenda_id', 'username', 'id')->withPivot('status', 'is_penugasan');
+    }
+    public function rapatTindakLanjut()
+    {
+        return $this->hasMany(RapatTindakLanjut::class, 'pegawai_username', 'username', 'id');
     }
 }

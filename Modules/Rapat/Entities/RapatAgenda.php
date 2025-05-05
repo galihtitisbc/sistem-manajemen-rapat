@@ -57,6 +57,13 @@ class RapatAgenda extends Model
         }
         return StatusTindakLanjut::SELESAI->value;
     }
+    public function getStatusPersentasePenyelesaianAttribute()
+    {
+        $jmlhTindakLanjut = $this->rapatTindakLanjut->count();
+        $jmlSelesai       = $this->rapatTindakLanjut->where('status', StatusTindakLanjut::SELESAI->value)->count();
+        return round(($jmlSelesai / $jmlhTindakLanjut) * 100);
+
+    }
     // public function user()
     // {
     //     return $this->belongsTo(User::class, 'user_id');

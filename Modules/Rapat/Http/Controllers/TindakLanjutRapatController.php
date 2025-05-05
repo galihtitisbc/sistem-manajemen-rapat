@@ -1,11 +1,11 @@
 <?php
-
 namespace Modules\Rapat\Http\Controllers;
 
 use App\Models\Core\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Entities\RapatTindakLanjut;
 use Modules\Rapat\Http\Helper\FlashMessage;
@@ -24,31 +24,43 @@ class TindakLanjutRapatController extends Controller
     public function index()
     {
         // $agendaRapat = RapatAgenda::with('rapatTindakLanjut')->showTindakLanjut(Auth::user()->id)->get();
-        $tindakLanjutRapat = RapatTindakLanjut::listAgendaRapatHaveTugas(Auth::user()->id)->with('rapatAgenda')->get();
-        $data = [];
+        $tindakLanjutRapat  = RapatTindakLanjut::listAgendaRapatHaveTugas(Auth::user()->pegawai->username)->with('rapatAgenda')->orderBy('created_at', 'desc')->get();
+        $data               = [];
         $statusTindakLanjut = [
-            'SELESAI' => 'success',
+            'SELESAI'       => 'success',
             'BELUM_SELESAI' => 'danger',
         ];
-        $status = '';
-        $btnDetail = '';
+        // $status         = '';
+        $btnDetail      = '';
         $addedAgendaIds = [];
-        $no = 0;
+        $no             = 0;
+        $persentase     = 0;
         foreach ($tindakLanjutRapat as $key => $tindakLanjut) {
             if (in_array($tindakLanjut->rapat_agenda_id, $addedAgendaIds)) {
                 continue;
             }
-            $status =         '<div class="text-center">
-                 <span class="badge badge-' . $statusTindakLanjut[$tindakLanjut->rapatAgenda->status_tindak_lanjut] . '">
-                     ' . $tindakLanjut->rapatAgenda->status_tindak_lanjut  . '
-                 </span></div>';
+
+            // $status = '<div class="text-center">
+            //      <span class="badge badge-' . $statusTindakLanjut[$tindakLanjut->rapatAgenda->status_tindak_lanjut] . '">
+            //          ' . $tindakLanjut->rapatAgenda->status_tindak_lanjut . '
+            //      </span></div>';
+            if ($tindakLanjut->rapatAgenda->pimpinan_username == Auth::user()->pegawai->username) {
+                $persentase = $tindakLanjut->rapatAgenda->status_persentase_penyelesaian . '%';
+            } else {
+                $persentase = '<div class="text-center">
+     <span class="badge badge-' . $statusTindakLanjut[$tindakLanjut->status] . '">
+         ' . $tindakLanjut->status . '
+     </span></div>';
+
+            }
             $btnDetail = '<div class="text-center"> <a href="' . url('rapat/tindak-lanjut-rapat/' . $tindakLanjut->rapatAgenda->slug . '/detail') . '" class="btn btn-secondary">
                         Detail</a></div>';
             $data[] = [
                 '<div class="text-center">' . ($no + 1) . '</div>',
                 $tindakLanjut->rapatAgenda->agenda_rapat,
-                $status,
-                $btnDetail
+                // $status,
+                $persentase,
+                $btnDetail,
             ];
             $addedAgendaIds[] = $tindakLanjut->rapat_agenda_id;
             $no++;
@@ -56,11 +68,11 @@ class TindakLanjutRapatController extends Controller
         $heads = [
             ['label' => 'No', 'width' => 5, 'class' => 'text-center'],
             ['label' => 'Agenda Rapat', 'width' => 40],
-            ['label' => 'Status', 'width' => 10, 'class' => 'text-center'],
+            ['label' => 'Penyelesaian', 'width' => 10, 'class' => 'text-center'],
             ['label' => 'Aksi', 'width' => 10, 'class' => 'text-center'],
         ];
         $config = [
-            'data' => $data,
+            'data'    => $data,
             'columns' => [
                 ['className' => 'text-center'],
                 null,
@@ -70,63 +82,64 @@ class TindakLanjutRapatController extends Controller
         ];
         return view('rapat::rapat.tindak-lanjut.index', [
             'agendaRapat' => $tindakLanjutRapat,
-            'config'         => $config,
-            'heads'          => $heads
+            'config'      => $config,
+            'heads'       => $heads,
         ]);
     }
     public function show(RapatAgenda $rapatAgenda)
     {
-        $tindakLanjut = $rapatAgenda->rapatTindakLanjut()->userHaveTugas(Auth::user(), $rapatAgenda)->with(['rapatTindakLanjutFile', 'rapatAgenda', 'user'])->get();
+        $tindakLanjut = $rapatAgenda->rapatTindakLanjut()->pegawaiHaveTugas(Auth::user()->pegawai, $rapatAgenda)->with(['rapatTindakLanjutFile', 'rapatAgenda', 'pegawai'])->get();
         return view('rapat::rapat.tindak-lanjut.lihat-tindak-lanjut', [
             'rapat'         => $rapatAgenda,
-            'tindakLanjuts' => $tindakLanjut
+            'tindakLanjuts' => $tindakLanjut,
         ]);
     }
     public function isiPenugasan(RapatAgenda $rapatAgenda)
     {
         $rapatAgenda->load(['rapatAgendaPimpinan', 'rapatAgendaNotulis', 'rapatAgendaPeserta']);
-        $data = [];
+        $data         = [];
         $btnPenugasan = '';
         foreach ($rapatAgenda->rapatAgendaPeserta as $key => $peserta) {
-            if ($peserta->id == $rapatAgenda->notulis_id) {
+            if ($peserta->username == $rapatAgenda->notulis_username) {
                 continue;
             }
-            if ($peserta->id == $rapatAgenda->pimpinan_id) {
+            if ($peserta->username == $rapatAgenda->pimpinan_username) {
                 continue;
             }
             if ($peserta->pivot->is_penugasan == false) {
-                $btnPenugasan = '<a href="' . url('/rapat/agenda-rapat/' . $rapatAgenda->slug . '/tugaskan/' . $peserta->id) . '" class="btn btn-primary">Tugaskan</a>';
+                $btnPenugasan = '<a href="' . url('/rapat/agenda-rapat/' . $rapatAgenda->slug . '/tugaskan/' . $peserta->username) . '" class="btn btn-primary">Tugaskan</a>';
             } else {
                 $btnPenugasan = ' <button class="btn btn-danger">Sudah Ditugaskan</button>';
             }
             $data[] = [
                 $key + 1,
-                $peserta->name,
-                $btnPenugasan
+                $peserta->nama,
+                $btnPenugasan,
             ];
         }
         return view('rapat::rapat.tindak-lanjut.input-penugasan', [
             'rapat' => $rapatAgenda,
-            'data'  => $data
+            'data'  => $data,
         ]);
     }
-    public function tugaskanPesertaRapat(RapatAgenda $rapatAgenda, User $user)
+    public function tugaskanPesertaRapat(RapatAgenda $rapatAgenda, Pegawai $pegawai)
     {
-        $this->isUserArePesertaRapat($rapatAgenda, $user);
+        $this->isUserArePesertaRapat($rapatAgenda, $pegawai);
         return view('rapat::rapat.tindak-lanjut.tugaskan', [
             'rapat'   => $rapatAgenda,
-            'peserta' => $user,
+            'peserta' => $pegawai,
         ]);
     }
-    public function createTugasPesertaRapat(RapatAgenda $rapatAgenda, User $user, CreateTugasPesertaRapatRequest $request)
+    public function createTugasPesertaRapat(RapatAgenda $rapatAgenda, Pegawai $pegawai, CreateTugasPesertaRapatRequest $request)
     {
-        $this->isUserArePesertaRapat($rapatAgenda, $user);
+        $this->isUserArePesertaRapat($rapatAgenda, $pegawai);
         $validated = $request->validated();
         try {
-            $this->tindakLanjutRapatService->createTugasPesertaRapat($rapatAgenda, $user, $validated);
+            $this->tindakLanjutRapatService->createTugasPesertaRapat($rapatAgenda, $pegawai, $validated);
             FlashMessage::success('Tugas Berhasil Ditambahkan');
             return redirect()->to('/rapat/agenda-rapat/' . $rapatAgenda->slug . '/tugas');
         } catch (\Throwable $e) {
+            dd($e->getMessage());
             FlashMessage::error("Gagal Menambahkan Tugas");
             return redirect()->to('/rapat/agenda-rapat/' . $rapatAgenda->slug . '/tugas');
         }
@@ -135,7 +148,7 @@ class TindakLanjutRapatController extends Controller
     public function showUploadTugas(RapatTindakLanjut $rapatTindakLanjut)
     {
         return view('rapat::rapat.tindak-lanjut.upload-tugas', [
-            'rapatTindakLanjut' => $rapatTindakLanjut
+            'rapatTindakLanjut' => $rapatTindakLanjut,
         ]);
     }
     public function uploadTugas(RapatTindakLanjut $rapatTindakLanjut, UploadTugasTindakLanjutRapatRequest $request)
@@ -153,7 +166,7 @@ class TindakLanjutRapatController extends Controller
     public function showEditTugas(RapatTindakLanjut $rapatTindakLanjut)
     {
         return view('rapat::rapat.tindak-lanjut.ubah-tugas', [
-            'rapatTindakLanjut' => $rapatTindakLanjut
+            'rapatTindakLanjut' => $rapatTindakLanjut,
         ]);
     }
     public function editTugas(RapatTindakLanjut $rapatTindakLanjut, UploadTugasTindakLanjutRapatRequest $request)
@@ -172,7 +185,7 @@ class TindakLanjutRapatController extends Controller
     {
         $rapatTindakLanjut->load(['rapatTindakLanjutFile', 'rapatAgenda']);
         return view('rapat::rapat.tindak-lanjut.detail-tugas', [
-            'tindakLanjut' => $rapatTindakLanjut
+            'tindakLanjut' => $rapatTindakLanjut,
         ]);
     }
     public function simpanTugas(RapatTindakLanjut $rapatTindakLanjut, Request $request)
@@ -192,9 +205,9 @@ class TindakLanjutRapatController extends Controller
     }
 
     // untuk cek apakah user adalah peserta
-    function isUserArePesertaRapat(RapatAgenda $rapatAgenda, User $user)
+    public function isUserArePesertaRapat(RapatAgenda $rapatAgenda, Pegawai $user)
     {
-        if (!$rapatAgenda->rapatAgendaPeserta->contains($user)) {
+        if (! $rapatAgenda->rapatAgendaPeserta->contains($user)) {
             abort(404);
         }
         return;

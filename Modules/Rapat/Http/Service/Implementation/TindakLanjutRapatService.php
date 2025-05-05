@@ -1,28 +1,26 @@
 <?php
-
 namespace Modules\Rapat\Http\Service\Implementation;
 
-use App\Models\Core\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Entities\RapatTindakLanjut;
 use Modules\Rapat\Http\Helper\StatusTindakLanjut;
-use Modules\Rapat\Http\Requests\CreateTugasPesertaRapatRequest;
 
 class TindakLanjutRapatService
 {
-    public function createTugasPesertaRapat(RapatAgenda $rapatAgenda, User $user, array $data)
+    public function createTugasPesertaRapat(RapatAgenda $rapatAgenda, Pegawai $pegawai, array $data)
     {
         try {
             DB::beginTransaction();
             $rapatAgenda->rapatTindakLanjut()->create([
-                'user_id'           =>  $user->id,
-                'deskripsi_tugas'   =>  $data['deskripsi'],
-                'batas_waktu'       =>  $data['batas_waktu']
+                'pegawai_username' => $pegawai->username,
+                'deskripsi_tugas'  => $data['deskripsi'],
+                'batas_waktu'      => $data['batas_waktu'],
             ]);
             $rapatAgenda->rapatAgendaPeserta()->syncWithoutDetaching([
-                $user->id => ['is_penugasan' => 1]
+                $pegawai->username => ['is_penugasan' => 1],
             ]);
             DB::commit();
         } catch (\Throwable $th) {
@@ -46,10 +44,10 @@ class TindakLanjutRapatService
                 $tindakLanjutRapat->rapatTindakLanjutFile()->createMany($namafileTugas);
             }
             $tindakLanjutRapat->update([
-                'status'            => StatusTindakLanjut::SELESAI->value,
-                'tugas'             =>  $data['tugas'],
-                'kendala'           => $data['kendala'],
-                'tanggal_selesai'   => now()
+                'status'          => StatusTindakLanjut::SELESAI->value,
+                'tugas'           => $data['tugas'],
+                'kendala'         => $data['kendala'],
+                'tanggal_selesai' => now(),
             ]);
             DB::commit();
         } catch (\Throwable $e) {
@@ -78,10 +76,10 @@ class TindakLanjutRapatService
                 $tindakLanjutRapat->rapatTindakLanjutFile()->createMany($namafileTugas);
             }
             $tindakLanjutRapat->update([
-                'status'            => StatusTindakLanjut::SELESAI->value,
-                'tugas'             =>  $data['tugas'],
-                'kendala'           => $data['kendala'],
-                'tanggal_selesai'   => now()
+                'status'          => StatusTindakLanjut::SELESAI->value,
+                'tugas'           => $data['tugas'],
+                'kendala'         => $data['kendala'],
+                'tanggal_selesai' => now(),
             ]);
             DB::commit();
         } catch (\Throwable $e) {
@@ -94,7 +92,7 @@ class TindakLanjutRapatService
             DB::beginTransaction();
             $tindakLanjut->update([
                 'penilaian' => $data['kriteria_penilaian'],
-                'komentar' => $data['komentar_penugasan'],
+                'komentar'  => $data['komentar_penugasan'],
             ]);
             DB::commit();
         } catch (\Throwable $th) {

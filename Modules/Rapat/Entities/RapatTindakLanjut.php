@@ -1,10 +1,8 @@
 <?php
-
 namespace Modules\Rapat\Entities;
 
-use App\Models\Core\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class RapatTindakLanjut extends Model
@@ -31,32 +29,33 @@ class RapatTindakLanjut extends Model
         });
     }
 
-    public function scopeUserHaveTugas($query, $user, $rapatAgenda)
+    public function scopePegawaiHaveTugas($query, $pegawai, $rapatAgenda)
     {
-        $query->when($rapatAgenda->pimpinan_id == $user->id || $rapatAgenda->user_id == $user->id || $rapatAgenda->notulis_id == $user->id, function ($q) use ($rapatAgenda) {
+        //untuk menampilkan daftar tugas pada agenda rapat tertentu
+        $query->when($rapatAgenda->pimpinan_username == $pegawai->username || $rapatAgenda->notulis_username == $pegawai->username, function ($q) use ($rapatAgenda) {
             $q->where('rapat_agenda_id', $rapatAgenda->id);
-        }, function ($q) use ($user) {
-            $q->where('user_id', $user->id);
+        }, function ($q) use ($pegawai) {
+            $q->where('pegawai_username', $pegawai->username);
         });
         return $query;
     }
 
-    public function scopeListAgendaRapatHaveTugas($query, $userId)
+    public function scopeListAgendaRapatHaveTugas($query, $username)
     {
-        $query->whereHas('rapatAgenda', function ($q) use ($userId) {
-            $q->where('pimpinan_id', $userId)
-                ->orWhere('notulis_id', $userId);
+        $query->whereHas('rapatAgenda', function ($q) use ($username) {
+            $q->where('pimpinan_username', $username)
+                ->orWhere('notulis_username', $username);
         })
-            ->orWhere('user_id', $userId);
+            ->orWhere('pegawai_username', $username);
         return $query;
     }
     public function rapatAgenda()
     {
         return $this->belongsTo(RapatAgenda::class, 'rapat_agenda_id');
     }
-    public function user()
+    public function pegawai()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(Pegawai::class, 'pegawai_username', 'username', 'id');
     }
     public function rapatTindakLanjutFile()
     {
@@ -64,9 +63,9 @@ class RapatTindakLanjut extends Model
     }
     private static function generateUniqueSlug($judul, $ignoreId = null)
     {
-        $slug = Str::slug($judul);
+        $slug         = Str::slug($judul);
         $originalSlug = $slug;
-        $count = 1;
+        $count        = 1;
         while (static::where('slug', $slug)
             ->when($ignoreId, function ($query) use ($ignoreId) {
                 $query->where('id', '!=', $ignoreId);
@@ -78,4 +77,5 @@ class RapatTindakLanjut extends Model
 
         return $slug;
     }
+
 }

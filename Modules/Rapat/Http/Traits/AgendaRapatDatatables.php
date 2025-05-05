@@ -71,12 +71,12 @@ trait AgendaRapatDatatables
         }
 
         $heads = [
-            ['label' => 'No', 'width' => 5, 'class' => 'text-center'],
+            ['label' => 'No', 'width' => 6, 'class' => 'text-center'],
             ['label' => 'Agenda Rapat', 'width' => 25],
             ['label' => 'Waktu Mulai', 'width' => 25, 'class' => 'text-center'],
             ['label' => 'Status', 'width' => 10, 'class' => 'text-center'],
             ['label' => 'Aksi', 'width' => 20, 'class' => 'text-center'],
-            ['label' => 'Tugas', 'width' => 15, 'class' => 'text-center'],
+            ['label' => 'Tugas', 'width' => 10, 'class' => 'text-center'],
         ];
 
         $config = [

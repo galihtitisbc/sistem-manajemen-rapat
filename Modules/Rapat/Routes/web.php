@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Rapat\Http\Controllers\ExportPdfController;
 use Modules\Rapat\Http\Controllers\KepegawaianController;
 use Modules\Rapat\Http\Controllers\NotulisController;
 use Modules\Rapat\Http\Controllers\RapatController;
 use Modules\Rapat\Http\Controllers\RapatDashboardController;
+use Modules\Rapat\Http\Controllers\RiwayatRapatController;
 use Modules\Rapat\Http\Controllers\TindakLanjutRapatController;
 
 /*
@@ -70,5 +72,11 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
                 Route::patch('/{kepanitiaan}/change-status', [KepegawaianController::class, 'changeStatus']);
             });
         });
+        Route::prefix('/riwayat-rapat')->group(function () {
+            Route::get('/', [RiwayatRapatController::class, 'index']);
+            Route::get('/{rapatAgenda:slug}/generate-pdf', [ExportPdfController::class, 'generateNotulenRapat']);
+        });
     });
 });
+//function untuk menampilkan halaman konfirmasi kesediaan mengikuti rapat
+Route::get('/rapat/agenda-rapat/konfirmasi', [RapatController::class, 'konfirmasiKesediaanRapat']);

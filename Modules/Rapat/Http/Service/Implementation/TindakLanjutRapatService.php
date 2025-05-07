@@ -36,7 +36,7 @@ class TindakLanjutRapatService
                 $fileTugas = [];
                 foreach ($data['file_tugas'] as $index => $fileTugas) {
                     $fileName = time() . "_{$index}_" . $fileTugas->getClientOriginalName();
-                    Storage::putFileAs('tindakLanjut', $fileTugas, $fileName);
+                    Storage::putFileAs('public/tindakLanjut', $fileTugas, $fileName);
                     $namafileTugas[] = [
                         'nama_file' => $fileName,
                     ];
@@ -61,14 +61,14 @@ class TindakLanjutRapatService
             if (isset($data['file_tugas'])) {
                 if ($tindakLanjutRapat->rapatTindakLanjutFile->isNotEmpty()) {
                     foreach ($tindakLanjutRapat->rapatTindakLanjutFile as $file) {
-                        Storage::delete('tindakLanjut/' . $file->nama_file);
+                        Storage::delete('public/tindakLanjut/' . $file->nama_file);
                     }
                     $tindakLanjutRapat->rapatTindakLanjutFile()->delete();
                 }
                 $fileTugas = [];
                 foreach ($data['file_tugas'] as $index => $fileTugas) {
                     $fileName = time() . "_{$index}_" . $fileTugas->getClientOriginalName();
-                    Storage::putFileAs('tindakLanjut', $fileTugas, $fileName);
+                    Storage::putFileAs('public/tindakLanjut', $fileTugas, $fileName);
                     $namafileTugas[] = [
                         'nama_file' => $fileName,
                     ];

@@ -44,7 +44,7 @@ class TindakLanjutRapatController extends Controller
             //      <span class="badge badge-' . $statusTindakLanjut[$tindakLanjut->rapatAgenda->status_tindak_lanjut] . '">
             //          ' . $tindakLanjut->rapatAgenda->status_tindak_lanjut . '
             //      </span></div>';
-            if ($tindakLanjut->rapatAgenda->pimpinan_username == Auth::user()->pegawai->username) {
+            if ($tindakLanjut->rapatAgenda->pimpinan_username == Auth::user()->pegawai->username || $tindakLanjut->rapatAgenda->notulis_username == Auth::user()->pegawai->username) {
                 $persentase = $tindakLanjut->rapatAgenda->status_persentase_penyelesaian . '%';
             } else {
                 $persentase = '<div class="text-center">

@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Rapat\Http\Service\Implementation;
 
 use Illuminate\Support\Facades\DB;
@@ -14,16 +13,16 @@ class NotulisService
         try {
             DB::beginTransaction();
             $notulen = $rapatAgenda->rapatNotulen()->create([
-                'catatan' => $data['catatan_rapat']
+                'catatan' => $data['catatan_rapat'],
             ]);
-            $namafileNotulen = [];
+            $namafileNotulen     = [];
             $namafileDokumentasi = [];
             //upload notulen file
             if (isset($data['notulen_file'])) {
                 $fileNotulen = [];
                 foreach ($data['notulen_file'] as $index => $fileNotulen) {
                     $fileName = time() . "_{$index}_" . $fileNotulen->getClientOriginalName();
-                    Storage::putFileAs('notulen', $fileNotulen, $fileName);
+                    Storage::putFileAs('public/notulen', $fileNotulen, $fileName);
                     $namafileNotulen[] = [
                         'nama_file' => $fileName,
                     ];
@@ -34,36 +33,36 @@ class NotulisService
                 $fileNotulen = [];
                 foreach ($data['dokumentasi_file'] as $index => $fileDokumentasi) {
                     $fileName = time() . "_{$index}_" . $fileDokumentasi->getClientOriginalName();
-                    Storage::putFileAs('dokumentasi-rapat', $fileDokumentasi, $fileName);
+                    Storage::putFileAs('public/dokumentasi-rapat', $fileDokumentasi, $fileName);
                     $namafileDokumentasi[] = [
                         'foto' => $fileName,
                     ];
                 }
             }
             //ganti status peserta rapat
-            $pesertaId = [];
+            $pesertaUsername = [];
             foreach ($data['peserta_hadir'] as $peserta) {
-                $pesertaId[$peserta] = [
-                    'status' => StatusPesertaRapat::HADIR->value
+                $pesertaUsername[$peserta] = [
+                    'status' => StatusPesertaRapat::HADIR->value,
                 ];
             }
             //peserta yang tidak hadir
-            $pesertaTidakHadirId = [];
-            $pesertaTidakHadir = $rapatAgenda->rapatAgendaPeserta()->whereNotIn('user_id', $data['peserta_hadir'])->get();
+            $pesertaTidakHadirUsername = [];
+            $pesertaTidakHadir         = $rapatAgenda->rapatAgendaPeserta()->whereNotIn('pegawai_username', $data['peserta_hadir'])->get();
             foreach ($pesertaTidakHadir as $peserta) {
-                $pesertaTidakHadirId[$peserta->id] = [
-                    'status' => StatusPesertaRapat::TIDAK_HADIR->value
+                $pesertaTidakHadirUsername[$peserta->username] = [
+                    'status' => StatusPesertaRapat::TIDAK_HADIR->value,
                 ];
             }
             //update status peserta rapat yang hadir
-            $rapatAgenda->rapatAgendaPeserta()->syncWithoutDetaching($pesertaId);
+            $rapatAgenda->rapatAgendaPeserta()->syncWithoutDetaching($pesertaUsername);
             //update status peserta rapat yang tidak hadir
-            $rapatAgenda->rapatAgendaPeserta()->syncWithoutDetaching($pesertaTidakHadirId);
+            $rapatAgenda->rapatAgendaPeserta()->syncWithoutDetaching($pesertaTidakHadirUsername);
 
             $notulen->notulenFiles()->createMany($namafileNotulen);
             $rapatAgenda->rapatDokumentasi()->createMany($namafileDokumentasi);
             $rapatAgenda->update([
-                'status' => StatusAgendaRapat::COMPLETED->value
+                'status' => StatusAgendaRapat::COMPLETED->value,
             ]);
             DB::commit();
         } catch (\Throwable $th) {

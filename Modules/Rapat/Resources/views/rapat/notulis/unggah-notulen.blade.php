@@ -39,7 +39,7 @@
             foreach ($agendaRapat->rapatAgendaPeserta as $key => $rapat) {
                 $checkBox =
                     ' <input class="form-check-input" type="checkbox" name="peserta_hadir[]" value="' .
-                    $rapat->id .
+                    $rapat->username .
                     '"' .
                     (in_array($rapat->id, old('peserta_hadir', [])) ? ' checked' : '') .
                     '>';
@@ -49,7 +49,7 @@
                     '">' .
                     StatusPesertaRapat::from($rapat->pivot->status)->label() .
                     '</span>';
-                $data[] = [$key + 1, $rapat->name, '0989089890', $status, $checkBox];
+                $data[] = [$key + 1, $rapat->nama, '0989089890', $status, $checkBox];
             }
             $config = [
                 'data' => $data,
@@ -63,8 +63,8 @@
                 ],
             ];
         @endphp
-        <div class="col-sm-12 col-lg-7 mx-auto">
-            <h4 class="text-center">Membahas Fasilitas Baru</h4>
+        <div class="col-sm-12 col-lg-9 mx-auto">
+            <h4 class="text-center">{{ $agendaRapat->agenda_rapat }}</h4>
             <hr>
             <form action="{{ url('/rapat/agenda-rapat/notulis/' . $agendaRapat->slug . '/unggah-notulen') }}" method="POST"
                 enctype="multipart/form-data">
@@ -105,7 +105,7 @@
                                     <p style="font-size: 1.2rem">Pimpinan Rapat :</p>
                                 </span>
                                 <button
-                                    class="btn btn-secondary px-4 mt-1">{{ $agendaRapat->rapatAgendaPimpinan->name }}</button>
+                                    class="btn btn-secondary px-4 mt-1">{{ $agendaRapat->rapatAgendaPimpinan->nama }}</button>
                             </div>
                         </div>
                     </div>

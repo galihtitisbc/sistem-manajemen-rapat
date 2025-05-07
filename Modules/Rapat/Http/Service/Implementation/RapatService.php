@@ -34,7 +34,7 @@ class RapatService
                 $namaLampiran = [];
                 foreach ($data['lampiran'] as $index => $lampiran) {
                     $fileName = time() . "_{$index}_" . $lampiran->getClientOriginalName();
-                    Storage::putFileAs('rapat', $lampiran, $fileName);
+                    Storage::putFileAs('public/rapat', $lampiran, $fileName);
                     $namaLampiran[] = [
                         'nama_file' => $fileName,
                     ];
@@ -84,7 +84,7 @@ class RapatService
                 //hapus lampiran lama
                 if ($agendaRapat->rapatLampiran->isNotEmpty()) {
                     foreach ($agendaRapat->rapatLampiran as $lampiran) {
-                        Storage::delete('rapat/' . $lampiran->nama_file);
+                        Storage::delete('public/rapat/' . $lampiran->nama_file);
                     }
                     $agendaRapat->rapatLampiran()->delete();
                 }
@@ -92,7 +92,7 @@ class RapatService
                 $namaLampiran = [];
                 foreach ($data['lampiran'] as $index => $lampiran) {
                     $fileName = time() . "_{$index}_" . $lampiran->getClientOriginalName();
-                    Storage::putFileAs('rapat', $lampiran, $fileName);
+                    Storage::putFileAs('public/rapat', $lampiran, $fileName);
                     $namaLampiran[] = [
                         'nama_file' => $fileName,
                     ];

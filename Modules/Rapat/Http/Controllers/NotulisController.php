@@ -1,9 +1,6 @@
 <?php
-
 namespace Modules\Rapat\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Http\Helper\FlashMessage;
@@ -22,16 +19,15 @@ class NotulisController extends Controller
         $rapat = $rapatAgenda->load(['rapatAgendaPimpinan', 'rapatAgendaNotulis', 'rapatAgendaPeserta']);
 
         return view('rapat::rapat.notulis.unggah-notulen', [
-            'agendaRapat' => $rapat
+            'agendaRapat' => $rapat,
         ]);
     }
     public function storeNotulen(RapatAgenda $rapatAgenda, UploadNotulenRequest $request)
     {
         $validated = $request->validated();
-        // dd($validated);
         try {
             $this->notulisService->storeNotulen($rapatAgenda, $validated);
-            FlashMessage::success('Status rapat berhasil diubah');
+            FlashMessage::success('Notulen Berhasil Diubah');
             return redirect()->to('/rapat/agenda-rapat');
         } catch (\Throwable $th) {
             dd($th);

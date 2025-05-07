@@ -170,4 +170,8 @@ class RapatController extends Controller
             return redirect()->to('/rapat/agenda-rapat');
         }
     }
+    public function konfirmasiKesediaanRapat()
+    {
+        return view('rapat::rapat.konfirmasi.konfirmasi-kesediaan-rapat');
+    }
 }

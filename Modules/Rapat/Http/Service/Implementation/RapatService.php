@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Http\Helper\StatusAgendaRapat;
 use Modules\Rapat\Jobs\CreateMeetingZoom;
+use Modules\Rapat\Jobs\WhatsappSender;
 
 class RapatService
 {
@@ -45,6 +46,7 @@ class RapatService
                 CreateMeetingZoom::dispatch($agendaRapat);
             }
             $agendaRapat->rapatAgendaPeserta()->attach($data['peserta_rapat']);
+            WhatsappSender::dispatch($agendaRapat, 'rapat', 'tambahRapat');
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -61,6 +63,7 @@ class RapatService
                 $agendaRapat->status = StatusAgendaRapat::SCHEDULED->value;
                 $agendaRapat->save();
             }
+            WhatsappSender::dispatch($agendaRapat, 'rapat', 'batalRapat');
         } catch (\Throwable $th) {
             throw new Exception("Gagal Mengubah Status Agenda Rapat : " . $th->getMessage());
         }
@@ -103,6 +106,7 @@ class RapatService
                 CreateMeetingZoom::dispatch($agendaRapat);
             }
             $agendaRapat->rapatAgendaPeserta()->sync($data['peserta_rapat']);
+            WhatsappSender::dispatch($agendaRapat, 'rapat', 'updateRapat');
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();

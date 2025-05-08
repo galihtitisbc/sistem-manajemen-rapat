@@ -26,7 +26,7 @@ class CreateRapatAgendasTable extends Migration
             $table->foreign('notulis_username')->references('username')->on('pegawais');
 
             $table->string('nomor_surat');
-            $table->string('slug')->nullable();
+            $table->text('slug')->nullable();
             $table->dateTime('waktu_mulai');
             $table->dateTime('waktu_selesai')->nullable();
             $table->text('agenda_rapat');

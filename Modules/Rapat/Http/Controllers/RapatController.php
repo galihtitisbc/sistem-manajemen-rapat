@@ -115,7 +115,7 @@ class RapatController extends Controller
             ]);
         } catch (\Throwable $e) {
             return response()->json([
-                'fail'    => true,
+                'success' => false,
                 'message' => $e->getMessage(),
                 'title'   => 'Gagak',
                 'icon'    => 'error',

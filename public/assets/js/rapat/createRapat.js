@@ -81,9 +81,11 @@ $(document).ready(function () {
                     text: `${response.message}`,
                     icon: `${response.icon}`,
                 });
-                setTimeout(() => {
-                    window.location.href = "/rapat/agenda-rapat";
-                }, 1500);
+                if (response.success == true) {
+                    setTimeout(() => {
+                        window.location.href = "/rapat/agenda-rapat";
+                    }, 1500);
+                }
             },
             error: function (xhr) {
                 let errors = xhr.responseJSON.errors;

@@ -15,28 +15,37 @@
             color: #333;
         }
 
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
         .header {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             border-bottom: 2px solid #000;
             padding-bottom: 20px;
             margin-bottom: 20px;
+            text-align: left;
         }
 
-        .header h1 {
-            font-size: 18px;
+        .header img {
+            width: 100px;
+            margin-bottom: -200px;
+            margin-left: 10px;
+            height: auto;
+        }
+
+        .header .header-text {
+            margin-top: -50px;
+            margin-right: -50px;
+        }
+
+        .header h5 {
+            text-align: center;
             font-weight: bold;
             margin: 5px 0;
         }
 
         .header p {
-            font-size: 14px;
+            text-align: center;
+            font-size: 10px;
             margin: 5px 0;
         }
 
@@ -170,28 +179,36 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</h1>
-            <h1>POLITEKNIK NEGERI BANYUWANGI</h1>
-            <p>Jl. Raya Jember kilometer 13 Labanasem, Kabat, Banyuwangi, 68461</p>
-            <p>Telepon / Faks : (0333) 636780</p>
-            <p>E-mail : poliwangi@poliwangi.ac.id ; Website : http://www.poliwangi.ac.id</p>
+            <img src="{{ $logo }}" alt="Logo">
+            <div class="header-text">
+                <h5>KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</h5>
+                <h5>POLITEKNIK NEGERI BANYUWANGI</h5>
+                <p>Jl. Raya Jember kilometer 13 Labanasem, Kabat, Banyuwangi, 68461</p>
+                <p>Telepon / Faks : (0333) 636780</p>
+                <p>E-mail : poliwangi@poliwangi.ac.id ; Website : http://www.poliwangi.ac.id</p>
+            </div>
         </div>
         <div class="header-line"></div>
-        {{-- @php
-            echo '<pre>';
-            print_r($rapat);
-            echo '</pre>';
-
-        @endphp --}}
+        @php
+            use Carbon\Carbon;
+            Carbon::setLocale('id');
+        @endphp
+        @php
+            // echo '<pre>';
+            // print_r($logo ?? '');
+            // echo '</pre>';
+            $waktuMulai = Carbon::parse($rapat['waktu_mulai'])->translatedFormat('l, d F Y H:i');
+        @endphp
         <div class="meeting-info">
-            <h2>{{ $tanggal ?? 'Apr 24, 2025' }} {{ $rapat['agenda_rapat'] }}</h2>
+            <h2>{{ $waktuMulai }}</h2>
         </div>
 
         <div class="meeting-basis">
-            <h3 class="heading">Dasar Rapat :</h3>
+            <h3 class="heading">Lampiran Rapat :</h3>
             <ol>
                 @for ($i = 0, $count = count($rapat['rapat_lampiran']); $i < $count; $i++)
-                    <li> {{ $rapat['rapat_lampiran'][$i]['nama_file'] }} <a href="">[link]</a>
+                    <li> {{ $rapat['rapat_lampiran'][$i]['nama_file'] }} <a
+                            href="{{ $rapat['rapat_lampiran'][$i]['nama_file'] }}">[link]</a>
                     </li>
                 @endfor
             </ol>
@@ -206,9 +223,8 @@
             </ol>
         </div>
         <div class="agenda">
-            <h3>
-                <p class="heading">Agenda Rapat :</p> {{ $rapat['agenda_rapat'] }}
-            </h3>
+            <h3 class="heading">Agenda Rapat :</h3>
+            <p>{{ $rapat['agenda_rapat'] }}</p>
         </div>
         <div class="attendees">
             <h3 class="heading">Notulis :</h3>
@@ -232,9 +248,41 @@
                 <p> {!! strip_tags($rapat['rapat_notulen']['catatan'], '<b><i><u><p><div><span><ul><ol><li><br>') !!}</p>
             @endif
         </div>
+        <div class="attendees">
+            <h3 class="heading">Penugasan Tindak Lanjut Rapat</h3>
+            <table>
+                <thead>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Tugas</th>
+                    <th>Status</th>
+                </thead>
+                <tbody>
+                    @if (count($rapat['rapat_tindak_lanjut']) > 0)
+                        @for ($i = 0; $i < ($count = count($rapat['rapat_tindak_lanjut'])); $i++)
+                            <tr>
+                                <td>{{ $i + 1 }}</td>
+                                <td>{{ ucfirst(strtolower($rapat['rapat_tindak_lanjut'][$i]['pegawai']['nama'])) }}
+                                </td>
+                                <td>{{ $rapat['rapat_tindak_lanjut'][$i]['deskripsi_tugas'] }}</td>
+                                <td>{{ $rapat['rapat_tindak_lanjut'][$i]['status'] }}</td>
+                            </tr>
+                        @endfor
+                    @else
+                        <h3>Tidak Ada Tugas</h3>
+                    @endif
+                </tbody>
+            </table>
+        </div>
         <div class="documentation">
-            <h3>Dokumentasi:</h3>
-
+            <h3 class="heading">Dokumentasi Rapat:</h3>
+            <br>
+            @for ($i = 0; $i < ($count = count($rapat['rapat_dokumentasi'])); $i++)
+                <img width="600" height="500"
+                    src="{{ asset('storage/dokumentasi-rapat/' . $rapat['rapat_dokumentasi'][$i]['foto']) }}"
+                    alt="error">
+                <br>
+            @endfor
         </div>
 
         <div class="footer">

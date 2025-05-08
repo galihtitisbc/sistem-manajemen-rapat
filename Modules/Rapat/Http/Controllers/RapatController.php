@@ -2,6 +2,7 @@
 namespace Modules\Rapat\Http\Controllers;
 
 use App\Models\Core\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,7 @@ use Modules\Rapat\Entities\Kepanitiaan;
 use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Http\Helper\FlashMessage;
+use Modules\Rapat\Http\Helper\StatusAgendaRapat;
 use Modules\Rapat\Http\Requests\CreateRapatRequest;
 use Modules\Rapat\Http\Requests\UpdateRapatRequest;
 use Modules\Rapat\Http\Service\Implementation\RapatService;
@@ -27,10 +29,20 @@ class RapatController extends Controller
 
     public function index()
     {
+        $rapat = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)->orderBy('created_at', 'desc')->get();
+        $now   = Carbon::now('Asia/Jakarta')->toDateTimeString();
+        foreach ($rapat as $rapatItem) {
+            $tglMulai = Carbon::parse($rapatItem->waktu_mulai)->toDateTimeString();
+            if ($now >= $tglMulai && $rapatItem->status == StatusAgendaRapat::SCHEDULED->value) {
+                $rapatItem->status = StatusAgendaRapat::STARTED->value;
+                $rapatItem->save();
+            }
+        }
+        $table = $this->getAgendaRapatDatatables($rapat);
         // mengambil data agenda rapat dari trait AgendaRapatDatatables
         return view('rapat::rapat.index', [
-            'config' => $this->getAgendaRapatDatatables()['config'],
-            'heads'  => $this->getAgendaRapatDatatables()['heads'],
+            'config' => $table['config'],
+            'heads'  => $table['heads'],
         ]);
     }
     public function create()

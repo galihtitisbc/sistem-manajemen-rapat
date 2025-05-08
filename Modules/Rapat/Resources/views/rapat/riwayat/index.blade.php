@@ -40,22 +40,24 @@
     <div class="row">
         <div class="col-12 ">
             <x-adminlte-card>
-                <div class="col-lg-9 col-sm-12 mx-auto my-3">
-                    <div class="row">
-                        <div class="col-lg-5 col-sm-12 mb-2">
-                            <input type="text" class="form-control" placeholder="Cari Agenda Rapat">
-                        </div>
-                        <div class="col-lg-3 col-sm-12 mb-2">
-                            <input type="text" class="form-control" placeholder="Dari Tanggal">
-                        </div>
-                        <div class="col-lg-3 col-sm-12 mb-2">
-                            <input type="text" class="form-control" placeholder="Sampai Tanggal">
-                        </div>
-                        <div class="col-lg-1 col-sm-12">
-                            <button class="btn btn-primary col-sm-12"><i class="fas fa-search"></i></button>
+                <form action="" method="get">
+                    <div class="col-lg-9 col-sm-12 mx-auto my-3">
+                        <div class="row">
+                            <div class="col-lg-5 col-sm-12 mb-2">
+                                <input type="text" name="cari" class="form-control" placeholder="Cari Agenda Rapat">
+                            </div>
+                            <div class="col-lg-3 col-sm-12 mb-2">
+                                <input type="text" name="dari_tgl" class="form-control" placeholder="Dari Tanggal">
+                            </div>
+                            <div class="col-lg-3 col-sm-12 mb-2">
+                                <input type="text" name="sampai_tgl" class="form-control" placeholder="Sampai Tanggal">
+                            </div>
+                            <div class="col-lg-1 col-sm-12">
+                                <button class="btn btn-primary col-sm-12"><i class="fas fa-search"></i></button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
                 <table class="table table-hover">
                     <thead>
                         <tr>
@@ -73,10 +75,12 @@
                                     {{ ($rapats->currentPage() - 1) * $rapats->perPage() + $loop->iteration }}</th>
                                 <td>{{ $rapat->agenda_rapat }}</td>
                                 <td>{{ $rapat->waktu_mulai }}</td>
-                                <td class="text-center"><a href="#">
-                                        <i class="fas fa-eye fa-lg" data-bs-toggle="tooltip" data-bs-placement="top"
-                                            title="Detail Rapat"></i></a></td>
                                 <td class="text-center"><a
+                                        href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/detail') }}">
+                                        <i class="fas fa-eye fa-lg" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="Detail Rapat"></i>
+                                    </a></td>
+                                <td class="text-center"><a target="_blank"
                                         href="{{ url('/rapat/riwayat-rapat/' . $rapat->slug . '/generate-pdf') }}">
                                         <i class="fas fa-download fa-lg"></i>
                                     </a></td>

@@ -74,9 +74,9 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         });
         Route::prefix('/riwayat-rapat')->group(function () {
             Route::get('/', [RiwayatRapatController::class, 'index']);
-            Route::get('/{rapatAgenda:slug}/generate-pdf', [ExportPdfController::class, 'generateNotulenRapat']);
         });
     });
 });
 //function untuk menampilkan halaman konfirmasi kesediaan mengikuti rapat
 Route::get('/rapat/agenda-rapat/konfirmasi', [RapatController::class, 'konfirmasiKesediaanRapat']);
+Route::get('/rapat/riwayat-rapat/{rapatAgenda:slug}/generate-pdf', [ExportPdfController::class, 'generateNotulenRapat']);

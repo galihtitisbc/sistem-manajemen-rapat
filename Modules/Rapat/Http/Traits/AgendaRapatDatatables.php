@@ -3,15 +3,13 @@ namespace Modules\Rapat\Http\Traits;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Http\Helper\StatusAgendaRapat;
 
 trait AgendaRapatDatatables
 {
-    public function getAgendaRapatDatatables()
+    public function getAgendaRapatDatatables($rapats)
     {
         Carbon::setLocale('id');
-        $rapats      = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)->orderBy('created_at', 'desc')->get();
         $statusRapat = [
             'CANCELED'  => ['danger', 'Di Batalkan'],
             'SCHEDULED' => ['warning', 'Di Jadwalkan'],
@@ -59,7 +57,9 @@ trait AgendaRapatDatatables
                         <span class="badge bg-primary p-2">Input Tugas</span>
                       </a>';
             }
-
+            if ($rapat->status == StatusAgendaRapat::COMPLETED->value && Auth::user()->pegawai->username !== $rapat->notulis_username) {
+                continue;
+            }
             $data[] = [
                 '<div class="text-center">' . ($index + 1) . '</div>',
                 $rapat->agenda_rapat,

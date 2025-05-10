@@ -42,11 +42,14 @@ class RapatService
                 }
                 $agendaRapat->rapatLampiran()->createMany($namaLampiran);
             }
-            if ($data['tempat'] == 'zoom') {
-                CreateMeetingZoom::dispatch($agendaRapat);
-            }
             $agendaRapat->rapatAgendaPeserta()->attach($data['peserta_rapat']);
-            WhatsappSender::dispatch($agendaRapat, 'rapat', 'tambahRapat');
+            if ($data['tempat'] == 'zoom') {
+                CreateMeetingZoom::dispatch($agendaRapat)->chain([
+                    new WhatsappSender($agendaRapat, 'rapat', 'tambahRapat'),
+                ]);
+            } else {
+                WhatsappSender::dispatch($agendaRapat, 'rapat', 'tambahRapat');
+            }
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -59,11 +62,12 @@ class RapatService
             if (StatusAgendaRapat::SCHEDULED->value == $agendaRapat->status) {
                 $agendaRapat->status = StatusAgendaRapat::CANCELLED->value;
                 $agendaRapat->save();
+                WhatsappSender::dispatch($agendaRapat, 'rapat', 'batalRapat');
             } else {
                 $agendaRapat->status = StatusAgendaRapat::SCHEDULED->value;
                 $agendaRapat->save();
+                WhatsappSender::dispatch($agendaRapat, 'rapat', 'jadwalUlangRapat');
             }
-            WhatsappSender::dispatch($agendaRapat, 'rapat', 'batalRapat');
         } catch (\Throwable $th) {
             throw new Exception("Gagal Mengubah Status Agenda Rapat : " . $th->getMessage());
         }
@@ -103,10 +107,13 @@ class RapatService
                 $agendaRapat->rapatLampiran()->createMany($namaLampiran);
             }
             if ($oldTempat != 'zoom' && $data['tempat'] == 'zoom') {
-                CreateMeetingZoom::dispatch($agendaRapat);
+                CreateMeetingZoom::dispatch($agendaRapat)->chain([
+                    new WhatsappSender($agendaRapat, 'rapat', 'updateRapat'),
+                ]);
+            } else {
+                WhatsappSender::dispatch($agendaRapat, 'rapat', 'updateRapat');
             }
             $agendaRapat->rapatAgendaPeserta()->sync($data['peserta_rapat']);
-            WhatsappSender::dispatch($agendaRapat, 'rapat', 'updateRapat');
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();

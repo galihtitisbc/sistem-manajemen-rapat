@@ -3,13 +3,17 @@ namespace Modules\Rapat\Http\Service\Implementation;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use Modules\Rapat\Http\Helper\KriteriaPenilaian;
 
 class WhatsappService
 {
+    public function __construct()
+    {
+        Carbon::setLocale('id');
+    }
     public function sendMessageRapat($agendaRapat, $status)
     {
         try {
-            Carbon::setLocale('id');
             $tempatRapat = '';
             $headerMsg   = '';
             switch ($status) {
@@ -17,7 +21,10 @@ class WhatsappService
                     $headerMsg = "*[Pemberitahuan Rapat]*\n\n";
                     break;
                 case 'batalRapat':
-                    $headerMsg = "*[Pemberitahuan Batal Rapat]*\n\n";
+                    $headerMsg = "*[Pemberitahuan Pembatalan Rapat]*\n\n";
+                    break;
+                case 'jadwalUlangRapat':
+                    $headerMsg = "*[Pemberitahuan Jadwal Ulang Rapat]*\n\n";
                     break;
                 case 'updateRapat':
                     $headerMsg = "*[Pemberitahuan Perubahan Rapat]*\n\n";
@@ -51,15 +58,71 @@ class WhatsappService
 
             //mengirim pesan
             $response = Http::post(env('WA_URL'), [
-                'session' => 'default',
-                'chatId'  => '6282264349638@c.us',
-                'text'    => $message,
+                'session'     => 'default',
+                'chatId'      => '6282264349638@c.us',
+                'text'        => $message,
+                'linkPreview' => false,
             ]);
         } catch (\Throwable $th) {
-
+            logger()->error($th->getMessage());
         }
     }
-    public function sendMessagePenugasan($agendaRapat)
-    {}
+    public function sendMessagePenugasan($agendaRapat, $tindakLanjut, $status)
+    {
+        $agenda            = $agendaRapat->agenda_rapat;
+        $pegawai           = $tindakLanjut->pegawai->nama;
+        $tanggalPenugasan  = Carbon::parse($tindakLanjut->created_at)->translatedFormat('l, d F Y');
+        $deskripsiTugas    = $tindakLanjut->deskripsi_tugas;
+        $batasPenyelesaian = Carbon::parse($tindakLanjut->batas_waktu)->translatedFormat('l, d F Y');
+        try {
+            $message = "📢 *Pemberitahuan Penugasan Tugas Rapat*\n\n" .
+                "Anda telah ditugaskan dalam agenda rapat berikut:\n\n" .
+                "👤 *Nama Pegawai:* {$pegawai}" . " \n\n" .
+                "📝 *Agenda Rapat:* {$agenda}" . " \n\n" .
+                "📅 *Tanggal Penugasan:* {$tanggalPenugasan}" . " \n\n" .
+                "🧾 *Deskripsi Tugas:* {$deskripsiTugas}" . " \n\n" .
+                "⏳ *Batas Penyelesaian:* {$batasPenyelesaian}" . " \n\n" .
+                "Mohon untuk menyelesaikan tugas sesuai dengan batas waktu yang telah ditentukan.\n\n" .
+                "Terima kasih.\n" .
+                "" .
+                "Politeknik Negeri Banyuwangi";
 
+            Http::post(env('WA_URL'), [
+                'session'     => 'default',
+                'chatId'      => '6282264349638@c.us',
+                'text'        => $message,
+                'linkPreview' => false,
+            ]);
+        } catch (\Throwable $th) {
+            logger()->error($th->getMessage());
+        }
+
+    }
+    public function sendMessagePenilaian($agendaRapat, $tindakLanjut, $status)
+    {
+
+        try {
+            $namaAgenda   = $agendaRapat->agenda_rapat;
+            $namaPimpinan = $agendaRapat->rapatAgendaPimpinan->nama;
+            $nilai        = KriteriaPenilaian::from($tindakLanjut->penilaian)->label();
+            $komentar     = $tindakLanjut->komentar;
+            $message      = "✅ *Penilaian Tugas Rapat*\n\n" .
+                "Tugas yang Anda kumpulkan pada agenda *{$namaAgenda}* telah dinilai oleh pimpinan rapat.\n\n" .
+                "👤 *Pimpinan:* {$namaPimpinan}" . "\n\n" .
+                "📝 *Kriteria Penilaian:* {$nilai}" . "\n\n" .
+                "💬 *Komentar:* {$komentar}" . "\n\n" .
+                "Terima kasih atas kontribusi Anda." . "\n\n" .
+                "_Sistem Manajemen Rapat_";
+
+            Http::post(env('WA_URL'), [
+                'session'     => 'default',
+                'chatId'      => '6282264349638@c.us',
+                'text'        => $message,
+                'linkPreview' => false,
+            ]);
+
+        } catch (\Throwable $th) {
+            logger()->error($th->getMessage());
+        }
+    }
 }

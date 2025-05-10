@@ -7,6 +7,7 @@ use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Entities\RapatTindakLanjut;
 use Modules\Rapat\Http\Helper\StatusTindakLanjut;
+use Modules\Rapat\Jobs\WhatsappSender;
 
 class TindakLanjutRapatService
 {
@@ -14,7 +15,7 @@ class TindakLanjutRapatService
     {
         try {
             DB::beginTransaction();
-            $rapatAgenda->rapatTindakLanjut()->create([
+            $tindakLanjut = $rapatAgenda->rapatTindakLanjut()->create([
                 'pegawai_username' => $pegawai->username,
                 'deskripsi_tugas'  => $data['deskripsi'],
                 'batas_waktu'      => $data['batas_waktu'],
@@ -22,6 +23,12 @@ class TindakLanjutRapatService
             $rapatAgenda->rapatAgendaPeserta()->syncWithoutDetaching([
                 $pegawai->username => ['is_penugasan' => 1],
             ]);
+            WhatsappSender::dispatch(
+                agendaRapat: $rapatAgenda,
+                type: 'penugasan',
+                status: 'penugasan',
+                tindakLanjut: $tindakLanjut
+            );
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -94,6 +101,13 @@ class TindakLanjutRapatService
                 'penilaian' => $data['kriteria_penilaian'],
                 'komentar'  => $data['komentar_penugasan'],
             ]);
+            WhatsappSender::dispatch(
+                agendaRapat: $tindakLanjut->rapatAgenda,
+                type: 'penilaian',
+                status: 'penilaian',
+                tindakLanjut: $tindakLanjut
+            );
+
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();

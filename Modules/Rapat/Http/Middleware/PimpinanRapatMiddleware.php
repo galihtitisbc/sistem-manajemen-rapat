@@ -16,8 +16,7 @@ class PimpinanRapatMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $user = Auth::user();
-
+        $user        = Auth::user();
         $agendaRapat = $request->rapatAgenda;
         if ($user->hasAnyRole(['pimpinan', 'pejabat', 'sekretaris'])) {
             return $next($request);

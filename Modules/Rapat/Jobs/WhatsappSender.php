@@ -16,16 +16,18 @@ class WhatsappSender implements ShouldQueue
     private $agendaRapat;
     private $type;
     private $status;
+    private $tindakLanjut;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(RapatAgenda $agendaRapat, $type, $status)
+    public function __construct(RapatAgenda $agendaRapat, $type, $status, $tindakLanjut = null)
     {
-        $this->agendaRapat = $agendaRapat;
-        $this->type        = $type;
-        $this->status      = $status;
+        $this->agendaRapat  = $agendaRapat;
+        $this->type         = $type;
+        $this->status       = $status;
+        $this->tindakLanjut = $tindakLanjut;
     }
 
     /**
@@ -38,7 +40,9 @@ class WhatsappSender implements ShouldQueue
         if ($this->type === 'rapat') {
             $whatsappService->sendMessageRapat($this->agendaRapat, $this->status);
         } else if ($this->type === 'penugasan') {
-            $whatsappService->sendMessagePenugasan($this->agendaRapat);
+            $whatsappService->sendMessagePenugasan($this->agendaRapat, $this->tindakLanjut, 'penugasan');
+        } else if ($this->type == 'penilaian') {
+            $whatsappService->sendMessagePenilaian($this->agendaRapat, $this->tindakLanjut, 'penilaian');
         }
     }
 }

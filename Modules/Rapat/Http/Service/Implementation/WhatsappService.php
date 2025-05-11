@@ -2,6 +2,7 @@
 namespace Modules\Rapat\Http\Service\Implementation;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Modules\Rapat\Http\Helper\KriteriaPenilaian;
 
@@ -40,8 +41,8 @@ class WhatsappService
                 $tempatRapat =
                 "📍 *Tempat:* \n" . $agendaRapat->tempat . "\n\n";
             }
-            $waktuSelesai = $agendaRapat->waktu_selesai == null ? "SELESAI" : Carbon::parse($agendaRapat->waktu_selesai)->format('H:i');
-            $message      = $headerMsg .
+            $waktuSelesai    = $agendaRapat->waktu_selesai == null ? "SELESAI" : Carbon::parse($agendaRapat->waktu_selesai)->format('H:i');
+            $messageTemplate = $headerMsg .
             "Yth. Bapak/Ibu/Saudara/i,\n\n" .
             "Dengan hormat, kami mengundang Anda untuk hadir dalam rapat yang akan dilaksanakan dengan rincian sebagai berikut:\n\n" .
             "📌 *Agenda Rapat:* \n" . $agendaRapat->agenda_rapat . "\n\n" .
@@ -50,19 +51,27 @@ class WhatsappService
             $tempatRapat .
             "👤 *Pimpinan Rapat:* \n" . $agendaRapat->rapatAgendaPimpinan->nama . "\n\n" .
             "✅ *Konfirmasi Kesediaan Hadir:* \n" .
-            "🔗 " . $agendaRapat->calendar_link . "\n\n" .
+            "🔗 {{link_konfirmasi}}\n\n" .
             "📅 *Tambahkan ke Google Calendar:* \n" .
             "🔗 " . $agendaRapat->calendar_link . "\n\n" .
                 "Demikian pemberitahuan ini kami sampaikan. Mohon kesediaannya untuk hadir tepat waktu. Atas perhatian dan partisipasinya, kami ucapkan terima kasih.\n\n" .
                 "Hormat kami,\nPoliteknik Negeri Banyuwangi";
 
-            //mengirim pesan
-            $response = Http::post(env('WA_URL'), [
-                'session'     => 'default',
-                'chatId'      => '6282264349638@c.us',
-                'text'        => $message,
-                'linkPreview' => false,
-            ]);
+            foreach ($agendaRapat->rapatAgendaPeserta as $value) {
+                $data = [
+                    'username'        => $value->username,
+                    'rapat_agenda_id' => $agendaRapat->id,
+                ];
+                $linkKonfirmasiKesediaanRapat = $this->createKesediaanRapatLink($data);
+                $message                      = str_replace('{{link_konfirmasi}}', $linkKonfirmasiKesediaanRapat, $messageTemplate);
+                //mengirim pesan
+                $response = Http::post(env('WA_URL'), [
+                    'session'     => 'default',
+                    'chatId'      => '6282264349638@c.us',
+                    'text'        => $message,
+                    'linkPreview' => false,
+                ]);
+            }
         } catch (\Throwable $th) {
             logger()->error($th->getMessage());
         }
@@ -75,7 +84,7 @@ class WhatsappService
         $deskripsiTugas    = $tindakLanjut->deskripsi_tugas;
         $batasPenyelesaian = Carbon::parse($tindakLanjut->batas_waktu)->translatedFormat('l, d F Y');
         try {
-            $message = "📢 *Pemberitahuan Penugasan Tugas Rapat*\n\n" .
+            $message = "📢 *Pemberitahuan Penugasan Tindak Lanjut Rapat*\n\n" .
                 "Anda telah ditugaskan dalam agenda rapat berikut:\n\n" .
                 "👤 *Nama Pegawai:* {$pegawai}" . " \n\n" .
                 "📝 *Agenda Rapat:* {$agenda}" . " \n\n" .
@@ -107,7 +116,7 @@ class WhatsappService
             $nilai        = KriteriaPenilaian::from($tindakLanjut->penilaian)->label();
             $komentar     = $tindakLanjut->komentar;
             $message      = "✅ *Penilaian Tugas Rapat*\n\n" .
-                "Tugas yang Anda kumpulkan pada agenda *{$namaAgenda}* telah dinilai oleh pimpinan rapat.\n\n" .
+                "Tugas yang Anda kumpulkan pada agenda rapat \n\n" . " :*{$namaAgenda}* " . "\n\n" . "telah dinilai oleh pimpinan rapat.\n\n" .
                 "👤 *Pimpinan:* {$namaPimpinan}" . "\n\n" .
                 "📝 *Kriteria Penilaian:* {$nilai}" . "\n\n" .
                 "💬 *Komentar:* {$komentar}" . "\n\n" .
@@ -124,5 +133,10 @@ class WhatsappService
         } catch (\Throwable $th) {
             logger()->error($th->getMessage());
         }
+    }
+    public function createKesediaanRapatLink($data)
+    {
+        $token = Crypt::encrypt($data);
+        return env('APP_URL') . '/rapat/agenda-rapat/konfirmasi/' . $token;
     }
 }

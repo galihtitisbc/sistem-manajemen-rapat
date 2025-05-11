@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Modules\Rapat\Entities\Kepanitiaan;
@@ -13,6 +14,7 @@ use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Http\Helper\FlashMessage;
 use Modules\Rapat\Http\Helper\StatusAgendaRapat;
+use Modules\Rapat\Http\Helper\StatusPesertaRapat;
 use Modules\Rapat\Http\Requests\CreateRapatRequest;
 use Modules\Rapat\Http\Requests\UpdateRapatRequest;
 use Modules\Rapat\Http\Service\Implementation\RapatService;
@@ -182,8 +184,34 @@ class RapatController extends Controller
             return redirect()->to('/rapat/agenda-rapat');
         }
     }
-    public function konfirmasiKesediaanRapat()
+    public function formKonfirmasiKesediaanRapat($token)
     {
-        return view('rapat::rapat.konfirmasi.konfirmasi-kesediaan-rapat');
+        $data             = Crypt::decrypt($token);
+        $agendaRapat      = RapatAgenda::where('id', $data['rapat_agenda_id'])->first();
+        $pegawai          = Pegawai::where('username', $data['username'])->first();
+        $statusKonfirmasi = '';
+        if (! $agendaRapat->rapatAgendaPeserta->contains($pegawai)) {
+            abort(403);
+        }
+        $statusKonfirmasi = optional(
+            $pegawai->rapatAgendaPeserta
+                ->firstWhere('pivot.rapat_agenda_id', $agendaRapat->id)
+        )->pivot->status ?? null;
+        return view('rapat::rapat.konfirmasi.konfirmasi-kesediaan-rapat', [
+            'rapat'            => $agendaRapat,
+            'pegawai'          => $pegawai,
+            'statusKonfirmasi' => $statusKonfirmasi,
+        ]);
+    }
+    public function konfirmasiKesediaanRapat(RapatAgenda $rapatAgenda, Pegawai $pegawai, Request $request)
+    {
+        try {
+            $rapatAgenda->rapatAgendaPeserta()->syncWithoutDetaching([
+                $pegawai->username => ['status' => StatusPesertaRapat::from($request->status)->value],
+            ]);
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            return redirect()->back();
+        }
     }
 }

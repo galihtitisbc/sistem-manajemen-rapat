@@ -43,6 +43,7 @@ class RapatService
                 $agendaRapat->rapatLampiran()->createMany($namaLampiran);
             }
             $agendaRapat->rapatAgendaPeserta()->attach($data['peserta_rapat']);
+
             if ($data['tempat'] == 'zoom') {
                 CreateMeetingZoom::dispatch($agendaRapat)->chain([
                     new WhatsappSender($agendaRapat, 'rapat', 'tambahRapat'),

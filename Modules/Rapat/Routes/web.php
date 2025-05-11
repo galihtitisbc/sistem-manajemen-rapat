@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Http\Controllers\ExportPdfController;
 use Modules\Rapat\Http\Controllers\KepegawaianController;
 use Modules\Rapat\Http\Controllers\NotulisController;
@@ -9,7 +8,6 @@ use Modules\Rapat\Http\Controllers\RapatController;
 use Modules\Rapat\Http\Controllers\RapatDashboardController;
 use Modules\Rapat\Http\Controllers\RiwayatRapatController;
 use Modules\Rapat\Http\Controllers\TindakLanjutRapatController;
-use Modules\Rapat\Jobs\WhatsappSender;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,9 +78,8 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     });
 });
 //function untuk menampilkan halaman konfirmasi kesediaan mengikuti rapat
-Route::get('/rapat/agenda-rapat/konfirmasi', [RapatController::class, 'konfirmasiKesediaanRapat']);
+Route::get('/rapat/agenda-rapat/konfirmasi/{token}', [RapatController::class, 'formKonfirmasiKesediaanRapat']);
+Route::post('/rapat/agenda-rapat/konfirmasi/{rapatAgenda:slug}/{pegawai}', [RapatController::class, 'konfirmasiKesediaanRapat']);
+
+//untuk generate pdf laporan hasil rapat
 Route::get('/rapat/riwayat-rapat/{rapatAgenda:slug}/generate-pdf', [ExportPdfController::class, 'generateNotulenRapat']);
-Route::get('/send-wa', function () {
-    $agendaRapat = RapatAgenda::find(3);
-    WhatsappSender::dispatch($agendaRapat);
-});

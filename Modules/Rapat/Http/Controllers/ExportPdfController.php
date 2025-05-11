@@ -20,6 +20,18 @@ class ExportPdfController extends Controller
             $logoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
 
+        $rapatDokumentasi = $rapatAgenda->rapatDokumentasi->map(function ($item) {
+            $path = public_path('/storage/dokumentasi-rapat/' . $item->foto);
+            if (file_exists($path)) {
+                $type              = pathinfo($path, PATHINFO_EXTENSION);
+                $data              = file_get_contents($path);
+                $item->foto_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            } else {
+                $item->foto_base64 = null;
+            }
+            return $item;
+        });
+
         $html = view('rapat::rapat.pdf.notulen', [
             'rapat' => $rapatAgenda->toArray(),
             'logo'  => $logoBase64,

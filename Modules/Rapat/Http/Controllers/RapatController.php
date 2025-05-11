@@ -134,7 +134,7 @@ class RapatController extends Controller
     }
     public function downloadLampiran($file)
     {
-        return Storage::download('/rapat/' . $file);
+        return Storage::download('/public/rapat/' . $file);
     }
     public function edit(RapatAgenda $rapatAgenda)
     {

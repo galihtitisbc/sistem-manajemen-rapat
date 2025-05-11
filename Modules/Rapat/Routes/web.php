@@ -57,6 +57,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             Route::post('/{rapatTindakLanjut:slug}/detail/simpan-tugas', [TindakLanjutRapatController::class, 'simpanTugas']);
         });
         Route::prefix('agenda-rapat/notulis')->group(function () {
+            Route::get('/{file}/download', [NotulisController::class, 'downloadNotulen']);
             Route::middleware(['notulis'])->group(function () {
                 Route::get('/{rapatAgenda:slug}/unggah-notulen', [NotulisController::class, 'formUnggahNotulen']);
                 Route::post('/{rapatAgenda:slug}/unggah-notulen', [NotulisController::class, 'storeNotulen']);

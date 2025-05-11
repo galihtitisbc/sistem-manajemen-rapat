@@ -2,6 +2,7 @@
 namespace Modules\Rapat\Http\Controllers;
 
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Storage;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Http\Helper\FlashMessage;
 use Modules\Rapat\Http\Requests\UploadNotulenRequest;
@@ -27,10 +28,15 @@ class NotulisController extends Controller
         $validated = $request->validated();
         try {
             $this->notulisService->storeNotulen($rapatAgenda, $validated);
-            FlashMessage::success('Notulen Berhasil Diubah');
+            FlashMessage::success('Notulen Berhasil Unggah');
             return redirect()->to('/rapat/agenda-rapat');
         } catch (\Throwable $th) {
-            dd($th);
+            FlashMessage::success('Notulen Gagal Di Unggah');
+            return redirect()->to('/rapat/agenda-rapat');
         }
+    }
+    public function downloadNotulen($file)
+    {
+        return Storage::download('/public/notulen/' . $file);
     }
 }

@@ -41,7 +41,7 @@
                     ' <input class="form-check-input" type="checkbox" name="peserta_hadir[]" value="' .
                     $rapat->username .
                     '"' .
-                    (in_array($rapat->id, old('peserta_hadir', [])) ? ' checked' : '') .
+                    (in_array($rapat->username, old('peserta_hadir', [])) ? ' checked' : '') .
                     '>';
                 $status =
                     '<span class="badge badge-' .

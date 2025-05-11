@@ -1,4 +1,3 @@
-<!-- rapat_pk_direktur.blade.php -->
 <!DOCTYPE html>
 <html lang="id">
 
@@ -7,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
     <style>
+        @page {
+            size: A4;
+            margin: 2cm 2cm 2cm 2cm;
+        }
+
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -195,7 +199,7 @@
         @endphp
         @php
             // echo '<pre>';
-            // print_r($logo ?? '');
+            // print_r($rapat);
             // echo '</pre>';
             $waktuMulai = Carbon::parse($rapat['waktu_mulai'])->translatedFormat('l, d F Y H:i');
         @endphp
@@ -208,17 +212,17 @@
             <ol>
                 @for ($i = 0, $count = count($rapat['rapat_lampiran']); $i < $count; $i++)
                     <li> {{ $rapat['rapat_lampiran'][$i]['nama_file'] }} <a
-                            href="{{ $rapat['rapat_lampiran'][$i]['nama_file'] }}">[link]</a>
+                            href="{{ url('/rapat/agenda-rapat/' . $rapat['rapat_lampiran'][$i]['nama_file'] . '/download') }}">[link]</a>
                     </li>
                 @endfor
             </ol>
         </div>
 
         <div class="attendees">
-            <h3 class="heading">Attendees:</h3>
+            <h3 class="heading">Daftar Hadir:</h3>
             <ol>
                 @for ($i = 0; $i < ($count = count($rapat['rapat_agenda_peserta'])); $i++)
-                    <li>Direktur : {{ ucfirst(strtolower($rapat['rapat_agenda_peserta'][$i]['nama'])) }}</li>
+                    <li>{{ ucfirst(strtolower($rapat['rapat_agenda_peserta'][$i]['nama'])) }}</li>
                 @endfor
             </ol>
         </div>
@@ -239,13 +243,14 @@
             @if (count($rapat['rapat_notulen']['notulen_files']) > 0)
                 <ol>
                     @for ($i = 0, $count = count($rapat['rapat_notulen']['notulen_files']); $i < $count; $i++)
-                        <li>{{ $rapat['rapat_notulen']['notulen_files'][$i]['nama_file'] }} <a href="#">[link]</a>
+                        <li>{{ $rapat['rapat_notulen']['notulen_files'][$i]['nama_file'] }} <a
+                                href="{{ url('/rapat/agenda-rapat/notulis/' . $rapat['rapat_notulen']['notulen_files'][$i]['nama_file'] . '/download') }}">[link]</a>
                         </li>
                     @endfor
                 </ol>
             @endif
             @if ($rapat['rapat_notulen']['catatan'] != null)
-                <p> {!! strip_tags($rapat['rapat_notulen']['catatan'], '<b><i><u><p><div><span><ul><ol><li><br>') !!}</p>
+                <p> {!! strip_tags($rapat['rapat_notulen']['catatan'], '<b><strong><i><u><p><div><span><ul><ol><li><br>') !!}</p>
             @endif
         </div>
         <div class="attendees">
@@ -277,12 +282,14 @@
         <div class="documentation">
             <h3 class="heading">Dokumentasi Rapat:</h3>
             <br>
-            @for ($i = 0; $i < ($count = count($rapat['rapat_dokumentasi'])); $i++)
-                <img width="600" height="500"
-                    src="{{ asset('storage/dokumentasi-rapat/' . $rapat['rapat_dokumentasi'][$i]['foto']) }}"
-                    alt="error">
-                <br>
-            @endfor
+            @foreach ($rapat['rapat_dokumentasi'] as $dok)
+                @if (!empty($dok['foto_base64']))
+                    <img width="400" height="300" src="{{ $dok['foto_base64'] }}" alt="dokumentasi">
+                    <br>
+                @else
+                    <p>Gagal memuat gambar</p>
+                @endif
+            @endforeach
         </div>
 
         <div class="footer">

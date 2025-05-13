@@ -3,6 +3,7 @@ namespace Modules\Rapat\Http\Controllers;
 
 use App\Models\Core\User;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Modules\Rapat\Entities\Kepanitiaan;
 use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Http\Helper\FlashMessage;
@@ -12,9 +13,15 @@ class KepegawaianController extends Controller
 {
     public function index()
     {
-        $kepanitiaans = Kepanitiaan::with('pegawai')->get();
+        $kepanitiaans = Kepanitiaan::pegawaiIsAnggotaPanitia(Auth::user()->pegawai->username)->with('pegawai')->get();
         return view('rapat::kepegawaian.index', [
             'kepanitiaans' => $kepanitiaans,
+        ]);
+    }
+    public function detail(Kepanitiaan $kepanitiaan)
+    {
+        return view('rapat::kepegawaian.detail', [
+            'panitia' => $kepanitiaan,
         ]);
     }
     public function ajaxKepanitiaanRapat($id)
@@ -30,22 +37,21 @@ class KepegawaianController extends Controller
     }
     public function create()
     {
-        $users = User::all();
+        $pegawais = Pegawai::all();
         return view('rapat::kepegawaian.create', [
-            'users' => $users,
+            'pegawais' => $pegawais,
         ]);
     }
 
     public function store(KepanitiaanRequest $request)
     {
         try {
-            $kepanitiaan = Kepanitiaan::create($request->validated());
-            $kepanitiaan->users()->attach($request->user_ids);
-            FlashMessage::success('Kepanitiaan Berhasil Di Tambahkan');
-            return redirect()->to('/rapat/panitia');
+            $validated   = $request->validated();
+            $kepanitiaan = Kepanitiaan::create($validated);
+            $kepanitiaan->pegawai()->attach($validated['peserta']);
+            return response()->json(['message' => 'Kepanitiaan berhasil ditambahkan.']);
         } catch (\Throwable $th) {
-            FlashMessage::error('Kepanitiaan Gagal Di Tambahkan');
-            return redirect()->to('/rapat/panitia');
+            return response()->json(['message' => 'Gagal menambahkan kepanitiaan.']);
         }
     }
 

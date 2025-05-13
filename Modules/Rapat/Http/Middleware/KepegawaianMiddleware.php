@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Rapat\Http\Middleware;
 
 use Closure;
@@ -18,7 +17,7 @@ class KepegawaianMiddleware
     public function handle(Request $request, Closure $next)
     {
         $user = Auth::user();
-        if (!$user->hasAnyRole(['kepegawaian'])) {
+        if (! $user->hasAnyRole(['kepegawaian'])) {
             abort(403);
         }
         return $next($request);

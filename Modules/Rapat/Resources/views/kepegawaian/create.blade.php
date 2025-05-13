@@ -6,7 +6,6 @@
 @stop
 
 @push('css')
-    @livewireStyles
 @endpush
 
 @section('content')
@@ -23,46 +22,63 @@
                     </ul>
                 </div>
             @endif
-            <form action="{{ url('/rapat/panitia') }}" method="POST">
+            <form id="formKepanitiaan" method="POST">
                 @csrf
                 <div class="mb-3">
                     <label>Nama Kepanitiaan</label>
-                    <input type="text" name="nama_kepanitiaan" class="form-control" value="{{ old('nama_kepanitiaan') }}">
+                    <input type="text" id="nama_kepanitiaan" name="nama_kepanitiaan" class="form-control">
                 </div>
 
                 <div class="mb-3">
                     <label>Deskripsi</label>
-                    <textarea name="deskripsi" class="form-control">{{ old('deskripsi') }}</textarea>
+                    <textarea id="deskripsi" name="deskripsi" class="form-control"></textarea>
                 </div>
 
                 <div class="mb-3">
                     <label>Tanggal Mulai</label>
-                    <input type="date" name="tanggal_mulai" class="form-control" value="{{ old('tanggal_mulai') }}">
+                    <input type="date" id="tanggal_mulai" name="tanggal_mulai" class="form-control">
                 </div>
 
                 <div class="mb-3">
                     <label>Tanggal Berakhir</label>
-                    <input type="date" name="tanggal_berakhir" class="form-control"
-                        value="{{ old('tanggal_berakhir') }}">
+                    <input type="date" id="tanggal_berakhir" name="tanggal_berakhir" class="form-control">
                 </div>
 
                 <div class="mb-3">
                     <label>Tujuan</label>
-                    <input type="text" name="tujuan" class="form-control" value="{{ old('tujuan') }}">
+                    <input type="text" id="tujuan" name="tujuan" class="form-control">
                 </div>
                 <div class="mb-3">
                     <label>Peserta</label>
-                    <x-adminlte-datatable id="usersTable" :heads="['Nama', 'Pilih']">
-                        @foreach ($users as $user)
+                    <table id="table-peserta-rapat" class="table table-hover">
+                        <thead>
                             <tr>
-                                <td>{{ $user->name }}</td>
-                                <td style="text-align: center;">
-                                    <input type="checkbox" name="user_ids[]" value="{{ $user->id }}"
-                                        @if (in_array($user->id, old('user_ids', $selectedUsers ?? []))) checked @endif>
-                                </td>
+                                <th scope="col">No</th>
+                                <th scope="col">Nama Peserta</th>
+                                <th scope="col">Whatsapp</th>
+                                <th scope="col">Pilih</th>
                             </tr>
-                        @endforeach
-                    </x-adminlte-datatable>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mb-3">
+                    <label>Pimpinan Panitia :</label>
+                    <table id="table-pimpinan-rapat" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Nama Peserta</th>
+                                <th scope="col">Whatsapp</th>
+                                <th scope="col">Undang</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
                 </div>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </form>
@@ -71,4 +87,40 @@
 @endsection
 
 @push('js')
+    <script src="{{ asset('assets/js/rapat/variable.js') }}"></script>
+    <script src="{{ asset('assets/js/rapat/pesertaRapatTable.js') }}"></script>
+    <script src="{{ asset('assets/js/rapat/pimpinanRapatTable.js') }}"></script>
+    <script>
+        $.ajaxSetup({
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+        });
+        $('#formKepanitiaan').on('submit', function(e) {
+            e.preventDefault();
+            const data = {
+                nama_kepanitiaan: $('#nama_kepanitiaan').val(),
+                deskripsi: $('#deskripsi').val(),
+                tanggal_mulai: $('#tanggal_mulai').val(),
+                tanggal_berakhir: $('#tanggal_berakhir').val(),
+                tujuan: $('#tujuan').val(),
+                peserta: pesertaRapat,
+                pimpinan_username: pimpinanRapatUsername
+            };
+            $.ajax({
+                url: '/rapat/panitia', // sesuaikan route
+                method: 'POST',
+                data: data,
+                success: function(response) {
+                    console.log(response);
+                    alert('Kepanitiaan berhasil disimpan!');
+                    window.location.href = '/rapat/panitia';
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert('Gagal menyimpan kepanitiaan!');
+                }
+            });
+        });
+    </script>
 @endpush

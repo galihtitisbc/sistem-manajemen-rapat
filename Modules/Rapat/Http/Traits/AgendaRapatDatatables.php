@@ -51,13 +51,17 @@ trait AgendaRapatDatatables
             $tugas = '';
             if (
                 in_array(Auth::user()->pegawai->username, [$rapat->notulis_username, $rapat->pimpinan_username]) &&
-                in_array($rapat->status, ['COMPLETED', 'STARTED'])
+                in_array($rapat->status, [StatusAgendaRapat::COMPLETED->value, StatusAgendaRapat::STARTED->value])
             ) {
                 $tugas = '<a href="' . url('rapat/agenda-rapat/' . $rapat->slug . '/tugas') . '">
                         <span class="badge bg-primary p-2">Input Tugas</span>
                       </a>';
             }
+            //untuk menyembunyikan rapat yang sudah selesai dan bukan notulis
             if ($rapat->status == StatusAgendaRapat::COMPLETED->value && Auth::user()->pegawai->username !== $rapat->notulis_username) {
+                continue;
+            }
+            if ($rapat->rapatTindakLanjut()->exists() && $rapat->rapatNotulen()->exists()) {
                 continue;
             }
             $data[] = [

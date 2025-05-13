@@ -16,30 +16,32 @@ class RapatKepanitiaanTableSeeder extends Seeder
     public function run()
     {
         Model::unguard();
+        $pegawai      = ['tefa', 'dimdim', 'jaeni', 'eka'];
         $kepanitiaans = [
             [
-                'nama_kepanitiaan' => 'Panitia Seminar Teknologi',
-                'deskripsi'        => 'Panitia yang bertanggung jawab atas seminar teknologi tahunan.',
-                'tanggal_mulai'    => now()->subDays(10)->toDateString(),
-                'tanggal_berakhir' => now()->addDays(10)->toDateString(),
-                'tujuan'           => 'Menyelenggarakan seminar teknologi bagi mahasiswa.',
-                'status'           => 'AKTIF',
-                'created_at'       => now(),
-                'updated_at'       => now(),
+                'pimpinan_username' => 'tefa',
+                'nama_kepanitiaan'  => 'Panitia Seminar Teknologi',
+                'deskripsi'         => 'Panitia yang bertanggung jawab atas seminar teknologi tahunan.',
+                'tanggal_mulai'     => now()->subDays(10)->toDateString(),
+                'tanggal_berakhir'  => now()->addDays(10)->toDateString(),
+                'tujuan'            => 'Menyelenggarakan seminar teknologi bagi mahasiswa.',
+                'status'            => 'AKTIF',
+                'created_at'        => now(),
+                'updated_at'        => now(),
             ],
         ];
         Kepanitiaan::insert($kepanitiaans);
-        $pegawai = ['tefa', 'dimdim', 'jaeni', 'eka'];
         Kepanitiaan::each(function ($kepanitiaan) use ($pegawai) {
             $kepanitiaan->pegawai()->attach($pegawai);
         });
         $panitia = Kepanitiaan::create([
-            'nama_kepanitiaan' => 'Panitia Konsumsi',
-            'deskripsi'        => 'Panitia yang mengorganisir konsumsi tahunan',
-            'tanggal_mulai'    => now()->subDays(20)->toDateString(),
-            'tanggal_berakhir' => now()->addDays(5)->toDateString(),
-            'tujuan'           => 'menyediakan konsumsi.',
-            'status'           => 'AKTIF',
+            'pimpinan_username' => 'haris',
+            'nama_kepanitiaan'  => 'Panitia Konsumsi',
+            'deskripsi'         => 'Panitia yang mengorganisir konsumsi tahunan',
+            'tanggal_mulai'     => now()->subDays(20)->toDateString(),
+            'tanggal_berakhir'  => now()->addDays(5)->toDateString(),
+            'tujuan'            => 'menyediakan konsumsi.',
+            'status'            => 'AKTIF',
         ]);
         $pegawai = ['eka', 'haris', 'erna'];
         $panitia->pegawai()->attach($pegawai);

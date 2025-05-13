@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateKepanitiaansTable extends Migration
 {
@@ -15,6 +15,9 @@ class CreateKepanitiaansTable extends Migration
     {
         Schema::create('kepanitiaans', function (Blueprint $table) {
             $table->id();
+            $table->string('pimpinan_username');
+            $table->foreign('pimpinan_username')->references('username')->on('pegawais');
+
             $table->string('nama_kepanitiaan');
             $table->text('deskripsi');
             $table->date('tanggal_mulai');

@@ -30,11 +30,11 @@ class Pegawai extends Model
 
     public function rapatAgendaPimpinan()
     {
-        return $this->hasMany(Pegawai::class, 'pimpinan_username', 'username', 'id');
+        return $this->hasMany(Pegawai::class, 'pimpinan_username', 'username');
     }
     public function rapatAgendaNotulis()
     {
-        return $this->hasMany(Pegawai::class, 'notulis_username', 'username', 'id');
+        return $this->hasMany(Pegawai::class, 'notulis_username', 'username');
     }
     public function rapatAgendaPeserta()
     {
@@ -42,6 +42,10 @@ class Pegawai extends Model
     }
     public function rapatTindakLanjut()
     {
-        return $this->hasMany(RapatTindakLanjut::class, 'pegawai_username', 'username', 'id');
+        return $this->hasMany(RapatTindakLanjut::class, 'pegawai_username', 'username');
+    }
+    public function ketuaPanitia()
+    {
+        return $this->hasMany(Kepanitiaan::class, 'pimpinan_username', 'username');
     }
 }

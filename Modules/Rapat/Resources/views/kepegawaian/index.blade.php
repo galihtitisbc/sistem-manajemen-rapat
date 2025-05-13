@@ -6,7 +6,6 @@
 @stop
 
 @push('css')
-    @livewireStyles
 @endpush
 
 @section('content')
@@ -39,23 +38,25 @@
                         </span>
                     </td>
                     <td>
-                        <a href="{{ url('/rapat/panitia/' . $kepanitiaan->id . '/edit') }}" class="btn btn-primary btn-sm">
+                        <a href="{{ url('/rapat/panitia/' . $kepanitiaan->id . '/detail') }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-eye fa-lg" data-bs-toggle="tooltip" data-bs-placement="top"
                                 title="Detail Kepanitiaan"></i>
                         </a>
-                        <a href="{{ url('/rapat/panitia/' . $kepanitiaan->id . '/edit') }}" class="btn btn-warning btn-sm"
-                            title="Edit">
-                            <i class="fa fa-lg fa-fw fa-pen"></i>
-                            <nobr>
-                        </a>
-                        <form action="{{ url('/rapat/panitia/' . $kepanitiaan->id . '/change-status') }}" method="POST"
-                            style="display:inline;">
-                            @csrf
-                            @method('PATCH')
-                            <button class="btn btn-danger btn-sm" title="Ubah Status">
-                                <i class="fa fa-lg fa-fw fa-exchange-alt"></i>
-                            </button>
-                        </form>
+                        @hasrole('kepegawaian')
+                            <a href="{{ url('/rapat/panitia/' . $kepanitiaan->id . '/edit') }}" class="btn btn-warning btn-sm"
+                                title="Edit">
+                                <i class="fa fa-lg fa-fw fa-pen"></i>
+                                <nobr>
+                            </a>
+                            <form action="{{ url('/rapat/panitia/' . $kepanitiaan->id . '/change-status') }}" method="POST"
+                                style="display:inline;">
+                                @csrf
+                                @method('PATCH')
+                                <button class="btn btn-danger btn-sm" title="Ubah Status">
+                                    <i class="fa fa-lg fa-fw fa-exchange-alt"></i>
+                                </button>
+                            </form>
+                        @endhasrole
                         </nobr>
                     </td>
                 </tr>

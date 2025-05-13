@@ -47,8 +47,6 @@ $("#table-peserta-rapat").on("click", ".add-peserta", function (event) {
     }
     pesertaRapat = [...new Set([...pesertaManual, ...pesertaKepanitiaan])];
 
-    console.log(pesertaRapat);
-
     tablePesertaRapat.ajax.reload();
     tablePimpinanRapat.ajax.reload();
     tableNotulisRapat.ajax.reload();

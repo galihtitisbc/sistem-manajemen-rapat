@@ -14,7 +14,13 @@ class Kepanitiaan extends Model
     // {
     //     return \Modules\Rapat\Database\factories\KepanitiaanFactory::new();
     // }
-
+    public function scopePegawaiIsAnggotaPanitia($query, $username)
+    {
+        $query->whereHas('pegawai', function ($q) use ($username) {
+            $q->where('username', $username);
+        });
+        return $query;
+    }
     public function pegawai()
     {
         return $this->belongsToMany(Pegawai::class, 'kepanitiaan_pegawai', 'kepanitiaan_id', 'pegawai_username', 'id', 'username');
@@ -22,5 +28,9 @@ class Kepanitiaan extends Model
     public function rapatAgenda()
     {
         return $this->hasMany(RapatAgenda::class, 'kepanitiaan_id');
+    }
+    public function ketua()
+    {
+        return $this->belongsTo(Pegawai::class, 'pimpinan_username', 'username');
     }
 }

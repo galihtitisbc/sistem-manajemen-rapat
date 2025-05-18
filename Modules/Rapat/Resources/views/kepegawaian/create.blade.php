@@ -22,7 +22,7 @@
                     </ul>
                 </div>
             @endif
-            <form id="formKepanitiaan" method="POST">
+            <form id="formKepanitiaan" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
                     <label>Nama Kepanitiaan</label>
@@ -49,7 +49,11 @@
                     <input type="text" id="tujuan" name="tujuan" class="form-control">
                 </div>
                 <div class="mb-3">
-                    <label>Peserta</label>
+                    <label>Surat Tugas :</label>
+                    <input type="file" id="surat_tugas" name="surat_tugas">
+                </div>
+                <div class="mb-3">
+                    <label>Peserta Kepanitiaan :</label>
                     <table id="table-peserta-rapat" class="table table-hover">
                         <thead>
                             <tr>
@@ -65,7 +69,7 @@
                     </table>
                 </div>
                 <div class="mb-3">
-                    <label>Pimpinan Panitia :</label>
+                    <label>Ketua Kepanitiaan :</label>
                     <table id="table-pimpinan-rapat" class="table table-hover">
                         <thead>
                             <tr>
@@ -79,6 +83,22 @@
 
                         </tbody>
                     </table>
+                </div>
+                <div class="mb-3">
+                    <label>Pengarah Kepanitiaan :</label>
+                    <input type="text" id="pengarah" name="pengarah" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Penanggung Jawab Kepanitiaan :</label>
+                    <input type="text" id="penanggung_jawab" name="penanggung_jawab" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Sekretaris Kepanitiaan :</label>
+                    <input type="text" id="sekretaris" name="sekretaris" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Koordinator Kepanitiaan :</label>
+                    <input type="text" id="koordinator" name="koordinator" class="form-control">
                 </div>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </form>
@@ -98,19 +118,15 @@
         });
         $('#formKepanitiaan').on('submit', function(e) {
             e.preventDefault();
-            const data = {
-                nama_kepanitiaan: $('#nama_kepanitiaan').val(),
-                deskripsi: $('#deskripsi').val(),
-                tanggal_mulai: $('#tanggal_mulai').val(),
-                tanggal_berakhir: $('#tanggal_berakhir').val(),
-                tujuan: $('#tujuan').val(),
-                peserta: pesertaRapat,
-                pimpinan_username: pimpinanRapatUsername
-            };
+            const formData = new FormData(this);
+            pesertaRapat.forEach(p => formData.append('peserta_panitia[]', p));
+            formData.append('pimpinan_username', pimpinanRapatUsername);
             $.ajax({
-                url: '/rapat/panitia', // sesuaikan route
+                url: '/rapat/panitia',
                 method: 'POST',
-                data: data,
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(response) {
                     console.log(response);
                     alert('Kepanitiaan berhasil disimpan!');

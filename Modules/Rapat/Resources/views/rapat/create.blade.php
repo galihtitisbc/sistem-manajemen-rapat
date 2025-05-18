@@ -84,7 +84,7 @@
                                 <tr>
                                     <th scope="col">No</th>
                                     <th scope="col">Nama Peserta</th>
-                                    <th scope="col">Whatsapp</th>
+                                    <th scope="col">Email</th>
                                     <th scope="col">Pilih</th>
                                 </tr>
                             </thead>
@@ -108,7 +108,7 @@
                                 <tr>
                                     <th scope="col">No</th>
                                     <th scope="col">Nama Peserta</th>
-                                    <th scope="col">Whatsapp</th>
+                                    <th scope="col">Email</th>
                                     <th scope="col">Undang</th>
                                 </tr>
                             </thead>
@@ -124,7 +124,7 @@
                                 <tr>
                                     <th scope="col">No</th>
                                     <th scope="col">Nama Peserta</th>
-                                    <th scope="col">Whatsapp</th>
+                                    <th scope="col">Email</th>
                                     <th scope="col">Undang</th>
                                 </tr>
                             </thead>

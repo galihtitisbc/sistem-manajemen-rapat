@@ -66,6 +66,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::prefix('/panitia')->group(function () {
             Route::get('/', [KepegawaianController::class, 'index']);
             Route::get('{kepanitiaan}/detail', [KepegawaianController::class, 'detail']);
+            Route::get('/download/{file}', [KepegawaianController::class, 'download']);
             Route::middleware(['kepegawaian'])->group(function () {
                 Route::get('/create', [KepegawaianController::class, 'create']);
                 Route::post('/', [KepegawaianController::class, 'store']);

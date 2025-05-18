@@ -4,6 +4,7 @@ namespace Modules\Rapat\Http\Controllers;
 use App\Models\Core\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Modules\Rapat\Entities\Kepanitiaan;
 use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Http\Helper\FlashMessage;
@@ -13,13 +14,19 @@ class KepegawaianController extends Controller
 {
     public function index()
     {
-        $kepanitiaans = Kepanitiaan::pegawaiIsAnggotaPanitia(Auth::user()->pegawai->username)->with('pegawai')->get();
+        $kepanitiaans = '';
+        if (in_array('kepegawaian', Auth::user()->roles->pluck('name')->toArray())) {
+            $kepanitiaans = Kepanitiaan::with('pegawai')->get();
+        } else {
+            $kepanitiaans = Kepanitiaan::pegawaiIsAnggotaPanitia(Auth::user()->pegawai->username)->with('pegawai')->get();
+        }
         return view('rapat::kepegawaian.index', [
             'kepanitiaans' => $kepanitiaans,
         ]);
     }
     public function detail(Kepanitiaan $kepanitiaan)
     {
+        $kepanitiaan->load('ketua');
         return view('rapat::kepegawaian.detail', [
             'panitia' => $kepanitiaan,
         ]);
@@ -46,9 +53,16 @@ class KepegawaianController extends Controller
     public function store(KepanitiaanRequest $request)
     {
         try {
-            $validated   = $request->validated();
+            $validated = $request->validated();
+            if (isset($validated['surat_tugas'])) {
+                // Simpan surat tugas ke storage
+                $file     = $validated['surat_tugas'];
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                Storage::putFileAs('public/kepanitiaan', $file, $fileName);
+                $validated['surat_tugas'] = $fileName;
+            }
             $kepanitiaan = Kepanitiaan::create($validated);
-            $kepanitiaan->pegawai()->attach($validated['peserta']);
+            $kepanitiaan->pegawai()->attach($validated['peserta_panitia']);
             return response()->json(['message' => 'Kepanitiaan berhasil ditambahkan.']);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Gagal menambahkan kepanitiaan.']);
@@ -91,5 +105,9 @@ class KepegawaianController extends Controller
             FlashMessage::error('Status Kepanitiaan Gagal Di Ubah');
             return redirect()->to('/rapat/panitia');
         }
+    }
+    public function download($file)
+    {
+        return Storage::download('public/kepanitiaan/' . $file);
     }
 }

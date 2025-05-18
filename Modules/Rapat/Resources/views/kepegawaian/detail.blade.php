@@ -35,15 +35,26 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-sm-12 col-md-12">
+                                    <div class="form-group">
+                                        <label><i class="fas fa-clipboard-list mr-2"></i>Deskripsi:</label>
+                                        <p>{{ $panitia->deskripsi }}</p>
+                                    </div>
 
-                            <div class="form-group">
-                                <label><i class="fas fa-clipboard-list mr-2"></i>Deskripsi:</label>
-                                <p>{{ $panitia->deskripsi }}</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label><i class="fas fa-bullseye mr-2"></i>Tujuan Kepanitiaan:</label>
-                                <p>{{ $panitia->tujuan }}</p>
+                                    <div class="form-group">
+                                        <label><i class="fas fa-bullseye mr-2"></i>Tujuan Kepanitiaan:</label>
+                                        <p>{{ $panitia->tujuan }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-sm-12 col-md-12">
+                                    <div class="form-group">
+                                        <label><i class="fas fa-bullseye mr-2"></i>Surat Tugas Kepanitiaan:</label>
+                                        <p><a
+                                                href="{{ url('/rapat/panitia/download/' . $panitia->surat_tugas) }}">{{ $panitia->surat_tugas }}</a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -51,6 +62,43 @@
             </div>
 
             <!-- Daftar Anggota Kepanitiaan -->
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-users mr-2"></i>Struktur Kepanitiaan</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label><i class="fas fa-user mr-2"></i>Ketua Kepanitiaan:</label>
+                                <p>{{ $panitia->ketua->formatted_name }}</p>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-user mr-2"></i></i>Sekretaris
+                                    Kepanitiaan :</label>
+                                <p>{{ $panitia->sekretaris == null ? '-' : $panitia->sekretaris }}</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label><i class="fas fa-user mr-2"></i></i>Penanggung Jawab
+                                    Kepanitiaan :</label>
+                                <p>{{ $panitia->penanggung_jawab == null ? '-' : $panitia->penanggung_jawab }}</p>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-user mr-2"></i></i>Koordinator
+                                    Kepanitiaan :</label>
+                                <p>{{ $panitia->koordinator == null ? '-' : $panitia->koordinator }}</p>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-user mr-2"></i></i>Pengarah
+                                    Kepanitiaan :</label>
+                                <p>{{ $panitia->pengarah == null ? '-' : $panitia->pengarah }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
@@ -65,8 +113,6 @@
                                             <th width="5%">No</th>
                                             <th width="15%">NIP</th>
                                             <th width="30%">Nama</th>
-                                            <th width="25%">Jabatan</th>
-                                            <th width="25%">Unit</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -75,8 +121,6 @@
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $anggota->nip }}</td>
                                                 <td>{{ $anggota->nama }}</td>
-                                                <td>{{ $anggota->jabatan }}</td>
-                                                <td>{{ $anggota->unit }}</td>
                                             </tr>
                                         @empty
                                             <tr>

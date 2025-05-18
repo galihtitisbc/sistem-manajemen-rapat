@@ -15,6 +15,11 @@ class Pegawai extends Model
     // {
     //     return \Modules\Rapat\Database\factories\PegawaiFactory::new();
     // }
+    public function getFormattedNameAttribute()
+    {
+        return ucwords(strtolower($this->nama));
+    }
+
     public function getRouteKeyName()
     {
         return 'username';

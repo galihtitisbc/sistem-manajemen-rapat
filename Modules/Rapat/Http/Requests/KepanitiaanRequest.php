@@ -19,8 +19,13 @@ class KepanitiaanRequest extends FormRequest
             'tanggal_berakhir'  => 'required|date|after_or_equal:tanggal_mulai',
             'tujuan'            => 'required|string|max:255',
             'pimpinan_username' => 'required|exists:pegawais,username',
-            'peserta'           => 'required|array',
-            'peserta.*'         => 'exists:pegawais,username',
+            'peserta_panitia'   => 'required|array',
+            'peserta_panitia.*' => 'exists:pegawais,username',
+            'pengarah'          => 'nullable',
+            'penanggung_jawab'  => 'nullable',
+            'sekretaris'        => 'nullable',
+            'koordinator'       => 'nullable',
+            'surat_tugas'       => 'required|file|mimes:jpg,jpeg,png,doc,docx,xls,xlsx,pdf,txt|max:2048',
         ];
     }
 

@@ -22,9 +22,7 @@
                     </ul>
                 </div>
             @endif
-            <form action="{{ url('/rapat/panitia/' . $kepanitiaan->id) }}" method="POST">
-                @csrf
-                @method('PUT')
+            <form id="formKepanitiaan" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label>Nama Kepanitiaan</label>
                     <input type="text" name="nama_kepanitiaan" class="form-control"
@@ -54,9 +52,62 @@
                         value="{{ old('tujuan', $kepanitiaan->tujuan ?? '') }}" required>
                 </div>
                 <div class="mb-3">
-                    <label>Peserta</label>
-                    {{-- <input type="checkbox" name="pegawai_username[]" value="{{ $pegawai->username }}"
-                        @if (isset($selectedUsers) && in_array($pegawai->username, $selectedUsers)) checked @endif> --}}
+                    <label>Surat Tugas :</label>
+                    <input type="file" id="surat_tugas" name="surat_tugas">
+                    <p>{{ $kepanitiaan->surat_tugas }}</p>
+
+                </div>
+                <div class="mb-3">
+                    <label>Peserta Kepanitiaan :</label>
+                    <table id="table-peserta-rapat" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Nama Peserta</th>
+                                <th scope="col">Whatsapp</th>
+                                <th scope="col">Pilih</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mb-3">
+                    <label>Ketua Kepanitiaan :</label>
+                    <table id="table-pimpinan-rapat" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Nama Peserta</th>
+                                <th scope="col">Whatsapp</th>
+                                <th scope="col">Undang</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mb-3">
+                    <label>Pengarah Kepanitiaan :</label>
+                    <input type="text" id="pengarah" value="{{ old('pengarah', $kepanitiaan->pengarah ?? '') }}"
+                        name="pengarah" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Penanggung Jawab Kepanitiaan :</label>
+                    <input type="text" id="penanggung_jawab" name="penanggung_jawab" class="form-control"
+                        value="{{ old('penanggung_jawab', $kepanitiaan->penanggung_jawab ?? '') }}">
+                </div>
+                <div class="mb-3">
+                    <label>Sekretaris Kepanitiaan :</label>
+                    <input type="text" id="sekretaris" name="sekretaris" class="form-control"
+                        value="{{ old('sekretaris', $kepanitiaan->sekretaris ?? '') }}">
+                </div>
+                <div class="mb-3">
+                    <label>Koordinator Kepanitiaan :</label>
+                    <input type="text" id="koordinator" name="koordinator" class="form-control"
+                        value="{{ old('koordinator', $kepanitiaan->koordinator ?? '') }}">
                 </div>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </form>
@@ -65,5 +116,47 @@
 @endsection
 
 @push('js')
-    <script></script>
+    <script src="{{ asset('assets/js/rapat/variable.js') }}"></script>
+    <script src="{{ asset('assets/js/rapat/pesertaRapatTable.js') }}"></script>
+    <script src="{{ asset('assets/js/rapat/pimpinanRapatTable.js') }}"></script>
+    <script>
+        //mendapatkan data pegawai dari kepanitiaan yang dikirim controller, dan menambahkan ke array pesertaRapat sebagai anggota panitia
+        const kepanitiaan = <?php echo json_encode($kepanitiaan); ?>;
+        pimpinanRapatUsername = kepanitiaan.pimpinan_username;
+        pesertaManual = kepanitiaan.pegawai.map((pegawai) => pegawai.username);
+        pesertaRapat = [...new Set([...pesertaManual, ...pesertaKepanitiaan])];
+        tablePimpinanRapat.ajax.reload();
+        //-------------------------------
+
+        $.ajaxSetup({
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+        });
+        $('#formKepanitiaan').on('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            pesertaRapat.forEach(p => formData.append('peserta_panitia[]', p));
+            formData.append('pimpinan_username', pimpinanRapatUsername);
+            $.ajax({
+                url: '/rapat/panitia/' + kepanitiaan.id,
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    "X-HTTP-Method-Override": "PUT",
+                },
+                success: function(response) {
+                    console.log(response);
+                    alert('Kepanitiaan berhasil Di Ubah');
+                    window.location.href = '/rapat/panitia';
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert('Gagal menyimpan kepanitiaan!');
+                }
+            });
+        });
+    </script>
 @endpush

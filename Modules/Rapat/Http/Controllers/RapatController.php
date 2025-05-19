@@ -31,8 +31,9 @@ class RapatController extends Controller
 
     public function index()
     {
-        $rapat = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)->orderBy('created_at', 'desc')->get();
+        $rapat = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)->orderBy('waktu_mulai', 'desc')->get();
         $now   = Carbon::now('Asia/Jakarta')->toDateTimeString();
+
         foreach ($rapat as $rapatItem) {
             $tglMulai = Carbon::parse($rapatItem->waktu_mulai)->toDateTimeString();
             if ($now >= $tglMulai && $rapatItem->status == StatusAgendaRapat::SCHEDULED->value) {

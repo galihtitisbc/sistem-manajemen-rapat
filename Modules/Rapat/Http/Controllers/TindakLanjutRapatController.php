@@ -24,7 +24,7 @@ class TindakLanjutRapatController extends Controller
     public function index()
     {
         // $agendaRapat = RapatAgenda::with('rapatTindakLanjut')->showTindakLanjut(Auth::user()->id)->get();
-        $tindakLanjutRapat  = RapatTindakLanjut::listAgendaRapatHaveTugas(Auth::user()->pegawai->username)->with('rapatAgenda')->orderBy('created_at', 'desc')->get();
+        $tindakLanjutRapat  = RapatTindakLanjut::listAgendaRapatHaveTugas(Auth::user()->pegawai->username)->with('rapatAgenda')->orderBy('created_at', 'asc')->get();
         $data               = [];
         $statusTindakLanjut = [
             'SELESAI'       => 'success',

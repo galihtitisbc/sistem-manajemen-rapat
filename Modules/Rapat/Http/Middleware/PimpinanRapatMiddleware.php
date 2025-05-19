@@ -24,7 +24,7 @@ class PimpinanRapatMiddleware
         if ($user->hasAnyRole(['pimpinan', 'pejabat', 'sekretaris']) && $agendaRapat->pegawai_username === $user->pegawai->username) {
             return $next($request);
         }
-        if ($agendaRapat && ($agendaRapat->pimpinan_id === $user->id)) {
+        if (Auth::user()->pegawai->ketuaPanitia->isNotEmpty()) {
             return $next($request);
         }
         abort(403);

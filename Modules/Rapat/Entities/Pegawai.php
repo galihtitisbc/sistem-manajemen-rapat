@@ -43,7 +43,7 @@ class Pegawai extends Model
     }
     public function rapatAgendaPeserta()
     {
-        return $this->belongsToMany(Pegawai::class, 'rapat_pesertas', 'pegawai_username', 'rapat_agenda_id', 'username', 'id')->withPivot('status', 'is_penugasan');
+        return $this->belongsToMany(RapatAgenda::class, 'rapat_pesertas', 'pegawai_username', 'rapat_agenda_id', 'username', 'id')->withPivot('status', 'is_penugasan');
     }
     public function rapatTindakLanjut()
     {

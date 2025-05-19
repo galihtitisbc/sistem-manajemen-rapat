@@ -9,6 +9,7 @@ use Modules\Rapat\Entities\Kepanitiaan;
 use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Http\Helper\FlashMessage;
 use Modules\Rapat\Http\Requests\KepanitiaanRequest;
+use Modules\Rapat\Http\Requests\UpdateKepanitiaanRequest;
 
 class KepegawaianController extends Controller
 {
@@ -71,25 +72,33 @@ class KepegawaianController extends Controller
 
     public function edit(Kepanitiaan $kepanitiaan)
     {
-        $pegawais        = Pegawai::all();
+        $kepanitiaan->load('pegawai');
         $selectedPegawai = $kepanitiaan->pegawai->pluck('username')->toArray();
         return view('rapat::kepegawaian.edit', [
             'kepanitiaan'     => $kepanitiaan,
-            'pegawais'        => $pegawais,
             'selectedPegawai' => $selectedPegawai,
         ]);
     }
 
-    public function update(KepanitiaanRequest $request, Kepanitiaan $kepanitiaan)
+    public function update(UpdateKepanitiaanRequest $request, Kepanitiaan $kepanitiaan)
     {
         try {
-            $kepanitiaan->update($request->validated());
-            $kepanitiaan->users()->sync($request->user_ids);
-            FlashMessage::success('Kepanitiaan Berhasil Di Diubah');
-            return redirect()->to('/rapat/panitia');
+            $validated = $request->validated();
+
+            if (isset($validated['surat_tugas'])) {
+                // Hapus surat tugas lama
+                Storage::delete('public/kepanitiaan/' . $kepanitiaan->surat_tugas);
+                // Simpan surat tugas ke storage
+                $file     = $validated['surat_tugas'];
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                Storage::putFileAs('public/kepanitiaan', $file, $fileName);
+                $validated['surat_tugas'] = $fileName;
+            }
+            $kepanitiaan->update($validated);
+            $kepanitiaan->pegawai()->sync($validated['peserta_panitia']);
+            return response()->json(['message' => 'Kepanitiaan berhasil diubah.']);
         } catch (\Throwable $th) {
-            FlashMessage::error('Kepanitiaan Gagal Di Ubah');
-            return redirect()->to('/rapat/panitia');
+            return response()->json(['message' => 'Gagal Mengubah kepanitiaan.']);
         }
     }
 

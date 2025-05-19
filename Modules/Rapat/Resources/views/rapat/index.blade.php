@@ -11,11 +11,13 @@
 
 @section('content')
     <x-adminlte-card>
-        @hasanyrole(['pimpinan', 'pejabat', 'sekretaris'])
+        @if (Auth::user()->hasAnyRole(['pimpinan', 'pejabat', 'sekretaris']) ||
+                Auth::user()->pegawai->ketuaPanitia->isNotEmpty())
             <div class="btn-tambah d-flex justify-content-end my-2">
                 <a href="{{ url('rapat/agenda-rapat/create') }}" class="btn btn-primary">Tambah Rapat</a>
             </div>
-        @endhasanyrole
+        @endif
+
         <x-adminlte-datatable id="agenda-rapat" :heads="$heads" :config="$config">
             @foreach ($config['data'] as $row)
                 <tr>

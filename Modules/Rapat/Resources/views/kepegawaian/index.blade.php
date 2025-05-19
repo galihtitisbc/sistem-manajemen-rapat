@@ -20,7 +20,7 @@
         ];
     @endphp
     <x-adminlte-card>
-        @hasanyrole(['pimpinan', 'kepegawaian'])
+        @hasanyrole(['kepegawaian'])
             <div class="btn-tambah d-flex justify-content-end my-2">
                 <a href="{{ url('rapat/panitia/create') }}" class="btn btn-primary">Tambah Kepanitiaan</a>
             </div>

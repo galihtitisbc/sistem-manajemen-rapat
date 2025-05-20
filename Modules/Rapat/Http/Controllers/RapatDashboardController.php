@@ -24,7 +24,7 @@ class RapatDashboardController extends Controller
         $totalRapatMendatang = RapatAgenda::pegawaiIsPesertaOrCreator($username)->whereYear('waktu_mulai', $tahunSekarang)
             ->where(DB::raw('DATE(waktu_mulai)'), '>=', date('Y-m-d'))
             ->where('status', StatusAgendaRapat::SCHEDULED->value)
-            ->orderBy('waktu_mulai', 'desc')
+            ->orderBy('waktu_mulai', 'asc')
             ->get();
         $totalHadirRapat = Pegawai::where('username', $username)
             ->withCount(['rapatAgendaPeserta as hadir_count' => function ($query) {

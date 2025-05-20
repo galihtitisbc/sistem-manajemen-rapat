@@ -9,6 +9,7 @@ use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Entities\RapatTindakLanjut;
 use Modules\Rapat\Http\Helper\FlashMessage;
+use Modules\Rapat\Http\Helper\StatusTindakLanjut;
 use Modules\Rapat\Http\Requests\CreateTugasPesertaRapatRequest;
 use Modules\Rapat\Http\Requests\UploadTugasTindakLanjutRapatRequest;
 use Modules\Rapat\Http\Service\Implementation\TindakLanjutRapatService;
@@ -31,14 +32,10 @@ class TindakLanjutRapatController extends Controller
             'BELUM_SELESAI' => 'danger',
         ];
         // $status         = '';
-        $btnDetail      = '';
-        $addedAgendaIds = [];
-        $no             = 0;
-        $persentase     = 0;
+        $btnDetail  = '';
+        $no         = 0;
+        $persentase = 0;
         foreach ($tindakLanjutRapat as $key => $tindakLanjut) {
-            if (in_array($tindakLanjut->rapat_agenda_id, $addedAgendaIds)) {
-                continue;
-            }
 
             // $status = '<div class="text-center">
             //      <span class="badge badge-' . $statusTindakLanjut[$tindakLanjut->rapatAgenda->status_tindak_lanjut] . '">
@@ -49,7 +46,7 @@ class TindakLanjutRapatController extends Controller
             } else {
                 $persentase = '<div class="text-center">
      <span class="badge badge-' . $statusTindakLanjut[$tindakLanjut->status] . '">
-         ' . $tindakLanjut->status . '
+         ' . StatusTindakLanjut::from($tindakLanjut->status)->label() . '
      </span></div>';
 
             }
@@ -62,7 +59,6 @@ class TindakLanjutRapatController extends Controller
                 $persentase,
                 $btnDetail,
             ];
-            $addedAgendaIds[] = $tindakLanjut->rapat_agenda_id;
             $no++;
         }
         $heads = [

@@ -90,7 +90,7 @@
                                 </div>
                                 <div class="media-body">
                                     <h6 class="text-muted mb-1">Pimpinan Rapat</h6>
-                                    <p class="font-weight-bold">{{ $rapat->rapatAgendaPimpinan->nama }}</p>
+                                    <p class="font-weight-bold">{{ $rapat->rapatAgendaPimpinan->formatted_name }}</p>
                                 </div>
                             </div>
 
@@ -104,7 +104,7 @@
                                 </div>
                                 <div class="media-body">
                                     <h6 class="text-muted mb-1">Notulis Rapat</h6>
-                                    <p class="font-weight-bold">{{ $rapat->rapatAgendaNotulis->nama }}</p>
+                                    <p class="font-weight-bold">{{ $rapat->rapatAgendaNotulis->formatted_name }}</p>
                                 </div>
                             </div>
 

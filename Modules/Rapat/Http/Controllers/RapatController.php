@@ -31,7 +31,7 @@ class RapatController extends Controller
 
     public function index()
     {
-        $rapat = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)->orderBy('waktu_mulai', 'desc')->get();
+        $rapat = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)->orderBy('waktu_mulai', 'asc')->get();
         $now   = Carbon::now('Asia/Jakarta')->toDateTimeString();
 
         foreach ($rapat as $rapatItem) {

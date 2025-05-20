@@ -17,7 +17,14 @@ let tableNotulisRapat = $("#table-notulis-rapat").DataTable({
                 return meta.settings._iDisplayStart + meta.row + 1;
             },
         },
-        { data: "nama" },
+        {
+            data: "nama",
+            render: function (data, type, row) {
+                return data.toLowerCase().replace(/\b\w/g, function (char) {
+                    return char.toUpperCase();
+                });
+            },
+        },
         { data: "user.email" },
         {
             data: null,

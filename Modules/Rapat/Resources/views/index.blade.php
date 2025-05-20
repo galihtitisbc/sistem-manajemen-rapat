@@ -39,67 +39,80 @@
                         </div>
                     </div>
                     <div class="long-info mt-5">
-                        <div class="position-relative mb-5">
-                            <div class="bg-gradient-primary text-white p-4 rounded shadow">
-                                <div class="row align-items-center">
-                                    <div class="col-md-8">
-                                        <h5 class="mb-3">Tindak Lanjut Rapat Dengan Deadline Segera :</h5>
-                                        <a href="{{ url('/rapat/tindak-lanjut-rapat/tugas/' . $tugasMendatang->slug . '/unggah-tugas') }}"
-                                            class="text-white">
-                                            <h5 class="font-weight-bold mb-2">{{ $tugasMendatang->deskripsi_tugas }}</h5>
-                                        </a>
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="fas fa-clock mr-2"></i>
-                                            <span>{{ \Carbon\Carbon::parse($tugasMendatang->batas_waktu)->translatedFormat('l, d F Y') }}</span>
+                        @if ($tugasMendatang !== null)
+                            <div class="position-relative mb-5">
+                                <div class="bg-gradient-warning text-dark p-4 rounded shadow">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <h5 class="mb-3">Tindak Lanjut Rapat Dengan Deadline Segera :</h5>
+                                            <a href="{{ url('/rapat/tindak-lanjut-rapat/tugas/' . $tugasMendatang->slug . '/unggah-tugas') }}"
+                                                class="text-dark">
+                                                <h5 class="font-weight-bold mb-2">{{ $tugasMendatang->deskripsi_tugas }}
+                                                </h5>
+                                            </a>
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="fas fa-clock mr-2"></i>
+                                                <span>{{ \Carbon\Carbon::parse($tugasMendatang->batas_waktu)->translatedFormat('l, d F Y') }}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4 text-md-right">
-                                        <div class="badge badge-light p-2">
-                                            <i class="fas fa-calendar-alt mr-1 text-dark"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="position-relative mb-5">
-                            <div class="bg-gradient-primary text-white p-4 rounded shadow">
-                                <div class="row align-items-center">
-                                    <div class="col-md-8">
-                                        <h5 class="mb-3">Jadwal Agenda Rapat Mendatang :</h5>
-                                        <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/detail') }}"
-                                            class="text-white">
-                                            <h5 class="font-weight-bold mb-2">{{ $rapat->agenda_rapat }}</h5>
-                                        </a>
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="fas fa-clock mr-2"></i>
-                                            <span>{{ \Carbon\Carbon::parse($rapat->waktu_mulai)->translatedFormat('l, d F Y') }}</span>
-                                            <span class="mx-2">|</span>
-                                            <span>{{ \Carbon\Carbon::parse($rapat->waktu_mulai)->translatedFormat('H:i') }}
-                                                WIB</span>
-                                        </div>
-                                        <div class="mt-1">
-                                            <i class="fas fa-map-marker-alt mr-2"></i>
-                                            <span>{{ $rapat->tempat }}</span>
-                                            <br>
-                                            @if ($rapat->tempat == 'zoom')
-                                                <i class="fas fa-link mt-2">
-                                                    <span class="ml-1">
-                                                        <a class="text-white" href="{{ $rapat->zoom_link }}"
-                                                            target="_blank">{{ $rapat->zoom_link }}</a>
-                                                    </span>
-                                                </i>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 text-md-right">
-                                        <div class="badge badge-light p-2">
-                                            <i class="fas fa-calendar-alt mr-1 text-dark"></i>
-                                            <span class="text-dark font-weight-bold">Dijadwalkan</span>
+                                        <div class="col-md-4 text-md-right">
+                                            <div class="badge badge-light p-2">
+                                                <i class="fas fa-calendar-alt mr-1 text-dark"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        @else
+                            <div class="empty-state">
+                                <p><i class="fas fa-info-circle"></i> Tidak Ada Tugas Yang Belum Selesai</p>
+                            </div>
+                        @endif
+                        @if ($rapat !== null)
+                            <div class="position-relative mb-5">
+                                <div class="bg-gradient-primary text-white p-4 rounded shadow">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <h5 class="mb-3">Jadwal Agenda Rapat Mendatang :</h5>
+                                            <a href="{{ url('rapat/agenda-rapat/' . $rapat->slug . '/detail') }}"
+                                                class="text-white">
+                                                <h5 class="font-weight-bold mb-2">{{ $rapat->agenda_rapat }}</h5>
+                                            </a>
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="fas fa-clock mr-2"></i>
+                                                <span>{{ \Carbon\Carbon::parse($rapat->waktu_mulai)->translatedFormat('l, d F Y') }}</span>
+                                                <span class="mx-2">|</span>
+                                                <span>{{ \Carbon\Carbon::parse($rapat->waktu_mulai)->translatedFormat('H:i') }}
+                                                    WIB</span>
+                                            </div>
+                                            <div class="mt-1">
+                                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                                <span>{{ $rapat->tempat }}</span>
+                                                <br>
+                                                @if ($rapat->tempat == 'zoom')
+                                                    <i class="fas fa-link mt-2">
+                                                        <span class="ml-1">
+                                                            <a class="text-white" href="{{ $rapat->zoom_link }}"
+                                                                target="_blank">{{ $rapat->zoom_link }}</a>
+                                                        </span>
+                                                    </i>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 text-md-right">
+                                            <div class="badge badge-light p-2">
+                                                <i class="fas fa-calendar-alt mr-1 text-dark"></i>
+                                                <span class="text-dark font-weight-bold">Dijadwalkan</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="empty-state">
+                                <p><i class="fas fa-info-circle"></i> Tidak Ada Agenda Rapat Mendatang</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

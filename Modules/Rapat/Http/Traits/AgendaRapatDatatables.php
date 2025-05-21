@@ -22,7 +22,10 @@ trait AgendaRapatDatatables
             'COMPLETED' => ['fas fa-check-circle', '#28a745'],
             'STARTED'   => ['fas fa-play-circle', '#0275d8'],
         ];
-        $data = [];
+        $data            = [];
+        $showTugasColumn = collect($rapats)->contains(function ($rapat) {
+            return $rapat->pimpinan_username === Auth::user()->pegawai->username || $rapat->notulis_username === Auth::user()->pegawai->username;
+        });
         foreach ($rapats as $index => $rapat) {
             $startTime   = Carbon::parse($rapat->waktu_mulai)->translatedFormat('l, d F Y H:i');
             $statusBadge = '<span class="badge bg-' . $statusRapat[$rapat->status][0] . '">' . $statusRapat[$rapat->status][1] . '</span>';
@@ -70,8 +73,10 @@ trait AgendaRapatDatatables
                 '<div class="text-center">' . $startTime . '</div>',
                 '<div class="text-center">' . $statusBadge . '</div>',
                 '<div class="text-center">' . $aksi . '</div>',
-                '<div class="text-center">' . $tugas . '</div>',
             ];
+            if ($showTugasColumn) {
+                $data[$index][] = '<div class="text-center">' . $tugas . '</div>';
+            }
         }
 
         $heads = [
@@ -80,7 +85,6 @@ trait AgendaRapatDatatables
             ['label' => 'Waktu Mulai', 'width' => 25, 'class' => 'text-center'],
             ['label' => 'Status', 'width' => 10, 'class' => 'text-center'],
             ['label' => 'Aksi', 'width' => 20, 'class' => 'text-center'],
-            ['label' => 'Tugas', 'width' => 10, 'class' => 'text-center'],
         ];
 
         $config = [
@@ -91,9 +95,13 @@ trait AgendaRapatDatatables
                 ['className' => 'text-center'],
                 ['className' => 'text-center'],
                 ['className' => 'text-center', 'orderable' => false],
-                ['className' => 'text-center', 'orderable' => false],
+                // ['className' => 'text-center', 'orderable' => false],
             ],
         ];
+        if ($showTugasColumn) {
+            array_push($heads, ['label' => 'Tugas', 'width' => 10, 'class' => 'text-center']);
+            array_push($config['columns'], ['className' => 'text-center', 'orderable' => false]);
+        }
         return ['heads' => $heads, 'config' => $config];
     }
 }

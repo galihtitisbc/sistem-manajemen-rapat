@@ -16,9 +16,7 @@ class RiwayatRapatController extends Controller
      */
     public function index(Request $request)
     {
-        $rapats = Auth::user()->hasAnyRole(['pimpinan'])
-        ? RapatAgenda::query()
-        : RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username);
+        $rapats = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username);
         $rapats = $rapats->when($request->input('cari'), function ($query, $cari) {
             $query->where(function ($q) use ($cari) {
                 $q->where('agenda_rapat', 'like', "%$cari%");

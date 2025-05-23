@@ -1,9 +1,8 @@
 <?php
-
 namespace Modules\Rapat\Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -18,11 +17,26 @@ class RoleSeederTableSeeder extends Seeder
     {
         Model::unguard();
 
-        $roles = ['pimpinan', 'pejabat', 'sekretaris', 'kepegawaian', 'dosen'];
+        $roles = [
+            'dosen',
+            'pegawai',
+            'direktur',
+            'wadir1',
+            'wadir2',
+            'wadir3',
+            'kaprodi',
+            'kajur',
+            'p2m',
+            'kaunit',
+            'kalab',
+            'keuangan',
+            'sekjur',
+        ];
+
         $permissions = ['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'];
 
         foreach ($roles as $roleName) {
-            $role = Role::firstOrCreate(['name' => $roleName]);
+            $role            = Role::firstOrCreate(['name' => $roleName]);
             $permissionExist = [
                 'adminlte.darkmode.toggle',
                 'home.index',
@@ -33,12 +47,12 @@ class RoleSeederTableSeeder extends Seeder
                 'beralih.peran',
                 'users.tukaruser',
                 'users.editprofile',
-                'users.updateprofile'
+                'users.updateprofile',
             ];
             $role->syncPermissions($permissionExist);
             foreach ($permissions as $action) {
                 $permissionName = "{$roleName}.{$action}";
-                $permission = Permission::firstOrCreate(['name' => $permissionName]);
+                $permission     = Permission::firstOrCreate(['name' => $permissionName]);
                 $role->givePermissionTo($permission);
             }
         }

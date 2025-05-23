@@ -17,7 +17,11 @@ class Pegawai extends Model
     // }
     public function getFormattedNameAttribute()
     {
-        return ucwords(strtolower($this->nama));
+        return
+        ($this->gelar_dpn ? $this->gelar_dpn . ' ' : '') .
+        ucwords(strtolower($this->nama)) .
+            ($this->gelar_blk ? ', ' . $this->gelar_blk : '');
+
     }
 
     public function getRouteKeyName()

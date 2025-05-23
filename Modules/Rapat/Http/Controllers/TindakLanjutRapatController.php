@@ -9,7 +9,6 @@ use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Entities\RapatTindakLanjut;
 use Modules\Rapat\Http\Helper\FlashMessage;
-use Modules\Rapat\Http\Helper\StatusTindakLanjut;
 use Modules\Rapat\Http\Requests\CreateTugasPesertaRapatRequest;
 use Modules\Rapat\Http\Requests\UploadTugasTindakLanjutRapatRequest;
 use Modules\Rapat\Http\Service\Implementation\TindakLanjutRapatService;
@@ -22,64 +21,30 @@ class TindakLanjutRapatController extends Controller
     {
         $this->tindakLanjutRapatService = $tindakLanjutRapatService;
     }
-    public function index()
+    public function index(Request $request)
     {
-        // $agendaRapat = RapatAgenda::with('rapatTindakLanjut')->showTindakLanjut(Auth::user()->id)->get();
-        $tindakLanjutRapat  = RapatTindakLanjut::listAgendaRapatHaveTugas(Auth::user()->pegawai->username)->with('rapatAgenda')->orderBy('created_at', 'asc')->get();
-        $data               = [];
-        $statusTindakLanjut = [
-            'SELESAI'       => 'success',
-            'BELUM_SELESAI' => 'danger',
-        ];
-        // $status         = '';
-        $btnDetail  = '';
-        $no         = 0;
-        $persentase = 0;
-        foreach ($tindakLanjutRapat as $key => $tindakLanjut) {
-
-            // $status = '<div class="text-center">
-            //      <span class="badge badge-' . $statusTindakLanjut[$tindakLanjut->rapatAgenda->status_tindak_lanjut] . '">
-            //          ' . $tindakLanjut->rapatAgenda->status_tindak_lanjut . '
-            //      </span></div>';
-            if ($tindakLanjut->rapatAgenda->pimpinan_username == Auth::user()->pegawai->username || $tindakLanjut->rapatAgenda->notulis_username == Auth::user()->pegawai->username) {
-                $persentase = $tindakLanjut->rapatAgenda->status_persentase_penyelesaian . '%';
-            } else {
-                $persentase = '<div class="text-center">
-     <span class="badge badge-' . $statusTindakLanjut[$tindakLanjut->status] . '">
-         ' . StatusTindakLanjut::from($tindakLanjut->status)->label() . '
-     </span></div>';
-
-            }
-            $btnDetail = '<div class="text-center"> <a href="' . url('rapat/tindak-lanjut-rapat/' . $tindakLanjut->rapatAgenda->slug . '/detail') . '" class="btn btn-secondary">
-                        Detail</a></div>';
-            $data[] = [
-                '<div class="text-center">' . ($no + 1) . '</div>',
-                $tindakLanjut->rapatAgenda->agenda_rapat,
-                // $status,
-                $persentase,
-                $btnDetail,
-            ];
-            $no++;
-        }
-        $heads = [
-            ['label' => 'No', 'width' => 5, 'class' => 'text-center'],
-            ['label' => 'Agenda Rapat', 'width' => 40],
-            ['label' => 'Penyelesaian', 'width' => 10, 'class' => 'text-center'],
-            ['label' => 'Aksi', 'width' => 10, 'class' => 'text-center'],
-        ];
-        $config = [
-            'data'    => $data,
-            'columns' => [
-                ['className' => 'text-center'],
-                null,
-                ['className' => 'text-center'],
-                ['className' => 'text-center', 'orderable' => false],
-            ],
-        ];
+        $tindakLanjutRapat = RapatTindakLanjut::listAgendaRapatHaveTugas(Auth::user()->pegawai->username)
+            ->with('rapatAgenda')
+            ->when($request->input('cari'), function ($query, $cari) {
+                $query->whereHas('rapatAgenda', function ($q) use ($cari) {
+                    $q->where('agenda_rapat', 'like', "%$cari%");
+                });
+            })
+            ->when($request->input('dari_tgl'), function ($query, $dari) {
+                $query->whereHas('rapatAgenda', function ($q) use ($dari) {
+                    $q->whereDate('waktu_mulai', '>=', $dari);
+                });
+            })
+            ->when($request->input('sampai_tgl'), function ($query, $sampai) {
+                $query->whereHas('rapatAgenda', function ($q) use ($sampai) {
+                    $q->whereDate('waktu_mulai', '<=', $sampai);
+                });
+            })
+            ->orderBy('created_at', 'asc')
+            ->get();
+        // dd($tindakLanjutRapat);
         return view('rapat::rapat.tindak-lanjut.index', [
-            'agendaRapat' => $tindakLanjutRapat,
-            'config'      => $config,
-            'heads'       => $heads,
+            'tindakLanjutRapat' => $tindakLanjutRapat,
         ]);
     }
     public function show(RapatAgenda $rapatAgenda)

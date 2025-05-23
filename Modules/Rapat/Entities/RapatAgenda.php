@@ -3,7 +3,9 @@ namespace Modules\Rapat\Entities;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Modules\Rapat\Http\Helper\RoleGroupHelper;
 use Modules\Rapat\Http\Helper\StatusTindakLanjut;
 
 class RapatAgenda extends Model
@@ -31,6 +33,9 @@ class RapatAgenda extends Model
     }
     public function scopePegawaiIsPesertaOrCreator($query, $username)
     {
+        if (RoleGroupHelper::userHasRoleGroup(Auth::user(), RoleGroupHelper::pimpinanRoles())) {
+            return $query;
+        }
         $query->whereHas('rapatAgendaPeserta', function ($q) use ($username) {
             $q->where('pegawai_username', $username);
         })

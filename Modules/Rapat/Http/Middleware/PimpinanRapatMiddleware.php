@@ -4,6 +4,7 @@ namespace Modules\Rapat\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Modules\Rapat\Http\Helper\RoleGroupHelper;
 
 class PimpinanRapatMiddleware
 {
@@ -18,10 +19,10 @@ class PimpinanRapatMiddleware
     {
         $user        = Auth::user();
         $agendaRapat = $request->rapatAgenda;
-        if ($user->hasAnyRole(['pimpinan', 'pejabat', 'sekretaris'])) {
+        if (RoleGroupHelper::userHasRoleGroup($user, RoleGroupHelper::pimpinanRapatRoles())) {
             return $next($request);
         }
-        if ($user->hasAnyRole(['pimpinan', 'pejabat', 'sekretaris']) && $agendaRapat->pegawai_username === $user->pegawai->username) {
+        if (RoleGroupHelper::userHasRoleGroup($user, RoleGroupHelper::pimpinanRapatRoles()) && $agendaRapat->pegawai_username === $user->pegawai->username) {
             return $next($request);
         }
         if (Auth::user()->pegawai->ketuaPanitia->isNotEmpty()) {

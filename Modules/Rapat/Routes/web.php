@@ -54,7 +54,10 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             Route::post('/tugas/{rapatTindakLanjut:slug}/unggah-tugas', [TindakLanjutRapatController::class, 'uploadTugas']);
             Route::get('/tugas/{rapatTindakLanjut:slug}/ubah-tugas', [TindakLanjutRapatController::class, 'showEditTugas']);
             Route::put('/tugas/{rapatTindakLanjut:slug}/ubah-tugas', [TindakLanjutRapatController::class, 'editTugas']);
-            Route::post('/{rapatTindakLanjut:slug}/detail/simpan-tugas', [TindakLanjutRapatController::class, 'simpanTugas']);
+            Route::middleware(['pimpinanRapat'])->group(function () {
+                Route::post('/{rapatTindakLanjut:slug}/detail/simpan-tugas', [TindakLanjutRapatController::class, 'simpanTugas']);
+            });
+
         });
         Route::prefix('agenda-rapat/notulis')->group(function () {
             Route::get('/{file}/download', [NotulisController::class, 'downloadNotulen']);

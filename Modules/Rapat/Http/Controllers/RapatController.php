@@ -18,11 +18,9 @@ use Modules\Rapat\Http\Helper\StatusPesertaRapat;
 use Modules\Rapat\Http\Requests\CreateRapatRequest;
 use Modules\Rapat\Http\Requests\UpdateRapatRequest;
 use Modules\Rapat\Http\Service\Implementation\RapatService;
-use Modules\Rapat\Http\Traits\AgendaRapatDatatables;
 
 class RapatController extends Controller
 {
-    use AgendaRapatDatatables;
     protected $rapatService;
     public function __construct(RapatService $rapatService)
     {
@@ -31,9 +29,8 @@ class RapatController extends Controller
 
     public function index()
     {
-        $rapat = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)->orderBy('waktu_mulai', 'asc')->get();
+        $rapat = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)->orderBy('waktu_mulai', 'asc')->paginate(5);
         $now   = Carbon::now('Asia/Jakarta')->toDateTimeString();
-
         foreach ($rapat as $rapatItem) {
             $tglMulai = Carbon::parse($rapatItem->waktu_mulai)->toDateTimeString();
             if ($now >= $tglMulai && $rapatItem->status == StatusAgendaRapat::SCHEDULED->value) {
@@ -41,11 +38,8 @@ class RapatController extends Controller
                 $rapatItem->save();
             }
         }
-        $table = $this->getAgendaRapatDatatables($rapat);
-        // mengambil data agenda rapat dari trait AgendaRapatDatatables
         return view('rapat::rapat.index', [
-            'config' => $table['config'],
-            'heads'  => $table['heads'],
+            'rapats' => $rapat,
         ]);
     }
     public function create()

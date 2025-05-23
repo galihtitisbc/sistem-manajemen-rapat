@@ -10,6 +10,7 @@
 
 @section('content')
     @php
+        use Modules\Rapat\Http\Helper\RoleGroupHelper;
         $heads = [
             'ID',
             'Nama Kepanitiaan',
@@ -20,11 +21,11 @@
         ];
     @endphp
     <x-adminlte-card>
-        @hasanyrole(['kepegawaian'])
+        @if (RoleGroupHelper::userHasRoleGroup(Auth::user(), RoleGroupHelper::kepegawaianRoles()))
             <div class="btn-tambah d-flex justify-content-end my-2">
                 <a href="{{ url('rapat/panitia/create') }}" class="btn btn-primary">Tambah Kepanitiaan</a>
             </div>
-        @endhasanyrole
+        @endif
         <x-adminlte-datatable id="table1" :heads="$heads">
             @foreach ($kepanitiaans as $kepanitiaan)
                 <tr>

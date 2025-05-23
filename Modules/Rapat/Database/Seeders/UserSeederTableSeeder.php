@@ -21,17 +21,40 @@ class UserSeederTableSeeder extends Seeder
         $pimpinan = User::create([
             'name'       => 'Pimpinan',
             'username'   => 'pimpinan',
-            'email'      => 'pimpinan@gmail.com',
+            'email'      => 'p@gmail.com',
             'password'   => Hash::make('password'),
-            'role_aktif' => 'pimpinan',
+            'role_aktif' => 'direktur',
             'unit'       => 0,
             'staff'      => 0,
             'status'     => 2,
         ]);
-        $pimpinan->assignRole(['pimpinan']);
+        $pimpinan->assignRole(['direktur']);
+        $wadir = User::create([
+            'name'       => 'Devit Suwardiyanto',
+            'username'   => 'devit',
+            'email'      => 'devit@gmail.com',
+            'password'   => Hash::make('password'),
+            'role_aktif' => 'wadir2',
+            'unit'       => 0,
+            'staff'      => 0,
+            'status'     => 2,
+        ]);
+        $wadir->assignRole(['wadir2', 'dosen']);
+        $roles = [
+            'dosen',
+            'pegawai',
+            'wadir1',
+            'wadir3',
+            'kaprodi',
+            'kajur',
+            'p2m',
+            'kaunit',
+            'kalab',
+            'keuangan',
+            'sekjur',
+        ];
 
-        $roles          = ['pimpinan', 'pejabat', 'sekretaris', 'kepegawaian', 'dosen'];
-        $pegawaiRecords = DB::table('pegawais')->where('id', '<>', 1)->get();
+        $pegawaiRecords = DB::table('pegawais')->whereNotIn('id', [1, 2])->get();
         foreach ($pegawaiRecords as $pegawai) {
             $randomRole = $roles[array_rand($roles)];
 

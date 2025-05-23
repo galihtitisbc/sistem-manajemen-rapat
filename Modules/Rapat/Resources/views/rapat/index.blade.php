@@ -10,23 +10,159 @@
 @endpush
 
 @section('content')
+    @php
+        use Modules\Rapat\Http\Helper\RoleGroupHelper;
+        use Modules\Rapat\Http\Helper\StatusAgendaRapat;
+        use Carbon\Carbon;
+        Carbon::setLocale('id');
+        $statusRapat = [
+            'CANCELED' => ['danger', 'Di Batalkan'],
+            'SCHEDULED' => ['warning', 'Di Jadwalkan'],
+            'COMPLETED' => ['success', 'Selesai'],
+            'STARTED' => ['primary', 'Sedang Berlangsung'],
+        ];
+
+        $statusKeaktifan = [
+            'SCHEDULED' => ['fa-calendar-times', '#ff0000'],
+            'CANCELED' => ['fa-undo', '#5cb85c'],
+            'COMPLETED' => ['fas fa-check-circle', '#28a745'],
+            'STARTED' => ['fas fa-play-circle', '#0275d8'],
+        ];
+        $showTugasColumn = $rapats->getCollection()->contains(function ($rapat) {
+            return $rapat->pimpinan_username === Auth::user()->pegawai->username ||
+                $rapat->notulis_username === Auth::user()->pegawai->username;
+        });
+
+    @endphp
     <x-adminlte-card>
-        @if (Auth::user()->hasAnyRole(['pimpinan', 'pejabat', 'sekretaris']) ||
+        @if (RoleGroupHelper::userHasRoleGroup(Auth::user(), RoleGroupHelper::pimpinanRapatRoles()) ||
                 Auth::user()->pegawai->ketuaPanitia->isNotEmpty())
             <div class="btn-tambah d-flex justify-content-end my-2">
                 <a href="{{ url('rapat/agenda-rapat/create') }}" class="btn btn-primary">Tambah Rapat</a>
             </div>
         @endif
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th style="width: 6%;">No</th>
+                        <th style="width: 25%;">Agenda Rapat</th>
+                        <th style="width: 25%;">Waktu Mulai</th>
+                        <th style="width: 10%;">Status</th>
+                        <th style="width: 20%;">Aksi</th>
+                        @if ($showTugasColumn)
+                            <th style="width: 10%;">Tugas</th>
+                        @endif
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($rapats as $index => $rapat)
+                        @php
+                            if (
+                                $rapat->status == StatusAgendaRapat::COMPLETED->value &&
+                                Auth::user()->pegawai->username !== $rapat->notulis_username
+                            ) {
+                                continue;
+                            }
+                            if ($rapat->rapatTindakLanjut()->exists() && $rapat->rapatNotulen()->exists()) {
+                                continue;
+                            }
 
-        <x-adminlte-datatable id="agenda-rapat" :heads="$heads" :config="$config">
-            @foreach ($config['data'] as $row)
-                <tr>
-                    @foreach ($row as $cell)
-                        <td>{!! $cell !!}</td>
+                            $startTime = Carbon::parse($rapat->waktu_mulai)->translatedFormat('l, d F Y H:i');
+                            $statusBadge =
+                                '<span class="badge bg-' .
+                                $statusRapat[$rapat->status][0] .
+                                '">' .
+                                $statusRapat[$rapat->status][1] .
+                                '</span>';
+
+                            $aksi =
+                                '<a href="' .
+                                url('rapat/agenda-rapat/' . $rapat->slug . '/detail') .
+                                '">
+                                        <i class="fas fa-eye fa-lg" title="Detail Rapat"></i>
+                                    </a>';
+
+                            if (
+                                Auth::user()->pegawai->username === $rapat->pegawai_username ||
+                                Auth::user()->pegawai->username === $rapat->pimpinan_username
+                            ) {
+                                if (
+                                    in_array($rapat->status, [
+                                        StatusAgendaRapat::CANCELLED->value,
+                                        StatusAgendaRapat::SCHEDULED->value,
+                                    ])
+                                ) {
+                                    $aksi .=
+                                        '<a href="' .
+                                        url('rapat/agenda-rapat/' . $rapat->slug . '/edit') .
+                                        '" class="mx-2 my-2">
+                                                <i class="fas fa-edit fa-lg" style="color: #FFD43B;" title="Edit Rapat"></i>
+                                              </a>';
+                                    $aksi .=
+                                        '<a href="' .
+                                        url('rapat/agenda-rapat/' . $rapat->slug . '/batal') .
+                                        '" onclick="return batalkanRapat(event,this.href,\'' .
+                                        $rapat->status .
+                                        '\')">
+                                                <i class="fas ' .
+                                        $statusKeaktifan[$rapat->status][0] .
+                                        ' fa-lg"
+                                                   style="color: ' .
+                                        $statusKeaktifan[$rapat->status][1] .
+                                        ';" title="Batalkan / Jadwal Ulang"></i>
+                                              </a>';
+                                }
+                            }
+
+                            if (
+                                Auth::user()->pegawai->username === $rapat->notulis_username &&
+                                $rapat->status !== 'CANCELED' &&
+                                $rapat->status == StatusAgendaRapat::STARTED->value
+                            ) {
+                                $aksi .=
+                                    '<a href="' .
+                                    url('rapat/agenda-rapat/notulis/' . $rapat->slug . '/unggah-notulen') .
+                                    '" class="btn btn-success btn-sm mx-2">Isi Notulen</a>';
+                            }
+
+                            $tugas = '';
+                            if (
+                                in_array(Auth::user()->pegawai->username, [
+                                    $rapat->notulis_username,
+                                    $rapat->pimpinan_username,
+                                ]) &&
+                                in_array($rapat->status, [
+                                    StatusAgendaRapat::COMPLETED->value,
+                                    StatusAgendaRapat::STARTED->value,
+                                ])
+                            ) {
+                                $tugas =
+                                    '<a href="' .
+                                    url('rapat/agenda-rapat/' . $rapat->slug . '/tugas') .
+                                    '">
+                                            <span class="badge bg-primary p-2">Input Tugas</span>
+                                          </a>';
+                            }
+                        @endphp
+
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td>{!! $rapat->agenda_rapat !!}</td>
+                            <td class="text-center">{{ $startTime }}</td>
+                            <td class="text-center">{!! $statusBadge !!}</td>
+                            <td class="text-center">{!! $aksi !!}</td>
+                            @if ($showTugasColumn)
+                                <td class="text-center">{!! $tugas !!}</td>
+                            @endif
+                        </tr>
                     @endforeach
-                </tr>
-            @endforeach
-        </x-adminlte-datatable>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-center">
+                {{ $rapats->links() }}
+            </div>
+        </div>
     </x-adminlte-card>
 @endsection
 

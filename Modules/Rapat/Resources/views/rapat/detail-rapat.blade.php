@@ -10,6 +10,7 @@
 
 @section('content')
     @php
+        use Modules\Rapat\Http\Helper\StatusPesertaRapat;
         \Carbon\Carbon::setLocale('id');
         $statusPeserta = [
             'BERSEDIA' => 'primary',
@@ -90,7 +91,8 @@
                                 </div>
                                 <div class="media-body">
                                     <h6 class="text-muted mb-1">Pimpinan Rapat</h6>
-                                    <p class="font-weight-bold">{{ $rapat->rapatAgendaPimpinan->formatted_name }}</p>
+                                    <p class="font-weight-bold"> {{ $rapat->rapatAgendaPimpinan->formatted_name }}
+                                    </p>
                                 </div>
                             </div>
 
@@ -213,27 +215,41 @@
                                             <tr>
                                                 <td class="text-center">{{ $loop->iteration }}</td>
                                                 <td>
-                                                    {{ $peserta->nama }}
+                                                    {{ $peserta->formatted_name }}
                                                 </td>
                                                 <td>082232123</td>
                                                 <td class="text-center">
                                                     @php
                                                         $statusClass = $statusPeserta[$peserta->pivot->status];
-                                                        $statusLabel = \Modules\Rapat\Http\Helper\StatusPesertaRapat::from(
+                                                        $statusLabel = StatusPesertaRapat::from(
                                                             $peserta->pivot->status,
                                                         )->label();
                                                         $statusIcon = '';
 
                                                         // Menentukan ikon berdasarkan status
-                                                        if ($peserta->pivot->status == 'BERSEDIA') {
+                                                        if (
+                                                            $peserta->pivot->status ==
+                                                            StatusPesertaRapat::BERSEDIA->value
+                                                        ) {
                                                             $statusIcon = 'fas fa-check';
-                                                        } elseif ($peserta->pivot->status == 'TIDAK_BERSEDIA') {
+                                                        } elseif (
+                                                            $peserta->pivot->status ==
+                                                            StatusPesertaRapat::TIDAK_BERSEDIA->value
+                                                        ) {
                                                             $statusIcon = 'fas fa-times';
-                                                        } elseif ($peserta->pivot->status == 'HADIR') {
+                                                        } elseif (
+                                                            $peserta->pivot->status == StatusPesertaRapat::HADIR->value
+                                                        ) {
                                                             $statusIcon = 'fas fa-user-check';
-                                                        } elseif ($peserta->pivot->status == 'TIDAK_HADIR') {
+                                                        } elseif (
+                                                            $peserta->pivot->status ==
+                                                            StatusPesertaRapat::TIDAK_HADIR->value
+                                                        ) {
                                                             $statusIcon = 'fas fa-user-times';
-                                                        } elseif ($peserta->pivot->status == 'MENUNGGU') {
+                                                        } elseif (
+                                                            $peserta->pivot->status ==
+                                                            StatusPesertaRapat::MENUNGGU->value
+                                                        ) {
                                                             $statusIcon = 'fas fa-clock';
                                                         }
                                                     @endphp

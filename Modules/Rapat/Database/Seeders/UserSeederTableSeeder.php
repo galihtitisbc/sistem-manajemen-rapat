@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Rapat\Database\Seeders;
 
 use App\Models\Core\User;
@@ -31,67 +30,8 @@ class UserSeederTableSeeder extends Seeder
         ]);
         $pimpinan->assignRole(['pimpinan']);
 
-        $pejabat = User::create([
-            'name'       => 'Pejabat User',
-            'username'   => 'pejabat',
-            'email'      => 'pejabat@gmail.com',
-            'password'   => Hash::make('password'),
-            'role_aktif' => 'pejabat',
-            'unit'       => 0,
-            'staff'      => 0,
-            'status'     => 2,
-        ]);
-        $pejabat->assignRole('pejabat');
-
-        $pejabat = User::create([
-            'username'   => 'sekretaris',
-            'name'       => 'Sekretaris User',
-            'email'      => 'sekretaris@gmail.com',
-            'password'   => Hash::make('password'),
-            'role_aktif' => 'sekretaris',
-            'unit'       => 0,
-            'staff'      => 0,
-            'status'     => 2,
-        ]);
-        $pejabat->assignRole('sekretaris');
-
-        $kepegawaian = User::create([
-            'username'   => 'kepegawaian',
-            'name'       => 'Kepegawaian User',
-            'email'      => 'kepegawaian@gmail.com',
-            'password'   => Hash::make('password'),
-            'role_aktif' => 'kepegawaian',
-            'unit'       => 0,
-            'staff'      => 0,
-            'status'     => 2,
-        ]);
-        $kepegawaian->assignRole('kepegawaian');
-
-        $dosen = User::create([
-            'username'   => 'dosen',
-            'name'       => 'Dosen User',
-            'email'      => 'dosen@gmail.com',
-            'password'   => Hash::make('password'),
-            'role_aktif' => 'dosen',
-            'unit'       => 0,
-            'staff'      => 0,
-            'status'     => 2,
-        ]);
-        $dosen->assignRole('dosen');
-
-        $multi = User::create([
-            'username'   => 'multi',
-            'name'       => 'Multi User',
-            'email'      => 'multi@gmail.com',
-            'password'   => Hash::make('password'),
-            'role_aktif' => 'pejabat,dosen',
-            'unit'       => 0,
-            'staff'      => 0,
-            'status'     => 2,
-        ]);
-        $multi->assignRole(['pejabat', 'dosen']);
-        $roles       = ['pimpinan', 'pejabat', 'sekretaris', 'kepegawaian', 'dosen'];
-        $pegawaiRecords = DB::table('pegawais')->get();
+        $roles          = ['pimpinan', 'pejabat', 'sekretaris', 'kepegawaian', 'dosen'];
+        $pegawaiRecords = DB::table('pegawais')->where('id', '<>', 1)->get();
         foreach ($pegawaiRecords as $pegawai) {
             $randomRole = $roles[array_rand($roles)];
 

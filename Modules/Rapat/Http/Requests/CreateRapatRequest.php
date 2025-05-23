@@ -19,7 +19,7 @@ class CreateRapatRequest extends FormRequest
             'peserta_rapat.*'   => 'exists:pegawais,username',
             'notulis_username'  => 'required|exists:pegawais,username',
             'nomor_surat'       => 'required|string|max:255',
-            'waktu_mulai'       => 'required',
+            'waktu_mulai'       => 'required|after:now',
             'waktu_selesai'     => 'required',
             'agenda_rapat'      => 'required|string',
             'tempat'            => 'required|string|max:255',

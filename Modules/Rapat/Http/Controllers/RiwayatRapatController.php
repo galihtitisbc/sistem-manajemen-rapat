@@ -16,12 +16,14 @@ class RiwayatRapatController extends Controller
      */
     public function index(Request $request)
     {
-        $rapats = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)
-            ->when($request->input('cari'), function ($query, $cari) {
-                $query->where(function ($q) use ($cari) {
-                    $q->where('agenda_rapat', 'like', "%$cari%");
-                });
-            })
+        $rapats = Auth::user()->hasAnyRole(['pimpinan'])
+        ? RapatAgenda::query()
+        : RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username);
+        $rapats = $rapats->when($request->input('cari'), function ($query, $cari) {
+            $query->where(function ($q) use ($cari) {
+                $q->where('agenda_rapat', 'like', "%$cari%");
+            });
+        })
             ->when($request->input('dari_tgl'), function ($query, $dari) {
                 $query->whereDate('waktu_mulai', '>=', $dari);
             })
@@ -31,7 +33,6 @@ class RiwayatRapatController extends Controller
             ->where('status', StatusAgendaRapat::COMPLETED->value)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-
         return view('rapat::rapat.riwayat.index', [
             'rapats' => $rapats,
         ]);

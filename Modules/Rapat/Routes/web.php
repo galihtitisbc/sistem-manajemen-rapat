@@ -30,11 +30,11 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             Route::get('/ajax-selected-peserta/', [RapatController::class, 'ajaxSelectedPesertaRapat']);
             Route::get('/ajax-kepanitiaan/{id}', [KepegawaianController::class, 'ajaxKepanitiaanRapat']);
             //-------------------------------------
-            Route::post('/store', [RapatController::class, 'store']);
             Route::get('/{rapatAgenda:slug}/detail', [RapatController::class, 'show']);
             Route::get('/{file}/download', [RapatController::class, 'downloadLampiran']);
             Route::middleware(['pimpinanRapat'])->group(function () {
                 Route::get('/create', [RapatController::class, 'create']);
+                Route::post('/store', [RapatController::class, 'store']);
                 Route::get('/{rapatAgenda:slug}/edit', [RapatController::class, 'edit']);
                 Route::get('/ajax-edit/{rapatAgenda:slug}', [RapatController::class, 'ajaxEditRapat']);
                 Route::put('/{rapatAgenda:slug}/update', [RapatController::class, 'update']);
@@ -79,10 +79,9 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             Route::get('/', [RiwayatRapatController::class, 'index']);
         });
     });
+    //untuk generate pdf laporan hasil rapat
+    Route::get('/rapat/riwayat-rapat/{rapatAgenda:slug}/generate-pdf', [ExportPdfController::class, 'generateNotulenRapat']);
 });
 //function untuk menampilkan halaman konfirmasi kesediaan mengikuti rapat
 Route::get('/rapat/agenda-rapat/konfirmasi/{token}', [RapatController::class, 'formKonfirmasiKesediaanRapat']);
 Route::post('/rapat/agenda-rapat/konfirmasi/{rapatAgenda:slug}/{pegawai}', [RapatController::class, 'konfirmasiKesediaanRapat']);
-
-//untuk generate pdf laporan hasil rapat
-Route::get('/rapat/riwayat-rapat/{rapatAgenda:slug}/generate-pdf', [ExportPdfController::class, 'generateNotulenRapat']);

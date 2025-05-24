@@ -19,7 +19,7 @@ class KepegawaianController extends Controller
     {
         $kepanitiaans = '';
 
-        if (RoleGroupHelper::userHasRoleGroup(Auth::user(), RoleGroupHelper::kepegawaianRoles())) {
+        if (RoleGroupHelper::userHasRoleGroup(Auth::user(), RoleGroupHelper::kepegawaianRoles()) || RoleGroupHelper::userHasRoleGroup(Auth::user(), RoleGroupHelper::pimpinanRoles())) {
             $kepanitiaans = Kepanitiaan::with('pegawai');
         } else {
             $kepanitiaans = Kepanitiaan::pegawaiIsAnggotaPanitia(Auth::user()->pegawai->username)->with('pegawai');
@@ -121,7 +121,7 @@ class KepegawaianController extends Controller
     }
     public function download(Kepanitiaan $kepanitiaan)
     {
-        $kepanitiaan->load('pegawai');
+        $kepanitiaan->load(['pegawai', 'ketua']);
         return view('rapat::kepegawaian.surat_tugas_pdf', [
             'kepanitiaan' => $kepanitiaan,
         ]);

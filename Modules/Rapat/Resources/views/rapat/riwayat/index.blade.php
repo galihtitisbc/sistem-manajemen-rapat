@@ -47,13 +47,24 @@
                                 <input type="text" name="cari" class="form-control" placeholder="Cari Agenda Rapat">
                             </div>
                             <div class="col-lg-3 col-sm-12 mb-2">
-                                <input type="text" name="dari_tgl" class="form-control" placeholder="Dari Tanggal">
+                                <input type="text" onfocus="(this.type='date')" onblur="(this.type='text')"
+                                    name="dari_tgl" class="form-control mb-2" value="{{ request('dari_tgl') }}"
+                                    placeholder="Rapat Dari Tanggal">
                             </div>
                             <div class="col-lg-3 col-sm-12 mb-2">
-                                <input type="text" name="sampai_tgl" class="form-control" placeholder="Sampai Tanggal">
+                                <input type="text" onfocus="(this.type='date')" onblur="(this.type='text')"
+                                    name="sampai_tgl" class="form-control" value="{{ request('sampai_tgl') }}"
+                                    placeholder="Rapat Sampai Tanggal">
                             </div>
-                            <div class="col-lg-1 col-sm-12">
+                            <div class="col-lg-1 col-md-12 col-sm-12">
                                 <button class="btn btn-primary col-sm-12"><i class="fas fa-search"></i></button>
+                                @if (request('cari') || request('dari_tgl') || request('sampai_tgl'))
+                                    <button type="button"
+                                        onclick="this.form.reset(); window.location='{{ url('rapat/riwayat-rapat') }}'"
+                                        class="btn btn-danger mt-2 col-sm-12">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     </div>

@@ -9,6 +9,7 @@ use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Entities\RapatTindakLanjut;
 use Modules\Rapat\Http\Helper\FlashMessage;
+use Modules\Rapat\Http\Helper\RoleGroupHelper;
 use Modules\Rapat\Http\Requests\CreateTugasPesertaRapatRequest;
 use Modules\Rapat\Http\Requests\UploadTugasTindakLanjutRapatRequest;
 use Modules\Rapat\Http\Service\Implementation\TindakLanjutRapatService;
@@ -23,8 +24,13 @@ class TindakLanjutRapatController extends Controller
     }
     public function index(Request $request)
     {
-        $tindakLanjutRapat = RapatTindakLanjut::listAgendaRapatHaveTugas(Auth::user()->pegawai->username)
-            ->with('rapatAgenda')
+        $tindakLanjutRapat = '';
+        if (RoleGroupHelper::userHasRoleGroup(Auth::user(), RoleGroupHelper::pimpinanRoles())) {
+            $tindakLanjutRapat = RapatTindakLanjut::with('rapatAgenda');
+        } else {
+            $tindakLanjutRapat = RapatTindakLanjut::listAgendaRapatHaveTugas(Auth::user()->pegawai->username)->with('rapatAgenda');
+        }
+        $tindakLanjutRapat = $tindakLanjutRapat
             ->when($request->input('cari'), function ($query, $cari) {
                 $query->whereHas('rapatAgenda', function ($q) use ($cari) {
                     $q->where('agenda_rapat', 'like', "%$cari%");
@@ -42,14 +48,19 @@ class TindakLanjutRapatController extends Controller
             })
             ->orderBy('created_at', 'asc')
             ->get();
-        // dd($tindakLanjutRapat);
+        // return $tindakLanjutRapat;
         return view('rapat::rapat.tindak-lanjut.index', [
             'tindakLanjutRapat' => $tindakLanjutRapat,
         ]);
     }
     public function show(RapatAgenda $rapatAgenda)
     {
-        $tindakLanjut = $rapatAgenda->rapatTindakLanjut()->pegawaiHaveTugas(Auth::user()->pegawai, $rapatAgenda)->with(['rapatTindakLanjutFile', 'rapatAgenda', 'pegawai'])->get();
+        $tindakLanjut = '';
+        if (RoleGroupHelper::userHasRoleGroup(Auth::user(), RoleGroupHelper::pimpinanRoles())) {
+            $tindakLanjut = $rapatAgenda->rapatTindakLanjut()->with(['rapatTindakLanjutFile', 'rapatAgenda', 'pegawai'])->get();
+        } else {
+            $tindakLanjut = $rapatAgenda->rapatTindakLanjut()->pegawaiHaveTugas(Auth::user()->pegawai, $rapatAgenda)->with(['rapatTindakLanjutFile', 'rapatAgenda', 'pegawai'])->get();
+        }
         return view('rapat::rapat.tindak-lanjut.lihat-tindak-lanjut', [
             'rapat'         => $rapatAgenda,
             'tindakLanjuts' => $tindakLanjut,

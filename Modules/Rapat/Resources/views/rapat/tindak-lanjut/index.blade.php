@@ -9,6 +9,10 @@
 @endpush
 
 @section('content')
+    @php
+        use Modules\Rapat\Http\Helper\StatusTindakLanjut;
+
+    @endphp
     <div class="row">
         <div class="col-12">
             @if ($tindakLanjutRapat->isEmpty())
@@ -86,7 +90,7 @@
                                             {{ $tindakLanjut->rapatAgenda->status_persentase_penyelesaian }}%
                                         @else
                                             <span class="badge badge-{{ $statusTindakLanjut[$tindakLanjut->status] }}">
-                                                {{ \App\Enums\StatusTindakLanjut::from($tindakLanjut->status)->label() }}
+                                                {{ StatusTindakLanjut::from($tindakLanjut->status)->label() }}
                                             </span>
                                         @endif
                                     </td>

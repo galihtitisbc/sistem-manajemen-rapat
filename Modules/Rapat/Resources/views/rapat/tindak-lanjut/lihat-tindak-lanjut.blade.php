@@ -57,13 +57,13 @@
                         '<a href="' .
                         url('/rapat/tindak-lanjut-rapat/' . $tindakLanjut->slug . '/detail/tugas') .
                         '" class="btn btn-success mx-2 btn-detail"> <i class="fas fa-eye" data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Detail Rapat"></i></a>';
+                    title="Detail Tugas"></i></a>';
                     $btnUpdate =
                         '<a href="' .
                         url('/rapat/tindak-lanjut-rapat/tugas/' . $tindakLanjut->slug . '/ubah-tugas') .
                         '" class="btn btn-warning"> <i class="fas fa-edit" data-bs-toggle="tooltip"
                             data-bs-placement="top" title="Ubah Tugas"></i></a>';
-                    $aksi = $btnDetail;
+                    $aksi = $tindakLanjut->status == $selesaiEnum ? $btnDetail : '-';
                     if (
                         $tindakLanjut->status == $belumSelesaiEnum &&
                         $tindakLanjut->pegawai_username == Auth::user()->pegawai->username

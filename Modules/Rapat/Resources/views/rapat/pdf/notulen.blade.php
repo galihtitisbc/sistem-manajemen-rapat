@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="id">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notulensi Rapat Politeknik Negeri Banyuwangi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+@extends('rapat::rapat.pdf.pdf_layout')
+@push('css')
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -20,60 +13,6 @@
             --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', Arial, sans-serif;
-            font-size: 12pt;
-            line-height: 1.5;
-            color: #000;
-            background: white;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 210mm;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-        }
-
-        @page {
-            size: A4;
-            margin: 20mm;
-        }
-
-        .kop-surat {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #000;
-        }
-
-        .kop-surat img {
-            width: 80px;
-            height: 80px;
-            margin-right: 20px;
-            object-fit: contain;
-        }
-
-        .kop-surat-text {
-            flex: 1;
-            text-align: center;
-        }
-
-        .kop-surat-text strong {
-            font-weight: bold;
-            font-size: 14pt;
-        }
-
-
-        /* Meeting title & info */
         .meeting-title {
             background-color: var(--primary-color);
             color: white;
@@ -327,12 +266,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Tombol Print hanya muncul di web */
-        .web-only {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
         @media print {
             .web-only {
                 display: none !important;
@@ -345,236 +278,196 @@
             }
 
             body {
-                margin: 0;
-                padding: 0;
-                width: 100%;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
-            }
-
-            .container {
-                width: 100%;
-                max-width: 100%;
-                margin: 0 auto;
-                padding: 0 1cm;
-                box-sizing: border-box;
             }
         }
     </style>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
+@endpush
+@section('content')
+    @php
+        use Carbon\Carbon;
+        use Modules\Rapat\Http\Helper\StatusTindakLanjut;
 
-<body>
-    <div class="container">
-        <!-- Tombol Print Preview -->
-        <div class="web-only">
-            <button class="btn-print" onclick="window.print()">🖨 Tampilkan Print Preview</button>
+        Carbon::setLocale('id');
+        $waktuMulai = Carbon::parse($rapat['waktu_mulai'])->translatedFormat('l, d F Y H:i');
+    @endphp
+
+    <div class="meeting-title">
+        <h1>NOTULENSI RAPAT</h1>
+    </div>
+
+    <div class="meeting-info">
+        <div class="meeting-date">
+            <i class="fas fa-calendar-alt"></i>
+            <h2>{{ $rapat->waktu_mulai }}</h2>
         </div>
+    </div>
 
-        <div class="kop-surat">
-            <img src="{{ asset('assets/img/pdf/Logo_Politeknik_Negeri_Banyuwangi.png') }}"
-                alt="Logo Politeknik Negeri Banyuwangi">
-            <div class="kop-surat-text">
-                <strong>KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET DAN TEKNOLOGI</strong><br>
-                <strong>POLITEKNIK NEGERI BANYUWANGI</strong><br>
-                Jalan Raya Jember KM 13 Labanasem Kabat-Banyuwangi, 68461<br>
-                Telp/Fax: (0333) 636780; E-mail: poliwangi@poliwangi.ac.id; Laman: poliwangi.ac.id
-            </div>
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-calendar-check"></i>
+            <h3>Agenda Rapat</h3>
         </div>
-
-        @php
-            use Carbon\Carbon;
-            use Modules\Rapat\Http\Helper\StatusTindakLanjut;
-
-            Carbon::setLocale('id');
-            $waktuMulai = Carbon::parse($rapat['waktu_mulai'])->translatedFormat('l, d F Y H:i');
-        @endphp
-
-        <div class="meeting-title">
-            <h1>NOTULENSI RAPAT</h1>
+        <div class="agenda-content">
+            <p>{{ $rapat->agenda_rapat }}</p>
         </div>
-
-        <div class="meeting-info">
-            <div class="meeting-date">
-                <i class="fas fa-calendar-alt"></i>
-                <h2>{{ $rapat->waktu_mulai }}</h2>
-            </div>
+    </div>
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-users"></i>
+            <h3>Daftar Hadir</h3>
         </div>
+        <div class="attendees-grid">
+            <table>
+                <thead>
+                    <th>No</th>
+                    <th>NIP</th>
+                    <th>Nama</th>
+                    <th>Status</th>
+                </thead>
+                <tbody>
+                    @foreach ($rapat->rapatAgendaPeserta as $item)
+                        @php
+                            $statusHadirClass = '';
+                            if ($item->pivot->status == 'TIDAK_HADIR') {
+                                $statusHadirClass = 'status-pending';
+                            } else {
+                                $statusHadirClass = 'status-complete';
+                            }
+                        @endphp
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $item->nip }}</td>
+                            <td>{{ $item->formatted_name }}</td>
+                            <td>
+                                <span class="status-badge {{ $statusHadirClass }}">
+                                    {{ $item->pivot->status }}
+                                </span>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-        <div class="section">
-            <div class="section-title">
-                <i class="fas fa-calendar-check"></i>
-                <h3>Agenda Rapat</h3>
-            </div>
-            <div class="agenda-content">
-                <p>{{ $rapat->agenda_rapat }}</p>
-            </div>
         </div>
-        <div class="section">
-            <div class="section-title">
-                <i class="fas fa-users"></i>
-                <h3>Daftar Hadir</h3>
-            </div>
-            <div class="attendees-grid">
-                <table>
-                    <thead>
-                        <th>No</th>
-                        <th>NIP</th>
-                        <th>Nama</th>
-                        <th>Status</th>
-                    </thead>
-                    <tbody>
-                        @foreach ($rapat->rapatAgendaPeserta as $item)
-                            @php
-                                $statusHadirClass = '';
-                                if ($item->pivot->status == 'TIDAK_HADIR') {
-                                    $statusHadirClass = 'status-pending';
-                                } else {
-                                    $statusHadirClass = 'status-complete';
-                                }
-                            @endphp
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->nip }}</td>
-                                <td>{{ $item->formatted_name }}</td>
-                                <td>
-                                    <span class="status-badge {{ $statusHadirClass }}">
-                                        {{ $item->pivot->status }}
-                                    </span>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    </div>
 
-            </div>
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-user-edit"></i>
+            <h3>Notulis</h3>
         </div>
-
-        <div class="section">
-            <div class="section-title">
-                <i class="fas fa-user-edit"></i>
-                <h3>Notulis</h3>
-            </div>
-            <div class="attendee-card">
-                <i class="fas fa-pen"></i>
-                {{ $rapat->rapatAgendaNotulis->formatted_name }}
-            </div>
+        <div class="attendee-card">
+            <i class="fas fa-pen"></i>
+            {{ $rapat->rapatAgendaNotulis->formatted_name }}
         </div>
+    </div>
 
-        <div class="section">
-            <div class="section-title">
-                <i class="fas fa-paperclip"></i>
-                <h3>Lampiran Rapat</h3>
-            </div>
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-paperclip"></i>
+            <h3>Lampiran Rapat</h3>
+        </div>
+        <div class="attachment-list">
+            @foreach ($rapat->rapatLampiran as $item)
+                <div class="attachment-item">
+                    <i class="fas fa-file-alt"></i>
+                    <a href="{{ url('/rapat/agenda-rapat/' . $item->nama_file . '/download') }}">
+                        {{ $item->nama_file }}
+                        <i class="fas fa-download"></i>
+                    </a>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-file-alt"></i>
+            <h3>Notulen Rapat</h3>
+        </div>
+        @if ($rapat->rapatNotulen->notulenFiles->isNotEmpty())
             <div class="attachment-list">
-                @foreach ($rapat->rapatLampiran as $item)
+                @foreach ($rapat->rapatNotulen->notulenFiles as $item)
                     <div class="attachment-item">
-                        <i class="fas fa-file-alt"></i>
-                        <a href="{{ url('/rapat/agenda-rapat/' . $item->nama_file . '/download') }}">
+                        <i class="fas fa-file-word"></i>
+                        <a href="{{ url('/rapat/agenda-rapat/notulis/' . $item->nama_file . '/download') }}">
                             {{ $item->nama_file }}
                             <i class="fas fa-download"></i>
                         </a>
                     </div>
                 @endforeach
             </div>
-        </div>
+        @endif
 
-        <div class="section">
-            <div class="section-title">
-                <i class="fas fa-file-alt"></i>
-                <h3>Notulen Rapat</h3>
+        @if ($rapat->rapatNotulen->catatan != null)
+            <div class="notes-content">
+                {!! strip_tags($rapat->rapatNotulen->catatan, '<b><strong><i><u><p><div><span><ul><ol><li><br>') !!}
             </div>
-            @if ($rapat->rapatNotulen->notulenFiles->isNotEmpty())
-                <div class="attachment-list">
-                    @foreach ($rapat->rapatNotulen->notulenFiles as $item)
-                        <div class="attachment-item">
-                            <i class="fas fa-file-word"></i>
-                            <a href="{{ url('/rapat/agenda-rapat/notulis/' . $item->nama_file . '/download') }}">
-                                {{ $item->nama_file }}
-                                <i class="fas fa-download"></i>
-                            </a>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
+        @endif
+    </div>
 
-            @if ($rapat->rapatNotulen->catatan != null)
-                <div class="notes-content">
-                    {!! strip_tags($rapat->rapatNotulen->catatan, '<b><strong><i><u><p><div><span><ul><ol><li><br>') !!}
-                </div>
-            @endif
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-tasks"></i>
+            <h3>Penugasan Tindak Lanjut Rapat</h3>
         </div>
-
-        <div class="section">
-            <div class="section-title">
-                <i class="fas fa-tasks"></i>
-                <h3>Penugasan Tindak Lanjut Rapat</h3>
-            </div>
-            @if ($rapat->rapatTindakLanjut->isNotEmpty())
-                <table>
-                    <thead>
+        @if ($rapat->rapatTindakLanjut->isNotEmpty())
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 5%">No</th>
+                        <th style="width: 25%">Nama</th>
+                        <th style="width: 50%">Tugas</th>
+                        <th style="width: 20%">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($rapat->rapatTindakLanjut as $item)
                         <tr>
-                            <th style="width: 5%">No</th>
-                            <th style="width: 25%">Nama</th>
-                            <th style="width: 50%">Tugas</th>
-                            <th style="width: 20%">Status</th>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $item->pegawai->formatted_name }}
+                            </td>
+                            <td>{{ $item->deskripsi_tugas }}</td>
+                            <td>
+                                @php
+                                    $status = StatusTindakLanjut::from($item->status)->value;
+                                    $statusClass = '';
+                                    if ($status == StatusTindakLanjut::BELUM_SELESAI->value) {
+                                        $statusClass = 'status-pending';
+                                    } else {
+                                        $statusClass = 'status-complete';
+                                    }
+                                @endphp
+                                <span class="status-badge {{ $statusClass }}">
+                                    {{ StatusTindakLanjut::from($item->status)->label() }}
+                                </span>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($rapat->rapatTindakLanjut as $item)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->pegawai->formatted_name }}
-                                </td>
-                                <td>{{ $item->deskripsi_tugas }}</td>
-                                <td>
-                                    @php
-                                        $status = StatusTindakLanjut::from($item->status)->value;
-                                        $statusClass = '';
-                                        if ($status == StatusTindakLanjut::BELUM_SELESAI->value) {
-                                            $statusClass = 'status-pending';
-                                        } else {
-                                            $statusClass = 'status-complete';
-                                        }
-                                    @endphp
-                                    <span class="status-badge {{ $statusClass }}">
-                                        {{ StatusTindakLanjut::from($item->status)->label() }}
-                                    </span>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @else
-                <div class="empty-state">
-                    <p><i class="fas fa-info-circle"></i> Tidak Ada Tugas</p>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <div class="empty-state">
+                <p><i class="fas fa-info-circle"></i> Tidak Ada Tugas</p>
+            </div>
+        @endif
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-images"></i>
+            <h3>Dokumentasi Rapat</h3>
+        </div>
+        <div class="documentation-gallery">
+            @foreach ($rapat->rapatDokumentasi as $dok)
+                <div class="gallery-item">
+                    <img src="{{ asset('/storage/dokumentasi-rapat/' . $dok->foto . '') }}" alt="Dokumentasi Rapat">
                 </div>
-            @endif
-        </div>
-
-        <div class="section">
-            <div class="section-title">
-                <i class="fas fa-images"></i>
-                <h3>Dokumentasi Rapat</h3>
-            </div>
-            <div class="documentation-gallery">
-                @foreach ($rapat->rapatDokumentasi as $dok)
-                    <div class="gallery-item">
-                        <img src="{{ asset('/storage/dokumentasi-rapat/' . $dok->foto . '') }}"
-                            alt="Dokumentasi Rapat">
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>&copy; {{ date('Y') }} Politeknik Negeri Banyuwangi. All Rights Reserved.</p>
+            @endforeach
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-    </script>
-</body>
-
-</html>
+@endsection

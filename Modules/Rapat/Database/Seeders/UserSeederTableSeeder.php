@@ -41,6 +41,7 @@ class UserSeederTableSeeder extends Seeder
         ]);
         $wadir->assignRole(['wadir2', 'dosen']);
         $roles = [
+            'kepegawaian',
             'dosen',
             'pegawai',
             'wadir1',

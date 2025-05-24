@@ -12,16 +12,11 @@
 
     <x-adminlte-card>
         <div class="col-lg-8 col-sm-12 col-md-12 mx-auto">
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <strong>Terjadi kesalahan:</strong>
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+            <div class="alert alert-danger d-none" id="error-alert">
+                <strong>Terjadi kesalahan:</strong>
+                <ul id="error-list"></ul>
+            </div>
+
             <form id="formKepanitiaan" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
@@ -47,10 +42,6 @@
                 <div class="mb-3">
                     <label>Tujuan</label>
                     <input type="text" id="tujuan" name="tujuan" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label>Surat Tugas :</label>
-                    <input type="file" id="surat_tugas" name="surat_tugas">
                 </div>
                 <div class="mb-3">
                     <label>Peserta Kepanitiaan :</label>
@@ -128,13 +119,38 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    console.log(response);
-                    alert('Kepanitiaan berhasil disimpan!');
-                    window.location.href = '/rapat/panitia';
+                    $('#error-alert').addClass('d-none');
+                    Swal.fire({
+                        title: 'Berhasil',
+                        text: `${response.message}`,
+                        icon: 'success',
+                    });
+                    setTimeout(() => {
+                        window.location.href = '/rapat/panitia';
+                    }, 1500);
                 },
                 error: function(xhr) {
                     console.error(xhr.responseText);
-                    alert('Gagal menyimpan kepanitiaan!');
+                    if (xhr.status === 422) {
+                        const errors = xhr.responseJSON.errors;
+                        let errorList = '';
+                        Object.values(errors).forEach(messages => {
+                            messages.forEach(message => {
+                                errorList += `<li>${message}</li>`;
+                            });
+                        });
+                        $('#error-list').html(errorList);
+                        $('#error-alert').removeClass('d-none');
+                        $('html, body').animate({
+                            scrollTop: $('#error-alert').offset().top - 20
+                        }, 500);
+                    } else {
+                        Swal.fire({
+                            title: 'Gagal',
+                            text: 'Gagal Menambahkan Kepanitiaan',
+                            icon: 'error',
+                        });
+                    }
                 }
             });
         });

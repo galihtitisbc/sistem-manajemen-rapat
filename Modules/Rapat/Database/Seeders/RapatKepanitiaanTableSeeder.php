@@ -21,6 +21,7 @@ class RapatKepanitiaanTableSeeder extends Seeder
             [
                 'pimpinan_username' => 'tefa',
                 'nama_kepanitiaan'  => 'Panitia Seminar Teknologi',
+                'slug'              => 'panitia-seminar-teknologi',
                 'deskripsi'         => 'Panitia yang bertanggung jawab atas seminar teknologi tahunan.',
                 'tanggal_mulai'     => now()->subDays(10)->toDateString(),
                 'tanggal_berakhir'  => now()->addDays(10)->toDateString(),
@@ -37,6 +38,7 @@ class RapatKepanitiaanTableSeeder extends Seeder
         $panitia = Kepanitiaan::create([
             'pimpinan_username' => 'haris',
             'nama_kepanitiaan'  => 'Panitia Konsumsi',
+            'slug'              => 'panitia-konsumsi',
             'deskripsi'         => 'Panitia yang mengorganisir konsumsi tahunan',
             'tanggal_mulai'     => now()->subDays(20)->toDateString(),
             'tanggal_berakhir'  => now()->addDays(5)->toDateString(),

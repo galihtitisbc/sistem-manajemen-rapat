@@ -25,7 +25,6 @@ class UpdateKepanitiaanRequest extends FormRequest
             'penanggung_jawab'  => 'nullable',
             'sekretaris'        => 'nullable',
             'koordinator'       => 'nullable',
-            'surat_tugas'       => 'nullable|file|mimes:jpg,jpeg,png,doc,docx,xls,xlsx,pdf,txt|max:2048',
         ];
     }
 

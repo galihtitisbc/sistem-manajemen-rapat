@@ -49,7 +49,7 @@ class WhatsappService
             "🗓️ *Waktu:* \n" . Carbon::parse($agendaRapat->waktu_mulai)->translatedFormat('l, d F Y') . ", Pukul " . Carbon::parse($agendaRapat->waktu_mulai)->format('H:i')
             . " - " . $waktuSelesai . " WIB\n\n" .
             $tempatRapat .
-            "👤 *Pimpinan Rapat:* \n" . $agendaRapat->rapatAgendaPimpinan->nama . "\n\n" .
+            "👤 *Pimpinan Rapat:* \n" . $agendaRapat->rapatAgendaPimpinan->formatted_name . "\n\n" .
             "✅ *Konfirmasi Kesediaan Hadir:* \n" .
             "🔗 {{link_konfirmasi}}\n\n" .
             "📅 *Tambahkan ke Google Calendar:* \n" .
@@ -133,6 +133,44 @@ class WhatsappService
         } catch (\Throwable $th) {
             logger()->error($th->getMessage());
         }
+    }
+    public function sendMessageKepanitiaan($kepanitiaan, $type)
+    {
+        try {
+            $header          = $type == 'create' ? "👤 Pemberitahuan Penambahan Kepanitiaan\n\n" : "👤 Pemberitahuan Perubahan Kepanitiaan\n\n";
+            $messageTemplate = "{{header}}, {{nama_pegawai}}\n\n" .
+                " Kami ingin menginformasikan bahwa Anda telah **ditambahkan sebagai anggota kepanitiaan baru** dengan rincian sebagai berikut:\n\n" .
+                "📝 Nama Kepanitiaan: {{nama_kepanitiaan}}\n" .
+                "📅 Tanggal Mulai: {{tgl_mulai}}\n" .
+                "📅 Tanggal Berakhir: {{tgl_berakhir}}\n" .
+                "👤 Pimpinan Kepanitiaan: {{nama_pimpinan}}\n\n" .
+                "Kami mengharapkan partisipasi aktif Anda dalam menjalankan tugas kepanitiaan ini sesuai dengan peran dan tanggung jawab yang diberikan.\n" .
+                "Silakan periksa klik link berikut untuk melihat detail lengkapnya.\n\n" .
+                "Link: {{link}}\n\n" .
+                "Terima kasih atas perhatiannya\n";
+            foreach ($kepanitiaan->pegawai as $pegawai) {
+                $data = [
+                    '{{header}}'           => $header,
+                    '{{nama_pegawai}}'     => $pegawai->formatted_name,
+                    '{{nama_kepanitiaan}}' => $kepanitiaan->nama_kepanitiaan,
+                    '{{tgl_mulai}}'        => \Carbon\Carbon::parse($kepanitiaan->tanggal_mulai)->translatedFormat('d F Y'),
+                    '{{tgl_berakhir}}'     => \Carbon\Carbon::parse($kepanitiaan->tanggal_berakhir)->translatedFormat('d F Y'),
+                    '{{nama_pimpinan}}'    => $kepanitiaan->ketua->formatted_name,
+                    '{{link}}'             => env('APP_URL') . '/rapat/panitia/' . $kepanitiaan->slug . '/detail',
+                ];
+                $message  = str_replace(array_keys($data), array_values($data), $messageTemplate);
+                $response = Http::post(env('WA_URL'), [
+                    'session'     => 'default',
+                    'chatId'      => '6282264349638@c.us',
+                    'text'        => $message,
+                    'linkPreview' => false,
+                ]);
+            }
+        } catch (\Throwable $th) {
+            logger()->error($th->getMessage());
+
+        }
+
     }
     public function createKesediaanRapatLink($data)
     {

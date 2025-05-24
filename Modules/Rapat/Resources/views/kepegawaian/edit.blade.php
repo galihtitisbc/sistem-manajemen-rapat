@@ -12,16 +12,10 @@
 
     <x-adminlte-card>
         <div class="col-lg-8 col-sm-12 col-md-12 mx-auto">
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <strong>Terjadi kesalahan:</strong>
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+            <div class="alert alert-danger d-none" id="error-alert">
+                <strong>Terjadi kesalahan:</strong>
+                <ul id="error-list"></ul>
+            </div>
             <form id="formKepanitiaan" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label>Nama Kepanitiaan</label>
@@ -50,12 +44,6 @@
                     <label>Tujuan</label>
                     <input type="text" name="tujuan" class="form-control"
                         value="{{ old('tujuan', $kepanitiaan->tujuan ?? '') }}" required>
-                </div>
-                <div class="mb-3">
-                    <label>Surat Tugas :</label>
-                    <input type="file" id="surat_tugas" name="surat_tugas">
-                    <p>{{ $kepanitiaan->surat_tugas }}</p>
-
                 </div>
                 <div class="mb-3">
                     <label>Peserta Kepanitiaan :</label>
@@ -139,7 +127,7 @@
             pesertaRapat.forEach(p => formData.append('peserta_panitia[]', p));
             formData.append('pimpinan_username', pimpinanRapatUsername);
             $.ajax({
-                url: '/rapat/panitia/' + kepanitiaan.id,
+                url: '/rapat/panitia/' + kepanitiaan.slug,
                 method: 'POST',
                 data: formData,
                 processData: false,
@@ -149,12 +137,37 @@
                 },
                 success: function(response) {
                     console.log(response);
-                    alert('Kepanitiaan berhasil Di Ubah');
-                    window.location.href = '/rapat/panitia';
+                    Swal.fire({
+                        title: 'Berhasil',
+                        text: `${response.message}`,
+                        icon: 'success',
+                    });
+                    setTimeout(() => {
+                        window.location.href = '/rapat/panitia';
+                    }, 1500);
                 },
                 error: function(xhr) {
                     console.error(xhr.responseText);
-                    alert('Gagal menyimpan kepanitiaan!');
+                    if (xhr.status === 422) {
+                        const errors = xhr.responseJSON.errors;
+                        let errorList = '';
+                        Object.values(errors).forEach(messages => {
+                            messages.forEach(message => {
+                                errorList += `<li>${message}</li>`;
+                            });
+                        });
+                        $('#error-list').html(errorList);
+                        $('#error-alert').removeClass('d-none');
+                        $('html, body').animate({
+                            scrollTop: $('#error-alert').offset().top - 20
+                        }, 500);
+                    } else {
+                        Swal.fire({
+                            title: 'Gagal',
+                            text: 'Gagal Menambahkan Kepanitiaan',
+                            icon: 'error',
+                        });
+                    }
                 }
             });
         });

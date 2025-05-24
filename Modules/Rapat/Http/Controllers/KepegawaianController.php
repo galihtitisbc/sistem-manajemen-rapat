@@ -4,19 +4,20 @@ namespace Modules\Rapat\Http\Controllers;
 use App\Models\Core\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Modules\Rapat\Entities\Kepanitiaan;
 use Modules\Rapat\Entities\Pegawai;
 use Modules\Rapat\Http\Helper\FlashMessage;
+use Modules\Rapat\Http\Helper\RoleGroupHelper;
 use Modules\Rapat\Http\Requests\KepanitiaanRequest;
 use Modules\Rapat\Http\Requests\UpdateKepanitiaanRequest;
+use Modules\Rapat\Jobs\WhatsappSenderKepanitiaan;
 
 class KepegawaianController extends Controller
 {
     public function index()
     {
         $kepanitiaans = '';
-        if (in_array('kepegawaian', Auth::user()->roles->pluck('name')->toArray())) {
+        if (RoleGroupHelper::userHasRoleGroup(Auth::user(), RoleGroupHelper::kepegawaianRoles())) {
             $kepanitiaans = Kepanitiaan::with('pegawai')->get();
         } else {
             $kepanitiaans = Kepanitiaan::pegawaiIsAnggotaPanitia(Auth::user()->pegawai->username)->with('pegawai')->get();
@@ -54,16 +55,10 @@ class KepegawaianController extends Controller
     public function store(KepanitiaanRequest $request)
     {
         try {
-            $validated = $request->validated();
-            if (isset($validated['surat_tugas'])) {
-                // Simpan surat tugas ke storage
-                $file     = $validated['surat_tugas'];
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                Storage::putFileAs('public/kepanitiaan', $file, $fileName);
-                $validated['surat_tugas'] = $fileName;
-            }
+            $validated   = $request->validated();
             $kepanitiaan = Kepanitiaan::create($validated);
             $kepanitiaan->pegawai()->attach($validated['peserta_panitia']);
+            WhatsappSenderKepanitiaan::dispatch($kepanitiaan, 'create');
             return response()->json(['message' => 'Kepanitiaan berhasil ditambahkan.']);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Gagal menambahkan kepanitiaan.']);
@@ -84,18 +79,9 @@ class KepegawaianController extends Controller
     {
         try {
             $validated = $request->validated();
-
-            if (isset($validated['surat_tugas'])) {
-                // Hapus surat tugas lama
-                Storage::delete('public/kepanitiaan/' . $kepanitiaan->surat_tugas);
-                // Simpan surat tugas ke storage
-                $file     = $validated['surat_tugas'];
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                Storage::putFileAs('public/kepanitiaan', $file, $fileName);
-                $validated['surat_tugas'] = $fileName;
-            }
             $kepanitiaan->update($validated);
             $kepanitiaan->pegawai()->sync($validated['peserta_panitia']);
+            WhatsappSenderKepanitiaan::dispatch($kepanitiaan, 'update');
             return response()->json(['message' => 'Kepanitiaan berhasil diubah.']);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Gagal Mengubah kepanitiaan.']);
@@ -115,8 +101,8 @@ class KepegawaianController extends Controller
             return redirect()->to('/rapat/panitia');
         }
     }
-    public function download($file)
+    public function download(Kepanitiaan $kepanitiaan)
     {
-        return Storage::download('public/kepanitiaan/' . $file);
+        return $kepanitiaan;
     }
 }

@@ -18,6 +18,7 @@ class CreateKepanitiaansTable extends Migration
             $table->string('pimpinan_username');
             $table->foreign('pimpinan_username')->references('username')->on('pegawais');
             $table->string('nama_kepanitiaan');
+            $table->string('slug')->unique();
             $table->string('koordinator')->nullable();
             $table->string('sekretaris')->nullable();
             $table->string('penanggung_jawab')->nullable();
@@ -26,7 +27,6 @@ class CreateKepanitiaansTable extends Migration
             $table->date('tanggal_mulai');
             $table->date('tanggal_berakhir');
             $table->string('tujuan');
-            $table->string('surat_tugas')->nullable();
             $table->enum('status', ['AKTIF', 'NON_AKTIF'])->default('AKTIF');
             $table->timestamps();
         });

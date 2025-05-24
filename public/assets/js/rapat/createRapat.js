@@ -107,12 +107,6 @@ $(document).ready(function () {
                         $("#form-errors-list").append(`<li>${message}</li>`);
                     });
                 });
-
-                Swal.fire({
-                    title: `Gagal`,
-                    text: `Gagal Menambahkan Agenda Rapat`,
-                    icon: `error`,
-                });
                 // Optional: scroll ke atas ke pesan error
                 $("html, body").animate(
                     {

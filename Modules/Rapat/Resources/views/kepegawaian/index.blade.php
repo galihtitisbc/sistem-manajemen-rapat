@@ -26,43 +26,56 @@
                 <a href="{{ url('rapat/panitia/create') }}" class="btn btn-primary">Tambah Kepanitiaan</a>
             </div>
         @endif
-        <x-adminlte-datatable id="table1" :heads="$heads">
-            @foreach ($kepanitiaans as $kepanitiaan)
-                <tr>
-                    <td>{{ $kepanitiaan->id }}</td>
-                    <td>{{ $kepanitiaan->nama_kepanitiaan }}</td>
-                    <td>{{ $kepanitiaan->tanggal_mulai }}</td>
-                    <td>{{ $kepanitiaan->tanggal_berakhir }}</td>
-                    <td>
-                        <span class="badge bg-{{ $kepanitiaan->status == 'AKTIF' ? 'success' : 'danger' }}">
-                            {{ $kepanitiaan->status }}
-                        </span>
-                    </td>
-                    <td>
-                        <a href="{{ url('/rapat/panitia/' . $kepanitiaan->id . '/detail') }}" class="btn btn-primary btn-sm">
-                            <i class="fas fa-eye" data-bs-toggle="tooltip" data-bs-placement="top"
-                                title="Detail Kepanitiaan"></i>
-                        </a>
-                        @hasrole('kepegawaian')
-                            <a href="{{ url('/rapat/panitia/' . $kepanitiaan->id . '/edit') }}" class="btn btn-warning btn-sm"
-                                title="Edit">
-                                <i class="fa fa-fw fa-pen"></i>
-                                <nobr>
-                            </a>
-                            <form action="{{ url('/rapat/panitia/' . $kepanitiaan->id . '/change-status') }}" method="POST"
-                                style="display:inline;">
-                                @csrf
-                                @method('PATCH')
-                                <button class="btn btn-danger btn-sm" title="Ubah Status">
-                                    <i class="fa fa-fw fa-exchange-alt"></i>
-                                </button>
-                            </form>
-                        @endhasrole
-                        </nobr>
-                    </td>
-                </tr>
-            @endforeach
-        </x-adminlte-datatable>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <th>No</th>
+                    <th>Nama Kepanitiaan</th>
+                    <th>Tanggal Mulai</th>
+                    <th>Tanggal Berakhir</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </thead>
+                <tbody>
+                    @foreach ($kepanitiaans as $kepanitiaan)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $kepanitiaan->nama_kepanitiaan }}</td>
+                            <td>{{ $kepanitiaan->tanggal_mulai }}</td>
+                            <td>{{ $kepanitiaan->tanggal_berakhir }}</td>
+                            <td>
+                                <span class="badge bg-{{ $kepanitiaan->status == 'AKTIF' ? 'success' : 'danger' }}">
+                                    {{ $kepanitiaan->status }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ url('/rapat/panitia/' . $kepanitiaan->slug . '/detail') }}"
+                                    class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Detail Kepanitiaan"></i>
+                                </a>
+                                @hasrole('kepegawaian')
+                                    <a href="{{ url('/rapat/panitia/' . $kepanitiaan->slug . '/edit') }}"
+                                        class="btn btn-warning btn-sm" title="Edit">
+                                        <i class="fa fa-fw fa-pen"></i>
+                                        <nobr>
+                                    </a>
+                                    <form action="{{ url('/rapat/panitia/' . $kepanitiaan->slug . '/change-status') }}"
+                                        method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button class="btn btn-danger btn-sm" title="Ubah Status">
+                                            <i class="fa fa-fw fa-exchange-alt"></i>
+                                        </button>
+                                    </form>
+                                @endhasrole
+                                </nobr>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </x-adminlte-card>
 @endsection
 

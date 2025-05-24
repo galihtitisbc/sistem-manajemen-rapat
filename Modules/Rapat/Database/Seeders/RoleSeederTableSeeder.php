@@ -18,6 +18,7 @@ class RoleSeederTableSeeder extends Seeder
         Model::unguard();
 
         $roles = [
+            'kepegawaian',
             'dosen',
             'pegawai',
             'direktur',

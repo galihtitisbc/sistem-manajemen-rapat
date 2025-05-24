@@ -50,7 +50,8 @@
                                 <div class="col-lg-6 col-sm-12 col-md-12">
                                     <div class="form-group">
                                         <label><i class="fas fa-bullseye mr-2"></i>Surat Tugas Kepanitiaan:</label>
-                                        <p><a href="{{ url('/rapat/panitia/download/' . $panitia->slug) }}">Unduh
+                                        <p><a href="{{ url('/rapat/panitia/download/' . $panitia->slug) }}"
+                                                target="_blank">Unduh
                                                 Surat Tugas Kepanitiaan</a>
                                         </p>
                                     </div>

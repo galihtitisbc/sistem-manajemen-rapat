@@ -29,7 +29,7 @@ class RapatController extends Controller
 
     public function index()
     {
-        $rapat = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)->orderBy('waktu_mulai', 'asc')->paginate(5);
+        $rapat = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)->orderBy('waktu_mulai', 'asc')->paginate(5)->withQueryString();
         $now   = Carbon::now('Asia/Jakarta')->toDateTimeString();
         foreach ($rapat as $rapatItem) {
             $tglMulai = Carbon::parse($rapatItem->waktu_mulai)->toDateTimeString();

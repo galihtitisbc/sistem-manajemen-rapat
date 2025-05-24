@@ -26,6 +26,37 @@
                 <a href="{{ url('rapat/panitia/create') }}" class="btn btn-primary">Tambah Kepanitiaan</a>
             </div>
         @endif
+        <form action="" method="get">
+            <div class="col-lg-9 col-sm-12 mx-auto my-3">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <input type="text" name="nama_kepanitiaan" class="form-control mb-2"
+                            placeholder="Cari Kepanitiaan" value="{{ request('nama_kepanitiaan') }}">
+                        <select name="status" class="form-control" id="">
+                            <option value="" selected>-- Pilih Status --</option>
+                            <option value="AKTIF" {{ request('status') == 'AKTIF' ? 'selected' : '' }}>Aktif</option>
+                            <option value="NON_AKTIF" {{ request('status') == 'NON_AKTIF' ? 'selected' : '' }}>Tidak Aktif
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-md-12 col-sm-12 mb-2">
+                        <input type="text" onfocus="(this.type='date')" onblur="(this.type='text')" name="dari_tgl"
+                            class="form-control mb-2" value="{{ request('dari_tgl') }}" placeholder="Aktif Dari Tanggal">
+                        <input type="text" onfocus="(this.type='date')" onblur="(this.type='text')" name="sampai_tgl"
+                            class="form-control" value="{{ request('sampai_tgl') }}" placeholder="Berakhir Sampai Tanggal">
+                    </div>
+                    <div class="col-lg-1 col-md-12 col-sm-12">
+                        <button class="btn btn-primary col-sm-12"><i class="fas fa-search"></i></button>
+                        @if (request('nama_kepanitiaan') || request('dari_tgl') || request('sampai_tgl') || request('status'))
+                            <button type="button" onclick="this.form.reset(); window.location='{{ url('rapat/panitia') }}'"
+                                class="btn btn-danger mt-2 col-sm-12">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </form>
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -75,6 +106,9 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="d-flex justify-content-center">
+                {{ $kepanitiaans->links() }}
+            </div>
         </div>
     </x-adminlte-card>
 @endsection

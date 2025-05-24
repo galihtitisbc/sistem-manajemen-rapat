@@ -30,7 +30,7 @@ class RiwayatRapatController extends Controller
             })
             ->where('status', StatusAgendaRapat::COMPLETED->value)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(10)->withQueryString();
         return view('rapat::rapat.riwayat.index', [
             'rapats' => $rapats,
         ]);

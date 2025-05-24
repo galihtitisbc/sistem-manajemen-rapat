@@ -20,69 +20,58 @@
             --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Poppins', Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0 30px;
-            color: var(--text-color);
-            background-color: white;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            background: white;
         }
 
         .container {
-            max-width: 1000px;
+            width: 100%;
+            max-width: 210mm;
             margin: 0 auto;
+            padding: 20px;
+            background: white;
         }
 
         @page {
             size: A4;
-            margin: 2cm 2cm 2cm 2cm;
+            margin: 20mm;
         }
 
-        /* Header styling */
-        .header {
+        .kop-surat {
             display: flex;
             align-items: center;
-            padding: 20px 0;
-            margin-bottom: 30px;
-            border-bottom: none;
-            position: relative;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #000;
         }
 
-        .header::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-        }
-
-        .header img {
-            width: 100px;
-            height: auto;
+        .kop-surat img {
+            width: 80px;
+            height: 80px;
             margin-right: 20px;
+            object-fit: contain;
         }
 
-        .header-text {
-            flex-grow: 1;
-        }
-
-        .header h5 {
-            color: var(--primary-color);
-            font-weight: 700;
-            margin: 5px 0;
+        .kop-surat-text {
+            flex: 1;
             text-align: center;
-            font-size: 16px;
         }
 
-        .header p {
-            text-align: center;
-            font-size: 11px;
-            margin: 3px 0;
-            color: var(--dark-gray);
+        .kop-surat-text strong {
+            font-weight: bold;
+            font-size: 14pt;
         }
+
 
         /* Meeting title & info */
         .meeting-title {
@@ -383,15 +372,14 @@
             <button class="btn-print" onclick="window.print()">🖨 Tampilkan Print Preview</button>
         </div>
 
-        <div class="header">
+        <div class="kop-surat">
             <img src="{{ asset('assets/img/pdf/Logo_Politeknik_Negeri_Banyuwangi.png') }}"
                 alt="Logo Politeknik Negeri Banyuwangi">
-            <div class="header-text">
-                <h5>KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</h5>
-                <h5>POLITEKNIK NEGERI BANYUWANGI</h5>
-                <p>Jl. Raya Jember kilometer 13 Labanasem, Kabat, Banyuwangi, 68461</p>
-                <p>Telepon / Faks : (0333) 636780</p>
-                <p>E-mail : poliwangi@poliwangi.ac.id ; Website : http://www.poliwangi.ac.id</p>
+            <div class="kop-surat-text">
+                <strong>KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET DAN TEKNOLOGI</strong><br>
+                <strong>POLITEKNIK NEGERI BANYUWANGI</strong><br>
+                Jalan Raya Jember KM 13 Labanasem Kabat-Banyuwangi, 68461<br>
+                Telp/Fax: (0333) 636780; E-mail: poliwangi@poliwangi.ac.id; Laman: poliwangi.ac.id
             </div>
         </div>
 
@@ -410,7 +398,7 @@
         <div class="meeting-info">
             <div class="meeting-date">
                 <i class="fas fa-calendar-alt"></i>
-                <h2>{{ $waktuMulai }}</h2>
+                <h2>{{ $rapat->waktu_mulai }}</h2>
             </div>
         </div>
 
@@ -420,27 +408,45 @@
                 <h3>Agenda Rapat</h3>
             </div>
             <div class="agenda-content">
-                <p>{{ $rapat['agenda_rapat'] }}</p>
+                <p>{{ $rapat->agenda_rapat }}</p>
             </div>
         </div>
-
         <div class="section">
             <div class="section-title">
                 <i class="fas fa-users"></i>
                 <h3>Daftar Hadir</h3>
             </div>
             <div class="attendees-grid">
-
-                <div class="row">
-                    @for ($i = 0; $i < ($count = count($rapat['rapat_agenda_peserta'])); $i++)
-                        <div class="col-6 my-2">
-                            <div class="attendee-card">
-                                <i class="fas fa-user"></i>
-                                {{ ucwords(strtolower($rapat['rapat_agenda_peserta'][$i]['nama'])) }}
-                            </div>
-                        </div>
-                    @endfor
-                </div>
+                <table>
+                    <thead>
+                        <th>No</th>
+                        <th>NIP</th>
+                        <th>Nama</th>
+                        <th>Status</th>
+                    </thead>
+                    <tbody>
+                        @foreach ($rapat->rapatAgendaPeserta as $item)
+                            @php
+                                $statusHadirClass = '';
+                                if ($item->pivot->status == 'TIDAK_HADIR') {
+                                    $statusHadirClass = 'status-pending';
+                                } else {
+                                    $statusHadirClass = 'status-complete';
+                                }
+                            @endphp
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $item->nip }}</td>
+                                <td>{{ $item->formatted_name }}</td>
+                                <td>
+                                    <span class="status-badge {{ $statusHadirClass }}">
+                                        {{ $item->pivot->status }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
 
             </div>
         </div>
@@ -452,7 +458,7 @@
             </div>
             <div class="attendee-card">
                 <i class="fas fa-pen"></i>
-                {{ ucwords(strtolower($rapat['rapat_agenda_notulis']['nama'])) }}
+                {{ $rapat->rapatAgendaNotulis->formatted_name }}
             </div>
         </div>
 
@@ -462,16 +468,15 @@
                 <h3>Lampiran Rapat</h3>
             </div>
             <div class="attachment-list">
-                @for ($i = 0, $count = count($rapat['rapat_lampiran']); $i < $count; $i++)
+                @foreach ($rapat->rapatLampiran as $item)
                     <div class="attachment-item">
                         <i class="fas fa-file-alt"></i>
-                        <a
-                            href="{{ url('/rapat/agenda-rapat/' . $rapat['rapat_lampiran'][$i]['nama_file'] . '/download') }}">
-                            {{ $rapat['rapat_lampiran'][$i]['nama_file'] }}
+                        <a href="{{ url('/rapat/agenda-rapat/' . $item->nama_file . '/download') }}">
+                            {{ $item->nama_file }}
                             <i class="fas fa-download"></i>
                         </a>
                     </div>
-                @endfor
+                @endforeach
             </div>
         </div>
 
@@ -480,24 +485,23 @@
                 <i class="fas fa-file-alt"></i>
                 <h3>Notulen Rapat</h3>
             </div>
-            @if (count($rapat['rapat_notulen']['notulen_files']) > 0)
+            @if ($rapat->rapatNotulen->notulenFiles->isNotEmpty())
                 <div class="attachment-list">
-                    @for ($i = 0, $count = count($rapat['rapat_notulen']['notulen_files']); $i < $count; $i++)
+                    @foreach ($rapat->rapatNotulen->notulenFiles as $item)
                         <div class="attachment-item">
                             <i class="fas fa-file-word"></i>
-                            <a
-                                href="{{ url('/rapat/agenda-rapat/notulis/' . $rapat['rapat_notulen']['notulen_files'][$i]['nama_file'] . '/download') }}">
-                                {{ $rapat['rapat_notulen']['notulen_files'][$i]['nama_file'] }}
+                            <a href="{{ url('/rapat/agenda-rapat/notulis/' . $item->nama_file . '/download') }}">
+                                {{ $item->nama_file }}
                                 <i class="fas fa-download"></i>
                             </a>
                         </div>
-                    @endfor
+                    @endforeach
                 </div>
             @endif
 
-            @if ($rapat['rapat_notulen']['catatan'] != null)
+            @if ($rapat->rapatNotulen->catatan != null)
                 <div class="notes-content">
-                    {!! strip_tags($rapat['rapat_notulen']['catatan'], '<b><strong><i><u><p><div><span><ul><ol><li><br>') !!}
+                    {!! strip_tags($rapat->rapatNotulen->catatan, '<b><strong><i><u><p><div><span><ul><ol><li><br>') !!}
                 </div>
             @endif
         </div>
@@ -507,7 +511,7 @@
                 <i class="fas fa-tasks"></i>
                 <h3>Penugasan Tindak Lanjut Rapat</h3>
             </div>
-            @if (count($rapat['rapat_tindak_lanjut']) > 0)
+            @if ($rapat->rapatTindakLanjut->isNotEmpty())
                 <table>
                     <thead>
                         <tr>
@@ -518,16 +522,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for ($i = 0; $i < ($count = count($rapat['rapat_tindak_lanjut'])); $i++)
+                        @foreach ($rapat->rapatTindakLanjut as $item)
                             <tr>
-                                <td>{{ $i + 1 }}</td>
-                                <td>{{ ucwords(strtolower($rapat['rapat_tindak_lanjut'][$i]['pegawai']['nama'])) }}
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $item->pegawai->formatted_name }}
                                 </td>
-                                <td>{{ $rapat['rapat_tindak_lanjut'][$i]['deskripsi_tugas'] }}</td>
+                                <td>{{ $item->deskripsi_tugas }}</td>
                                 <td>
                                     @php
-                                        $status = StatusTindakLanjut::from($rapat['rapat_tindak_lanjut'][$i]['status'])
-                                            ->value;
+                                        $status = StatusTindakLanjut::from($item->status)->value;
                                         $statusClass = '';
                                         if ($status == StatusTindakLanjut::BELUM_SELESAI->value) {
                                             $statusClass = 'status-pending';
@@ -536,11 +539,11 @@
                                         }
                                     @endphp
                                     <span class="status-badge {{ $statusClass }}">
-                                        {{ StatusTindakLanjut::from($rapat['rapat_tindak_lanjut'][$i]['status'])->label() }}
+                                        {{ StatusTindakLanjut::from($item->status)->label() }}
                                     </span>
                                 </td>
                             </tr>
-                        @endfor
+                        @endforeach
                     </tbody>
                 </table>
             @else
@@ -556,9 +559,9 @@
                 <h3>Dokumentasi Rapat</h3>
             </div>
             <div class="documentation-gallery">
-                @foreach ($rapat['rapat_dokumentasi'] as $dok)
+                @foreach ($rapat->rapatDokumentasi as $dok)
                     <div class="gallery-item">
-                        <img src="{{ asset('/storage/dokumentasi-rapat/' . $dok['foto'] . '') }}"
+                        <img src="{{ asset('/storage/dokumentasi-rapat/' . $dok->foto . '') }}"
                             alt="Dokumentasi Rapat">
                     </div>
                 @endforeach

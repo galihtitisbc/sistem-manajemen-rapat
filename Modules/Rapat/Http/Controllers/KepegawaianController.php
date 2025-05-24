@@ -2,6 +2,7 @@
 namespace Modules\Rapat\Http\Controllers;
 
 use App\Models\Core\User;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Rapat\Entities\Kepanitiaan;
@@ -14,14 +15,31 @@ use Modules\Rapat\Jobs\WhatsappSenderKepanitiaan;
 
 class KepegawaianController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $kepanitiaans = '';
+
         if (RoleGroupHelper::userHasRoleGroup(Auth::user(), RoleGroupHelper::kepegawaianRoles())) {
-            $kepanitiaans = Kepanitiaan::with('pegawai')->get();
+            $kepanitiaans = Kepanitiaan::with('pegawai');
         } else {
-            $kepanitiaans = Kepanitiaan::pegawaiIsAnggotaPanitia(Auth::user()->pegawai->username)->with('pegawai')->get();
+            $kepanitiaans = Kepanitiaan::pegawaiIsAnggotaPanitia(Auth::user()->pegawai->username)->with('pegawai');
         }
+        $kepanitiaans = $kepanitiaans
+            ->when($request->input('nama_kepanitiaan'), function ($query, $namaKepanitiaan) {
+                $query->where('nama_kepanitiaan', 'like', '%' . $namaKepanitiaan . '%');
+            })
+            ->when($request->input('dari_tgl'), function ($query, $dari) {
+                $query->whereDate('tanggal_mulai', '>=', $dari);
+            })
+            ->when($request->input('sampai_tgl'), function ($query, $sampai) {
+                $query->whereDate('tanggal_berakhir', '<=', $sampai);
+            })
+            ->when($request->input('status'), function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)->withQueryString();
+
         return view('rapat::kepegawaian.index', [
             'kepanitiaans' => $kepanitiaans,
         ]);
@@ -103,6 +121,9 @@ class KepegawaianController extends Controller
     }
     public function download(Kepanitiaan $kepanitiaan)
     {
-        return $kepanitiaan;
+        $kepanitiaan->load('pegawai');
+        return view('rapat::kepegawaian.surat_tugas_pdf', [
+            'kepanitiaan' => $kepanitiaan,
+        ]);
     }
 }

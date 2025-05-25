@@ -206,7 +206,7 @@
                                         <tr>
                                             <th class="text-center" width="5%">No</th>
                                             <th>Nama</th>
-                                            <th>Whatsapp</th>
+                                            <th>Email</th>
                                             <th class="text-center" width="15%">Status</th>
                                         </tr>
                                     </thead>
@@ -217,7 +217,7 @@
                                                 <td>
                                                     {{ $peserta->formatted_name }}
                                                 </td>
-                                                <td>082232123</td>
+                                                <td>{{ $peserta->user->email }}</td>
                                                 <td class="text-center">
                                                     @php
                                                         $statusClass = $statusPeserta[$peserta->pivot->status];

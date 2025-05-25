@@ -27,10 +27,25 @@ class RapatController extends Controller
         $this->rapatService = $rapatService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $rapat = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)->orderBy('waktu_mulai', 'asc')->paginate(5)->withQueryString();
-        $now   = Carbon::now('Asia/Jakarta')->toDateTimeString();
+        $rapat = RapatAgenda::pegawaiIsPesertaOrCreator(Auth::user()->pegawai->username)
+            ->when($request->input('agenda_rapat'), function ($query, $agendaRapat) {
+                return $query->where('agenda_rapat', 'like', "%{$agendaRapat}%");
+            })
+            ->when($request->input('dari_tgl'), function ($query, $dari) {
+                $query->whereDate('waktu_mulai', '>=', $dari);
+            })
+            ->when($request->input('sampai_tgl'), function ($query, $sampai) {
+                $query->whereDate('waktu_mulai', '<=', $sampai);
+            })
+            ->when($request->input('status'), function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->orderBy('waktu_mulai', 'asc')
+            ->paginate(5)
+            ->withQueryString();
+        $now = Carbon::now('Asia/Jakarta')->toDateTimeString();
         foreach ($rapat as $rapatItem) {
             $tglMulai = Carbon::parse($rapatItem->waktu_mulai)->toDateTimeString();
             if ($now >= $tglMulai && $rapatItem->status == StatusAgendaRapat::SCHEDULED->value) {
@@ -122,7 +137,7 @@ class RapatController extends Controller
 
     public function show(RapatAgenda $rapatAgenda)
     {
-        $rapatAgenda->load(['rapatAgendaPimpinan', 'rapatAgendaNotulis', 'rapatAgendaPeserta', 'rapatLampiran']);
+        $rapatAgenda->load(['rapatAgendaPimpinan', 'rapatAgendaNotulis', 'rapatAgendaPeserta', 'rapatLampiran', 'rapatAgendaPeserta.user']);
         return view('rapat::rapat.detail-rapat', [
             'rapat' => $rapatAgenda,
         ]);

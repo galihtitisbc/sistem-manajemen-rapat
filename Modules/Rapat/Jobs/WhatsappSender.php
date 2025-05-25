@@ -6,6 +6,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Modules\Rapat\Entities\RapatAgenda;
 use Modules\Rapat\Http\Service\Implementation\WhatsappService;
 
@@ -44,5 +45,13 @@ class WhatsappSender implements ShouldQueue
         } else if ($this->type == 'penilaian') {
             $whatsappService->sendMessagePenilaian($this->agendaRapat, $this->tindakLanjut, 'penilaian');
         }
+    }
+    public function failed(\Throwable $exception)
+    {
+        Log::error('Job gagal: ' . $exception->getMessage(), [
+            'trace' => $exception->getTraceAsString(),
+            'job'   => self::class,
+            'data'  => $this->yourJobData ?? null,
+        ]);
     }
 }

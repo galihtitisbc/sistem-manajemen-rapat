@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Rapat\Http\Service\Implementation;
 
 use Carbon\Carbon;
@@ -66,4 +65,5 @@ class ZoomServiceImpl implements MeetingServiceInterface
             throw new Exception("Gagal Membuat Zoom Meeting : " . $e->getMessage());
         }
     }
+
 }

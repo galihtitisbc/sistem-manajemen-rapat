@@ -41,6 +41,43 @@
                 <a href="{{ url('rapat/agenda-rapat/create') }}" class="btn btn-primary">Tambah Rapat</a>
             </div>
         @endif
+        <form action="" method="get">
+            <div class="col-lg-9 col-sm-12 mx-auto my-3">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <input type="text" name="agenda_rapat" class="form-control mb-2" placeholder="Cari Agenda Rapat"
+                            value="{{ request('agenda_rapat') }}">
+                        <select name="status" class="form-control" id="">
+                            <option value="" selected>-- Pilih Status --</option>
+                            <option value="{{ StatusAgendaRapat::STARTED->value }}"
+                                {{ request('status') == 'STARTED' ? 'selected' : '' }}>
+                                {{ StatusAgendaRapat::STARTED->label() }}
+                            </option>
+                            <option value="{{ StatusAgendaRapat::SCHEDULED->value }}"
+                                {{ request('status') == 'SCHEDULED' ? 'selected' : '' }}>
+                                {{ StatusAgendaRapat::SCHEDULED->label() }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-md-12 col-sm-12 mb-2">
+                        <input type="text" onfocus="(this.type='date')" onblur="(this.type='text')" name="dari_tgl"
+                            class="form-control mb-2" value="{{ request('dari_tgl') }}" placeholder="Rapat Dari Tanggal">
+                        <input type="text" onfocus="(this.type='date')" onblur="(this.type='text')" name="sampai_tgl"
+                            class="form-control" value="{{ request('sampai_tgl') }}" placeholder="Rapat Sampai Tanggal">
+                    </div>
+                    <div class="col-lg-1 col-md-12 col-sm-12">
+                        <button class="btn btn-primary col-sm-12"><i class="fas fa-search"></i></button>
+                        @if (request('agenda_rapat') || request('dari_tgl') || request('sampai_tgl') || request('status'))
+                            <button type="button"
+                                onclick="this.form.reset(); window.location='{{ url('rapat/agenda-rapat') }}'"
+                                class="btn btn-danger mt-2 col-sm-12">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </form>
         <div class="table-responsive">
             <table class="table">
                 <thead class="table-light text-center">

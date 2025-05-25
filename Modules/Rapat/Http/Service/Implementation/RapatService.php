@@ -3,6 +3,7 @@ namespace Modules\Rapat\Http\Service\Implementation;
 
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Modules\Rapat\Entities\RapatAgenda;
@@ -42,8 +43,20 @@ class RapatService
                 }
                 $agendaRapat->rapatLampiran()->createMany($namaLampiran);
             }
-            $agendaRapat->rapatAgendaPeserta()->attach($data['peserta_rapat']);
-
+            // $agendaRapat->rapatAgendaPeserta()->attach($data['peserta_rapat']);
+            //asosiasikan peserta rapat berserta link konfirmasi kehadiran
+            $pivotData = [];
+            foreach ($data['peserta_rapat'] as $pesertaId) {
+                $payload = [
+                    'username'        => $pesertaId,
+                    'rapat_agenda_id' => $agendaRapat->id,
+                ];
+                $linkKonfirmasi        = $this->createKesediaanRapatLink($payload);
+                $pivotData[$pesertaId] = [
+                    'link_konfirmasi' => $linkKonfirmasi,
+                ];
+            }
+            $agendaRapat->rapatAgendaPeserta()->attach($pivotData);
             if ($data['tempat'] == 'zoom') {
                 CreateMeetingZoom::dispatch($agendaRapat)->chain([
                     new WhatsappSender($agendaRapat, 'rapat', 'tambahRapat'),
@@ -146,5 +159,10 @@ class RapatService
             "&ctz=Asia/Jakarta";
 
         return $url;
+    }
+    public function createKesediaanRapatLink($data)
+    {
+        $token = Crypt::encrypt($data);
+        return env('APP_URL') . '/rapat/agenda-rapat/konfirmasi/' . $token;
     }
 }

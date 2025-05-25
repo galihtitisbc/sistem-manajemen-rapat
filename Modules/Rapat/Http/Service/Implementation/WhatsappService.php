@@ -2,7 +2,6 @@
 namespace Modules\Rapat\Http\Service\Implementation;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Modules\Rapat\Http\Helper\KriteriaPenilaian;
 
@@ -58,11 +57,7 @@ class WhatsappService
                 "Hormat kami,\nPoliteknik Negeri Banyuwangi";
 
             foreach ($agendaRapat->rapatAgendaPeserta as $value) {
-                $data = [
-                    'username'        => $value->username,
-                    'rapat_agenda_id' => $agendaRapat->id,
-                ];
-                $linkKonfirmasiKesediaanRapat = $this->createKesediaanRapatLink($data);
+                $linkKonfirmasiKesediaanRapat = $value->pivot->link_konfirmasi;
                 $message                      = str_replace('{{link_konfirmasi}}', $linkKonfirmasiKesediaanRapat, $messageTemplate);
                 //mengirim pesan
                 $response = Http::post(env('WA_URL'), [
@@ -170,11 +165,5 @@ class WhatsappService
             logger()->error($th->getMessage());
 
         }
-
-    }
-    public function createKesediaanRapatLink($data)
-    {
-        $token = Crypt::encrypt($data);
-        return env('APP_URL') . '/rapat/agenda-rapat/konfirmasi/' . $token;
     }
 }

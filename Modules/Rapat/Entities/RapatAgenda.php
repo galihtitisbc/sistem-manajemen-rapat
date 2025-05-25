@@ -83,7 +83,7 @@ class RapatAgenda extends Model
     }
     public function rapatAgendaPeserta()
     {
-        return $this->belongsToMany(Pegawai::class, 'rapat_pesertas', 'rapat_agenda_id', 'pegawai_username', 'id', 'username')->withPivot('status', 'is_penugasan');
+        return $this->belongsToMany(Pegawai::class, 'rapat_pesertas', 'rapat_agenda_id', 'pegawai_username', 'id', 'username')->withPivot('status', 'is_penugasan', 'link_konfirmasi');
     }
     public function rapatLampiran()
     {

@@ -11,6 +11,7 @@
 @section('content')
     @php
         use Modules\Rapat\Http\Helper\KriteriaPenilaian;
+        use Modules\Rapat\Http\Helper\RoleGroupHelper;
         $icons = [
             'jpg' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
             'jpeg' => ['icon' => 'fas fa-file-image', 'color' => '#FFD700'],
@@ -115,9 +116,12 @@
                 </div>
             </form>
         @endif
+        {{-- menampilkan penilaian terhadap tugas yang sudah dinilai oleh pimpinan rapat, yang bisa melihat penilaian nya adalah pimpinan, peserta rapat, dan pimpinan rapat --}}
         @if (
-            $tindakLanjut->pegawai_username == Auth::user()->pegawai->username &&
-                $tindakLanjut->penilaian != KriteriaPenilaian::BELUM_DINILAI->value)
+            ($tindakLanjut->pegawai_username == Auth::user()->pegawai->username &&
+                $tindakLanjut->penilaian != KriteriaPenilaian::BELUM_DINILAI->value) ||
+                (RoleGroupHelper::userHasRoleGroup(Auth::user(), RoleGroupHelper::pimpinanRoles()) &&
+                    $tindakLanjut->penilaian != KriteriaPenilaian::BELUM_DINILAI->value))
             <hr>
             <div class="col-8 mx-auto">
                 <div class="mb-3">

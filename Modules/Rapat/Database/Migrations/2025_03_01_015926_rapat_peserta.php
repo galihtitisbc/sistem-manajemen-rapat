@@ -22,6 +22,7 @@ class RapatPeserta extends Migration
 
             $table->enum('status', [StatusPesertaRapat::BERSEDIA->value, StatusPesertaRapat::TIDAK_BERSEDIA->value, StatusPesertaRapat::HADIR->value, StatusPesertaRapat::TIDAK_HADIR->value, StatusPesertaRapat::MENUNGGU->value])->default(StatusPesertaRapat::MENUNGGU->value);
             $table->boolean('is_penugasan')->default(false);
+            $table->text('link_konfirmasi');
             $table->timestamps();
         });
     }

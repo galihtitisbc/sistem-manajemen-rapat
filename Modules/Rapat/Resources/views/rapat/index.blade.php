@@ -35,6 +35,7 @@
 
     @endphp
     <x-adminlte-card>
+        {{-- jika user adalah pimpinan rapat, dan ketua panitia, maka button create rapat akan muncul --}}
         @if (RoleGroupHelper::userHasRoleGroup(Auth::user(), RoleGroupHelper::pimpinanRapatRoles()) ||
                 Auth::user()->pegawai->ketuaPanitia->isNotEmpty())
             <div class="btn-tambah d-flex justify-content-end my-2">

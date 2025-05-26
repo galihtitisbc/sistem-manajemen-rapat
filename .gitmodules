@@ -1,0 +1,3 @@
+[submodule "Modules/Rapat"]
+	path = Modules/Rapat
+	url = git@github.com:galihtitisbc/ModulRapat.git

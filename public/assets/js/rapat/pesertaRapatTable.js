@@ -65,7 +65,32 @@ $("#table-peserta-rapat").on("click", ".add-peserta", function (event) {
     }
     pesertaRapat = [...new Set([...pesertaManual, ...pesertaKepanitiaan])];
 
-    tablePesertaRapat.ajax.reload();
-    tablePimpinanRapat.ajax.reload();
-    tableNotulisRapat.ajax.reload();
+    // tablePesertaRapat.ajax.reload();
+    // tablePimpinanRapat.ajax.reload();
+    // tableNotulisRapat.ajax.reload();
+    // tableStrukturKepanitiaan.ajax.reload();
+    if (
+        typeof tablePesertaRapat !== "undefined" &&
+        tablePesertaRapat !== null
+    ) {
+        tablePesertaRapat.ajax.reload();
+    }
+    if (
+        typeof tablePimpinanRapat !== "undefined" &&
+        tablePimpinanRapat !== null
+    ) {
+        tablePimpinanRapat.ajax.reload();
+    }
+    if (
+        typeof tableNotulisRapat !== "undefined" &&
+        tableNotulisRapat !== null
+    ) {
+        tableNotulisRapat.ajax.reload();
+    }
+    if (
+        typeof tableStrukturKepanitiaan !== "undefined" &&
+        tableStrukturKepanitiaan !== null
+    ) {
+        tableStrukturKepanitiaan.ajax.reload();
+    }
 });

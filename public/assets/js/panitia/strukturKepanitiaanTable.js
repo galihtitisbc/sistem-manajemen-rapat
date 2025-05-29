@@ -39,11 +39,16 @@ let tableStrukturKepanitiaan = $("#table-struktur-kepanitiaan").DataTable({
         {
             data: null,
             render: function (data, type, row) {
+                const jabatan = jabatanMap[row.username] || "";
+                if (row.username == pimpinanKepanitiaan) {
+                    return "Ketua Panitia";
+                }
                 return `<input 
                         type="text" 
                         class="form-control jabatan-input" 
                         ${row.username == pimpinanKepanitiaan ? "hidden" : ""}
                         data-id="${row.username}" 
+                        value="${jabatan == "ketua" ? "" : jabatan}"
                         placeholder="Jabatan Dalam Panitia"
                         >`;
             },
@@ -53,7 +58,7 @@ let tableStrukturKepanitiaan = $("#table-struktur-kepanitiaan").DataTable({
             render: function (data, type, row) {
                 return `<input type="radio" name="pimpinan_username" ${
                     row.username == pimpinanKepanitiaan ? "checked" : ""
-                } class="select-pimpinan select-radio" id="" data-id="${
+                } class="select-pimpinan text-center select-radio" id="" data-id="${
                     row.username
                 }">`;
             },

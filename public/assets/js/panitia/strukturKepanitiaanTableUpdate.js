@@ -39,6 +39,7 @@ let tableStrukturKepanitiaan = $("#table-struktur-kepanitiaan").DataTable({
         {
             data: null,
             render: function (data, type, row) {
+                const jabatan = jabatanMap[row.username] || "";
                 const isPimpinan = row.username == pimpinanKepanitiaan;
                 const content = isPimpinan
                     ? "Ketua Panitia"
@@ -46,6 +47,7 @@ let tableStrukturKepanitiaan = $("#table-struktur-kepanitiaan").DataTable({
                             type="text" 
                             class="form-control jabatan-input" 
                             data-id="${row.username}" 
+                            value="${jabatan == "ketua" ? "" : jabatan}"
                             placeholder="Jabatan Dalam Panitia"
                         >`;
                 return `<div class="jabatan-cell" data-id="${row.username}">${content}</div>`;
@@ -74,10 +76,12 @@ $("#table-struktur-kepanitiaan").on("click", ".select-pimpinan", function () {
     // Kembalikan semua ke input (reset dari "Ketua Panitia" jika sebelumnya sudah diganti)
     $("#table-struktur-kepanitiaan .jabatan-cell").each(function () {
         const id = $(this).data("id");
+        const jabatan = jabatanMap[id] || "";
         const inputHtml = `<input 
             type="text" 
             class="form-control jabatan-input" 
             data-id="${id}" 
+            value="${jabatan == "ketua" ? "" : jabatan}"
             placeholder="Jabatan Dalam Panitia"
         >`;
         $(this).html(inputHtml);

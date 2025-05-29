@@ -68,7 +68,10 @@ $("#table-struktur-kepanitiaan").on(
     "click",
     ".select-pimpinan",
     function (event) {
-        pimpinanKepanitiaan = $(this).data("id");
-        tableStrukturKepanitiaan.ajax.reload();
+        const selectedId = $(this).data("id");
+        pimpinanKepanitiaan = selectedId;
+        //set input jabatan menjadi hidden jika dipilih sebagai ketua panitia
+        $(".jabatan-input").removeAttr("hidden");
+        $(`.jabatan-input[data-id='${selectedId}']`).attr("hidden", true);
     }
 );

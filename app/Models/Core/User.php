@@ -7,8 +7,6 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Pengadaan\Entities\Unit;
 use Modules\Rapat\Entities\Pegawai;
-use Modules\Rapat\Entities\RapatAgenda;
-use Modules\Rapat\Entities\RapatTindakLanjut;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -114,28 +112,4 @@ class User extends Authenticatable
     {
         return $this->hasOne(Pegawai::class, 'username', 'username');
     }
-    public function rapatAgenda()
-    {
-        return $this->hasMany(RapatAgenda::class, 'user_id');
-    }
-    public function rapatAgendaPimpinan()
-    {
-        return $this->hasMany(RapatAgenda::class, 'pimpinan_id');
-    }
-    public function rapatAgendaNotulis()
-    {
-        return $this->hasMany(RapatAgenda::class, 'notulis_id');
-    }
-    public function rapatAgendaPeserta()
-    {
-        return $this->belongsToMany(RapatAgenda::class, 'rapat_pesertas')->withPivot('id', 'status', 'is_penugasan');
-    }
-    public function rapatTindakLanjut()
-    {
-        return $this->hasMany(RapatTindakLanjut::class, 'user_id');
-    }
-    // public function kepanitiaans()
-    // {
-    //     return $this->belongsToMany(Kepanitiaan::class, 'kepanitiaan_user');
-    // }
 }

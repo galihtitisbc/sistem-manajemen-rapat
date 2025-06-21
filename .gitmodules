@@ -1,3 +1,12 @@
 [submodule "Modules/Rapat"]
 	path = Modules/Rapat
 	url = git@github.com:galihtitisbc/ModulRapat.git
+[submodule "SuratTugas"]
+	path = SuratTugas
+	url = https://github.com/cutisurattugas/ModulSuratTugas.git
+[submodule "Modules/SuratTugas"]
+	path = Modules/SuratTugas
+	url = https://github.com/cutisurattugas/ModulSuratTugas.git
+[submodule "Modules/Pengaturan"]
+	path = Modules/Pengaturan
+	url = https://github.com/cutisurattugas/ModulPengaturan.git

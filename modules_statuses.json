@@ -3,5 +3,7 @@
     "Monitoring": false,
     "Pengadaan": false,
     "PeminjamanRuangan": false,
-    "Rapat": true
+    "Rapat": true,
+    "SuratTugas": true,
+    "Pengaturan": true
 }

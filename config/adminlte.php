@@ -365,7 +365,7 @@ return [
             ],
         ],
         'bootstrap4DualListbox' => [
-            'active' => true,
+            'active' => false,
             'files'  => [
                 [
                     'type'     => 'css',
